@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  apartment-fe:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: apartment-fe-app
+    ports:
+      - "8080:80"
+    restart: always

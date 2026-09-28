@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1229" height="305" viewBox="9 598 1229 305">
+<title>KOVAN / yazı ve simgeler</title>
+<desc>İki boyutlu gerçek vektör. Şeffaf zemin; gölge, degrade ve gömülü raster görsel yok.</desc>
+<path id="harf_K" fill="#CDA65B" fill-rule="evenodd" d="M 155 880 L 121 880 L 70 805 L 48 831 L 48 880 L 21 880 L 21 715 L 48 715 L 48 795 L 115 715 L 151 715 L 88 783 Z"><title>K harfi</title></path>
+<path id="harf_O" fill="#CDA65B" fill-rule="evenodd" d="M 351 891 L 267 842.5 L 267 745.5 L 351 697 L 435 745.5 L 435 842.5 Z M 351 867 L 414 830.5 L 414 757.5 L 351 721 L 288 757.5 L 288 830.5 Z"><title>O / altıgen</title></path>
+<path id="harf_V" fill="#CDA65B" fill-rule="evenodd" d="M 641 610 C 593.29 610 550 647.474 550 701 C 550 747.881 611.844 837.276 641 878 C 670.156 837.276 732 747.881 732 701 C 732 647.474 688.71 610 641 610 Z M 641 637 C 606.222 637 578 664.997 578 701 C 578 729.745 606.028 769.658 641 817 C 675.972 769.658 704 729.745 704 701 C 704 664.997 675.778 637 641 637 Z"><title>V / konum simgesi</title></path>
+<path id="harf_A" fill="#CDA65B" fill-rule="evenodd" d="M 830 880 L 925 696 L 1017 880 L 984 880 L 925 759 L 896 819 L 935 819 L 946 843 L 883 843 L 863 880 Z"><title>A harfi</title></path>
+<path id="harf_N" fill="#CDA65B" fill-rule="evenodd" d="M 1226 880 L 1199 880 L 1114 772 L 1114 880 L 1086 880 L 1086 715 L 1113 715 L 1198 823 L 1198 715 L 1226 715 Z"><title>N harfi</title></path>
+</svg>

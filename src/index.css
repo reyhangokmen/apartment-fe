@@ -1,0 +1,112 @@
+@import "tailwindcss";
+@theme {
+  --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --color-brand: #cda65b;
+  --color-charcoal: #4d4d4d;
+}
+:root {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: var(--text, #303030);
+  background: var(--page, #f7f7f8);
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  --accent: #cda65b;
+  --ink: #4d4d4d;
+  --gold-dark: #806123;
+  --gold-light: #f7f1e5;
+  --line: #e9e9eb;
+  --muted: #787878;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  min-width: 320px;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+button,
+a,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--gold-dark);
+  outline-offset: 4px;
+}
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid #cda65b;
+  outline-offset: 1px;
+}
+button {
+  transition:
+    background 0.16s,
+    border-color 0.16s,
+    color 0.16s;
+}
+button svg {
+  flex-shrink: 0;
+}
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+::selection {
+  background: var(--selection, #eeddba);
+}
+
+/* Gold stays constant; neutral surfaces and semantic states adapt together. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #171819;
+  --surface: #202122;
+  --surface-subtle: #242526;
+  --surface-hover: #2c2d2e;
+  --text: #eeedea;
+  --ink: #e3e1dc;
+  --text-secondary: #c0bfbb;
+  --muted: #a3a3a1;
+  --line: #343536;
+  --border-strong: #48494a;
+  --gold-dark: #d9b773;
+  --gold-light: #343024;
+  --gold-surface: #2b2821;
+  --gold-border: #50452f;
+  --gold-track: #3c3932;
+  --gold-bar: #8a7752;
+  --avatar-surface: #383228;
+  --avatar-text: #dfc18b;
+  --success-surface: #25352a;
+  --success-text: #a3c9a6;
+  --success-border: #3a5240;
+  --progress-surface: #303039;
+  --progress-text: #c0bcd2;
+  --building-line: #62615e;
+  --window-lit: #8e7343;
+  --window-line: #cda65b;
+  --selection: #685333;
+}
+input::placeholder,
+textarea::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}

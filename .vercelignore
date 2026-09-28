@@ -1,0 +1,13 @@
+node_modules
+.git
+.env*
+!.env.example
+test-results
+playwright-report
+tests
+docs
+k8s
+Dockerfile
+docker-compose.yml
+src/components
+src/assets

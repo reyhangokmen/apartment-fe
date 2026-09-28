@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1223" height="1002" viewBox="12 11 1223 1002">
+<title>KOVAN / bina silüeti</title>
+<desc>İki boyutlu gerçek vektör. Şeffaf zemin; gölge, degrade ve gömülü raster görsel yok.</desc>
+<path id="bina_01" fill="#4D4D4D" fill-rule="evenodd" d="M 24 575 L 169 498 L 169 1001 L 24 1001 Z"><title>Bina paneli 1 (soldan sağa)</title></path>
+<path id="bina_02" fill="#4D4D4D" fill-rule="evenodd" d="M 238 364 L 327 309 L 327 1001 L 238 1001 Z"><title>Bina paneli 2 (soldan sağa)</title></path>
+<path id="bina_03" fill="#4D4D4D" fill-rule="evenodd" d="M 377 410 L 464 454 L 464 1001 L 377 1001 Z"><title>Bina paneli 3 (soldan sağa)</title></path>
+<path id="bina_04" fill="#4D4D4D" fill-rule="evenodd" d="M 500 93 L 606 23 L 606 1001 L 500 1001 Z"><title>Bina paneli 4 (soldan sağa)</title></path>
+<path id="bina_05" fill="#4D4D4D" fill-rule="evenodd" d="M 643 169 L 807 255 L 807 1001 L 643 1001 Z"><title>Bina paneli 5 (soldan sağa)</title></path>
+<path id="bina_06" fill="#4D4D4D" fill-rule="evenodd" d="M 855 432 L 1000 349 L 1000 1001 L 855 1001 Z"><title>Bina paneli 6 (soldan sağa)</title></path>
+<path id="bina_07" fill="#4D4D4D" fill-rule="evenodd" d="M 1052 391 L 1223 478 L 1223 1001 L 1052 1001 Z"><title>Bina paneli 7 (soldan sağa)</title></path>
+</svg>
