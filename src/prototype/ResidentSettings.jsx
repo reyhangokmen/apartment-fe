@@ -58,6 +58,7 @@ export default function ResidentSettings({
     emergencyName: "Zeynep Yılmaz",
     emergencyRelation: "Eşi",
     emergencyPhone: "0533 444 55 66",
+    emergencyNote: "7/24 Aranabilir (1. Derece Yakın)",
   });
 
   // 2. Araç & Plaka Listesi (PTS İçin)
@@ -384,7 +385,7 @@ export default function ResidentSettings({
                     </select>
                   </Field>
 
-                  {profileData.hasBedriddenPatient && (
+                  {profileData.hasBedriddenPatient ? (
                     <Field label="Özel Destek Gereken Birey Sayısı">
                       <input
                         type="number"
@@ -397,6 +398,14 @@ export default function ResidentSettings({
                             bedriddenCount: e.target.value,
                           })
                         }
+                      />
+                    </Field>
+                  ) : (
+                    <Field label="Öncelikli Tahliye Durumu">
+                      <input
+                        disabled
+                        value="Standart Bina Tahliye Planı Geçerli"
+                        style={{ opacity: 0.75, cursor: "not-allowed" }}
                       />
                     </Field>
                   )}
@@ -424,11 +433,12 @@ export default function ResidentSettings({
               <div className="settings-sub-section">
                 <h4>Acil Durum İrtibat Kişisi (Yangın, Su Basması, Kaza vb.)</h4>
                 <p className="text-xs text-muted mt-1">
-                  Size ulaşılamadığı acil durumlarda site güvenliğinin arayabileceği yakınınız:
+                  Size ulaşılamadığı acil durumlarda site yönetiminin ve güvenliğin arayabileceği yakınınız:
                 </p>
-                <div className="grid-3-col mt-2">
+                <div className="grid-2-col mt-2">
                   <Field label="Yakın Adı Soyadı">
                     <input
+                      required
                       value={profileData.emergencyName}
                       onChange={(e) =>
                         setProfileData({
@@ -440,6 +450,7 @@ export default function ResidentSettings({
                   </Field>
                   <Field label="Yakınlık Derecesi">
                     <input
+                      required
                       placeholder="Örn: Eşi, Kardeşi, Komşusu"
                       value={profileData.emergencyRelation}
                       onChange={(e) =>
@@ -450,14 +461,27 @@ export default function ResidentSettings({
                       }
                     />
                   </Field>
-                  <Field label="Yakın Telefonu">
+                  <Field label="Acil Durum Telefonu">
                     <input
+                      required
                       type="tel"
                       value={profileData.emergencyPhone}
                       onChange={(e) =>
                         setProfileData({
                           ...profileData,
                           emergencyPhone: e.target.value,
+                        })
+                      }
+                    />
+                  </Field>
+                  <Field label="İkincil Telefon / İletişim Notu">
+                    <input
+                      placeholder="Örn: 7/24 Aranabilir veya İş Tel"
+                      value={profileData.emergencyNote}
+                      onChange={(e) =>
+                        setProfileData({
+                          ...profileData,
+                          emergencyNote: e.target.value,
                         })
                       }
                     />
