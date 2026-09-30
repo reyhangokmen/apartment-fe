@@ -765,28 +765,27 @@ export default function App() {
                       <span>{manager ? "Site ve Yönetim Ayarları" : "Hesap ve Daire Ayarları"}</span>
                     </button>
                   </div>
-
-                  <div className="profile-dropdown-divider" />
-
-                  {/* Çıkış Yap */}
-                  <button
-                    type="button"
-                    className="profile-link-item profile-logout-item"
-                    onClick={() => {
-                      setProfileMenuOpen(false);
-                      setSession(null);
-                      setModal(null);
-                      setMobile(false);
-                      setToast("");
-                      window.history.pushState({}, "", "/login");
-                    }}
-                  >
-                    <LogOut size={15} />
-                    <span>Çıkış Yap</span>
-                  </button>
                 </div>
               )}
             </div>
+
+            {/* Sağda Açık Duran Çıkış Yap Butonu */}
+            <button
+              type="button"
+              className="logout-button"
+              aria-label="Çıkış Yap"
+              onClick={() => {
+                setProfileMenuOpen(false);
+                setSession(null);
+                setModal(null);
+                setMobile(false);
+                setToast("");
+                window.history.pushState({}, "", "/login");
+              }}
+            >
+              <LogOut size={16} />
+              <span>Çıkış Yap</span>
+            </button>
           </div>
         </header>
         <main className="page-content">
