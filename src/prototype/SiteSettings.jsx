@@ -47,6 +47,12 @@ export default function SiteSettings({
     auditorName: "Canan Çelik",
     auditorPhone: "0533 444 33 22",
     securityDeskExtension: "100",
+    // DASK Deprem Sigortası
+    daskPolicyNo: "83920194",
+    daskCompany: "Türkiye Sigorta / Kovan Acentesi",
+    daskStartDate: "2026-01-15",
+    daskEndDate: "2027-01-15",
+    daskCoverageAmount: "45000000",
   });
 
   // 2. Finans & Banka Hesapları
@@ -71,7 +77,10 @@ export default function SiteSettings({
   const [duesSettings, setDuesSettings] = useState({
     defaultDues: "2500",
     dueDay: "20",
+    applyInterest: true, // Aidat gecikme faizi tercihe bağlı
     interestRate: "5", // Gecikme faizi aylık %5
+    gracePeriodDays: "5", // Vadeden sonra tolerans gün sayısı
+    interestCalcMethod: "monthly", // 'monthly' | 'daily'
     autoAccrue: true,
     duesModel: "type", // 'flat' | 'type' | 'm2'
     m2Rate: "25",
@@ -313,6 +322,71 @@ export default function SiteSettings({
                   </Field>
                 </div>
               </div>
+
+              {/* Bina Güvenliği & DASK Deprem Sigortası Kartı */}
+              <div className="settings-card-box mt-3">
+                <div className="settings-card-header">
+                  <div className="flex items-center gap-2">
+                    <Shield size={18} className="text-gold" />
+                    <strong>Bina Deprem Sigortası & DASK Poliçe Bilgileri</strong>
+                  </div>
+                  <span className="badge complete">
+                    <CheckCircle2 size={12} /> Poliçe Aktif (Yenilemeye 106 Gün)
+                  </span>
+                </div>
+                <p className="text-xs text-muted mt-1">
+                  6305 sayılı Afet Sigortaları Kanunu uyarınca sitenizin ortak alan ve bina teminatını sağlayan güncel DASK zorunlu deprem sigortası detayları.
+                </p>
+                <div className="grid-2-col mt-3">
+                  <Field label="DASK Poliçe Numarası">
+                    <input
+                      required
+                      value={generalSettings.daskPolicyNo}
+                      onChange={(e) =>
+                        setGeneralSettings({ ...generalSettings, daskPolicyNo: e.target.value })
+                      }
+                    />
+                  </Field>
+                  <Field label="Sigorta Şirketi & Acente">
+                    <input
+                      required
+                      value={generalSettings.daskCompany}
+                      onChange={(e) =>
+                        setGeneralSettings({ ...generalSettings, daskCompany: e.target.value })
+                      }
+                    />
+                  </Field>
+                </div>
+                <div className="grid-3-col mt-2">
+                  <Field label="Poliçe Başlangıç Tarihi">
+                    <input
+                      type="date"
+                      value={generalSettings.daskStartDate}
+                      onChange={(e) =>
+                        setGeneralSettings({ ...generalSettings, daskStartDate: e.target.value })
+                      }
+                    />
+                  </Field>
+                  <Field label="Poliçe Bitiş Tarihi">
+                    <input
+                      type="date"
+                      value={generalSettings.daskEndDate}
+                      onChange={(e) =>
+                        setGeneralSettings({ ...generalSettings, daskEndDate: e.target.value })
+                      }
+                    />
+                  </Field>
+                  <Field label="Toplam Bina Teminat Tutarı (₺)">
+                    <input
+                      type="number"
+                      value={generalSettings.daskCoverageAmount}
+                      onChange={(e) =>
+                        setGeneralSettings({ ...generalSettings, daskCoverageAmount: e.target.value })
+                      }
+                    />
+                  </Field>
+                </div>
+              </div>
             </div>
           </Panel>
         )}
@@ -467,7 +541,7 @@ export default function SiteSettings({
             subtitle="Daire tiplerine veya m² alanına göre aidat belirleme ve tahakkuk otomasyonu"
           >
             <div className="settings-grid">
-              <div className="grid-3-col">
+              <div className="grid-2-col">
                 <Field label="Varsayılan Aylık Aidat (₺)">
                   <input
                     type="number"
@@ -488,17 +562,73 @@ export default function SiteSettings({
                     }
                   />
                 </Field>
-                <Field label="Aylık Gecikme Faizi (%)">
-                  <input
-                    type="number"
-                    min="0"
-                    max="20"
-                    value={duesSettings.interestRate}
-                    onChange={(e) =>
-                      setDuesSettings({ ...duesSettings, interestRate: e.target.value })
-                    }
-                  />
-                </Field>
+              </div>
+
+              {/* Aidat Gecikme Faizi Politikası (Yöneticinin Tercihine Bağlı) */}
+              <div className="settings-card-box">
+                <div className="settings-card-header">
+                  <div className="flex items-center gap-2">
+                    <Wallet size={18} className="text-gold" />
+                    <strong>Gecikme Faizi ve Tazminat Politikası (Yönetici Tercihi)</strong>
+                  </div>
+                  <span className={`badge ${duesSettings.applyInterest ? "complete" : "warning"}`}>
+                    {duesSettings.applyInterest ? "Faiz Uygulaması Aktif" : "Faiz Uygulaması Kapalı"}
+                  </span>
+                </div>
+                <p className="text-xs text-muted mt-1">
+                  Kat Mülkiyeti Kanunu (KMK Madde 20) uyarınca gecikme tazminatı yasal olarak aylık %5 oranındadır. Yönetim kurulu veya genel kurul kararına göre sistemin faiz işletmesini açıp kapatabilirsiniz.
+                </p>
+
+                <div className="mt-3">
+                  <label className="checkbox-item-custom font-semibold">
+                    <input
+                      type="checkbox"
+                      checked={duesSettings.applyInterest}
+                      onChange={(e) =>
+                        setDuesSettings({ ...duesSettings, applyInterest: e.target.checked })
+                      }
+                    />
+                    <span>Vadesi geçen aidat borçlarına gecikme faizi tahakkuk ettirilsin</span>
+                  </label>
+                </div>
+
+                {duesSettings.applyInterest && (
+                  <div className="grid-3-col mt-3 p-3 rounded-lg" style={{ background: "var(--page)", border: "1px solid var(--line)" }}>
+                    <Field label="Aylık Faiz Oranı (%)">
+                      <input
+                        type="number"
+                        min="0"
+                        max="20"
+                        value={duesSettings.interestRate}
+                        onChange={(e) =>
+                          setDuesSettings({ ...duesSettings, interestRate: e.target.value })
+                        }
+                      />
+                    </Field>
+                    <Field label="Gecikme Tolerans Süresi (Gün)">
+                      <input
+                        type="number"
+                        min="0"
+                        max="30"
+                        value={duesSettings.gracePeriodDays}
+                        onChange={(e) =>
+                          setDuesSettings({ ...duesSettings, gracePeriodDays: e.target.value })
+                        }
+                      />
+                    </Field>
+                    <Field label="Faiz Hesaplama Yöntemi">
+                      <select
+                        value={duesSettings.interestCalcMethod}
+                        onChange={(e) =>
+                          setDuesSettings({ ...duesSettings, interestCalcMethod: e.target.value })
+                        }
+                      >
+                        <option value="monthly">Aylık Sabit Oran (%5 / Ay)</option>
+                        <option value="daily">Günlük Basit Faiz (Gün Başına Oran)</option>
+                      </select>
+                    </Field>
+                  </div>
+                )}
               </div>
 
               {/* Dağıtım Modeli Seçimi */}

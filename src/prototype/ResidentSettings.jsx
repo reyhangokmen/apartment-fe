@@ -17,6 +17,7 @@ import {
   Info,
   Heart,
   ArrowLeftRight,
+  AlertTriangle,
 } from "lucide-react";
 import { Button, Field, Panel } from "./UI";
 
@@ -47,7 +48,12 @@ export default function ResidentSettings({
     role: "Kat Maliki (Ev Sahibi)",
     residentCount: "3", // Dairede ikamet eden toplam kişi sayısı
     hasPet: true,
+    petCount: "1", // Evcil hayvan sayısı
     petDetails: "1 Kedi",
+    // Afet & Acil Durum Tahliye Önceliği (Yatağa Bağlı Hasta / Özel İhtiyaç)
+    hasBedriddenPatient: false,
+    bedriddenCount: "1",
+    disasterEvacuationNote: "",
     // Acil Durum İletişimi
     emergencyName: "Zeynep Yılmaz",
     emergencyRelation: "Eşi",
@@ -303,7 +309,21 @@ export default function ResidentSettings({
                 </div>
 
                 {profileData.hasPet && (
-                  <div className="mt-2">
+                  <div className="grid-2-col mt-2">
+                    <Field label="Evcil Hayvan Sayısı">
+                      <input
+                        type="number"
+                        min="1"
+                        max="10"
+                        value={profileData.petCount}
+                        onChange={(e) =>
+                          setProfileData({
+                            ...profileData,
+                            petCount: e.target.value,
+                          })
+                        }
+                      />
+                    </Field>
                     <Field label="Evcil Hayvan Cinsi / Notu">
                       <input
                         placeholder="Örn: 1 Kedi, 1 Küçük Irk Köpek"
@@ -312,6 +332,75 @@ export default function ResidentSettings({
                           setProfileData({
                             ...profileData,
                             petDetails: e.target.value,
+                          })
+                        }
+                      />
+                    </Field>
+                  </div>
+                )}
+              </div>
+
+              {/* Afet ve Deprem Durumu Öncelikli Tahliye (Yatağa Bağlı Hasta / Özel İhtiyaç) */}
+              <div className="settings-sub-section disaster-alert-box">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle size={18} className="text-amber-500" />
+                    <h4>Afet & Acil Durum Tahliye Önceliği</h4>
+                  </div>
+                  <span className="badge warning">Site Yöneticisi Görür</span>
+                </div>
+                <p className="text-xs text-muted mt-1">
+                  Olası deprem, yangın veya afet durumunda AFAD ve site yönetiminin acil müdahale planında öncelikli tahliye edilmesi gereken yatağa bağımlı hasta veya özel gereksinimli birey kaydı:
+                </p>
+
+                <div className="grid-2-col mt-2">
+                  <Field label="Dairede Yatağa Bağlı Hasta / Özel Gereksinim Var mı?">
+                    <select
+                      value={profileData.hasBedriddenPatient ? "evet" : "hayir"}
+                      onChange={(e) => {
+                        const isEvet = e.target.value === "evet";
+                        setProfileData({
+                          ...profileData,
+                          hasBedriddenPatient: isEvet,
+                          disasterEvacuationNote: isEvet
+                            ? profileData.disasterEvacuationNote || "Yatağa bağımlı solunum cihazı kullanıyor, sedye tahliyesi gerekir."
+                            : "",
+                        });
+                      }}
+                    >
+                      <option value="hayir">Hayır, Özel İhtiyaç Yok</option>
+                      <option value="evet">Evet, Yatağa Bağlı / Özel İhtiyaç Var</option>
+                    </select>
+                  </Field>
+
+                  {profileData.hasBedriddenPatient && (
+                    <Field label="Özel Destek Gereken Birey Sayısı">
+                      <input
+                        type="number"
+                        min="1"
+                        max="5"
+                        value={profileData.bedriddenCount}
+                        onChange={(e) =>
+                          setProfileData({
+                            ...profileData,
+                            bedriddenCount: e.target.value,
+                          })
+                        }
+                      />
+                    </Field>
+                  )}
+                </div>
+
+                {profileData.hasBedriddenPatient && (
+                  <div className="mt-2">
+                    <Field label="Afet & Tahliye Notu (AFAD ve Yönetim İçin)">
+                      <input
+                        placeholder="Örn: 2. kat, solunum cihazına bağlı, tekerlekli sandalye veya sedye tahliyesi gerekir"
+                        value={profileData.disasterEvacuationNote}
+                        onChange={(e) =>
+                          setProfileData({
+                            ...profileData,
+                            disasterEvacuationNote: e.target.value,
                           })
                         }
                       />

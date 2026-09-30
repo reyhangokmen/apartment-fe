@@ -20,6 +20,13 @@ import {
   Send,
   ShieldCheck,
   User,
+  AlertTriangle,
+  AlertCircle,
+  RotateCcw,
+  Clock,
+  CheckSquare,
+  Square,
+  FileSpreadsheet,
 } from "lucide-react";
 import { Button, Empty, Field, Modal, Panel } from "./UI";
 import UnitGeneratorModal from "./UnitGeneratorModal";
@@ -43,6 +50,9 @@ export default function Apartments({
 
   const [block, setBlock] = useState(availableBlocks[0] || "A");
   const [search, setSearch] = useState("");
+  const [disasterFilterOnly, setDisasterFilterOnly] = useState(false);
+  const [showBulkInvite, setShowBulkInvite] = useState(false);
+  const [invitationOverrides, setInvitationOverrides] = useState({});
   const [editing, setEditing] = useState(null);
   const [editType, setEditType] = useState("2+1");
   const [editM2, setEditM2] = useState(95);
@@ -86,7 +96,9 @@ export default function Apartments({
     const res = residentFor(u.id);
     const matchesBlock = u.block === block;
     const searchTarget = `${u.id} ${u.number || ""} ${res?.name || ""} ${u.type || ""}`.toLocaleLowerCase("tr-TR");
-    return matchesBlock && searchTarget.includes(search.toLocaleLowerCase("tr-TR"));
+    const matchesSearch = searchTarget.includes(search.toLocaleLowerCase("tr-TR"));
+    const matchesDisaster = !disasterFilterOnly || Boolean(u.hasBedriddenPatient);
+    return matchesBlock && matchesSearch && matchesDisaster;
   });
 
   // Seçili bloğun katlarını büyükten küçüğe dinamik sırala
@@ -114,6 +126,18 @@ export default function Apartments({
     onNotify?.(`${unitId} için hazır SMS/WhatsApp metni kopyalandı!`);
   };
 
+  const handleRenewInvite = (unitId) => {
+    setInvitationOverrides((prev) => ({
+      ...prev,
+      [unitId]: {
+        status: "RENEWED",
+        expiresAt: "2026-10-07 (7 Gün)",
+        daysLeft: 7,
+      },
+    }));
+    onNotify?.(`${unitId} dairesi için yönetici davetiyesi yeniden oluşturuldu. Bağlantı 7 gün boyunca geçerlidir.`);
+  };
+
   return (
     <>
       <div className="module-actions">
@@ -126,7 +150,10 @@ export default function Apartments({
             {units.filter((u) => !u.occupied).length} boş bağımsız bölüm
           </span>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
+          <Button secondary onClick={() => setShowBulkInvite(true)}>
+            <Send size={15} /> Toplu Davet Ekranı
+          </Button>
           <Button onClick={() => setShowGenerator(true)}>
             <Sparkles size={16} /> Algoritmik Blok/Daire Üretici
           </Button>
@@ -212,15 +239,26 @@ export default function Apartments({
         title={`${block} Blok · Kat Planı & Daireler`}
         subtitle="Daire kartına tıklayarak sakin bilgilerini düzenleyin veya anahtar simgesine basarak sakine özel davet kodu üretin."
         action={
-          <label className="search-box">
-            <Search size={16} />
-            <input
-              aria-label="Daire, tip veya sakin ara"
-              placeholder="Daire no, tip veya sakin ara…"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </label>
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              type="button"
+              className={`disaster-quick-filter-btn ${disasterFilterOnly ? "active" : ""}`}
+              onClick={() => setDisasterFilterOnly((prev) => !prev)}
+              title="Afet ve Acil Durum Tahliye Önceliği Olan Daireleri Filtrele"
+            >
+              <AlertTriangle size={15} />
+              <span>🚨 Afet Tahliye Öncelikliler ({units.filter((u) => u.hasBedriddenPatient).length})</span>
+            </button>
+            <label className="search-box">
+              <Search size={16} />
+              <input
+                aria-label="Daire, tip veya sakin ara"
+                placeholder="Daire no, tip veya sakin ara…"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </label>
+          </div>
         }
       >
         <div className="floor-list">
@@ -237,9 +275,10 @@ export default function Apartments({
                     {floor.map((u) => {
                       const res = residentFor(u.id);
                       const isComm = u.type?.includes("Dükkan") || u.type?.includes("Ticari");
+                      const curStatus = invitationOverrides[u.id]?.status || u.invitationStatus || "VALID";
                       return (
                         <div
-                          className={`unit-card ${!u.occupied ? "vacant" : ""} ${isComm ? "commercial-unit" : ""}`}
+                          className={`unit-card ${!u.occupied ? "vacant" : ""} ${isComm ? "commercial-unit" : ""} ${u.hasBedriddenPatient ? "has-disaster-priority" : ""}`}
                           key={u.id}
                           onClick={() => startEdit(u)}
                         >
@@ -264,14 +303,28 @@ export default function Apartments({
                             </div>
                           </div>
 
+                          {u.hasBedriddenPatient && (
+                            <div className="unit-disaster-badge">
+                              <AlertTriangle size={12} />
+                              <span>🚨 Afet Tahliye Önceliği (Hasta)</span>
+                            </div>
+                          )}
+
                           <div className="unit-resident-info">
                             <span>{res?.name || (isComm ? "Boş Ticari Alan" : "Boş daire")}</span>
                             {res?.phone && <small className="muted">{res.phone}</small>}
                           </div>
 
                           <footer className="unit-card-footer">
-                            <span className="status-dot" />
-                            <span>{u.occupied ? "Sakin atandı" : "Sakin atanmadı"}</span>
+                            <div className="flex items-center gap-1.5">
+                              <span className="status-dot" />
+                              <span>{u.occupied ? "Sakin atandı" : "Sakin atanmadı"}</span>
+                            </div>
+                            {!u.occupied && (
+                              <span className={`invite-validity-pill ${curStatus.toLowerCase()}`}>
+                                {curStatus === "EXPIRED" ? "Süresi Dolmuş" : curStatus === "RENEWED" ? "Yenilendi" : "Davet Aktif"}
+                              </span>
+                            )}
                           </footer>
                         </div>
                       );
@@ -288,8 +341,8 @@ export default function Apartments({
       {/* TEKİL DAİRE DAVETİYE KODU OLUŞTURMA & PAYLAŞMA MODALI */}
       {inviteModalUnit && (
         <Modal
-          title={`${inviteModalUnit.id} · Davetiye Kodu Oluştur`}
-          description="Sakin bu kodu Kovan giriş ekranındaki 'Davetiyeniz mi Var?' alanına yazarak daireye bağlanır"
+          title={`${inviteModalUnit.id} · Davetiye Kodu & Durumu`}
+          description="Yönetici davet bağlantısı 1 hafta (7 gün) sonra otomatik geçersiz olur; gerektiğinde yenilenebilir."
           onClose={() => setInviteModalUnit(null)}
         >
           <div className="unit-invite-generator-box">
@@ -300,6 +353,52 @@ export default function Apartments({
                 <p>{inviteModalUnit.block} Blok · {inviteModalUnit.floor}. Kat · {inviteModalUnit.type || "2+1 Standart"}</p>
               </div>
             </div>
+
+            {/* 1 Hafta Geçerlilik Süresi ve Durum Göstergesi */}
+            {(() => {
+              const currentStatus = invitationOverrides[inviteModalUnit.id]?.status || inviteModalUnit.invitationStatus || "VALID";
+              const expiresAt = invitationOverrides[inviteModalUnit.id]?.expiresAt || inviteModalUnit.invitationExpiresAt || "2026-10-07 (7 Gün)";
+              return (
+                <div className={`invite-validity-status-card ${currentStatus.toLowerCase()} mt-2 mb-3`}>
+                  <div className="flex items-center justify-between">
+                    <span className="status-title-row">
+                      {currentStatus === "EXPIRED" ? (
+                        <>
+                          <AlertCircle size={16} className="text-red-500" />
+                          <strong className="text-red-600">Davet Süresi Dolmuş (Geçersiz)</strong>
+                        </>
+                      ) : currentStatus === "RENEWED" ? (
+                        <>
+                          <RotateCcw size={16} className="text-blue-500" />
+                          <strong className="text-blue-600">Davet Yeniden Oluşturuldu (Geçerli)</strong>
+                        </>
+                      ) : (
+                        <>
+                          <CheckCircle2 size={16} className="text-green-500" />
+                          <strong className="text-green-600">Davet Geçerli (Aktif)</strong>
+                        </>
+                      )}
+                    </span>
+                    <span className="validity-time-badge">
+                      <Clock size={12} /> {expiresAt}
+                    </span>
+                  </div>
+                  <p className="status-note-text">
+                    {currentStatus === "EXPIRED"
+                      ? "1 haftalık davet geçerlilik süresi sona erdiğinden sakin bu bağlantıyla kayıt olamaz. 'Yeni Davet Oluştur' butonuna basarak süreyi yenileyebilirsiniz."
+                      : "Sakinlerinizin güvenliği için yönetici davet bağlantıları oluşturulduktan sonra tam 1 hafta (7 gün) geçerlidir."}
+                  </p>
+                  <Button
+                    type="button"
+                    secondary
+                    className="w-full mt-2"
+                    onClick={() => handleRenewInvite(inviteModalUnit.id)}
+                  >
+                    <RotateCcw size={14} /> Yeni Davet Oluştur (Süreyi 1 Hafta Uzat)
+                  </Button>
+                </div>
+              );
+            })()}
 
             <Field label="Atanacak Sakin Rolü">
               <select value={inviteRole} onChange={(e) => setInviteRole(e.target.value)}>
@@ -462,6 +561,45 @@ export default function Apartments({
                   defaultValue={residentFor(editing.id)?.phone || ""}
                 />
               </Field>
+            </div>
+
+            {/* Afet & Acil Durum Tahliye Önceliği (Sakin Profilinden Alınan Veri) */}
+            <div className="disaster-info-card mt-3">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <AlertTriangle size={16} className={editing.hasBedriddenPatient ? "text-amber-500" : "text-muted"} />
+                  <strong style={{ fontSize: "13px", color: "var(--ink)" }}>Afet ve Acil Durum Tahliye Kaydı</strong>
+                </div>
+                {editing.hasBedriddenPatient ? (
+                  <span className="badge warning" style={{ fontSize: "11px" }}>🚨 Tahliye Öncelikli</span>
+                ) : (
+                  <span className="badge" style={{ fontSize: "11px" }}>Normal Durum</span>
+                )}
+              </div>
+              <div className="grid-3-col text-xs mb-2">
+                <div>
+                  <span className="text-muted block">Dairedeki Kişi Sayısı:</span>
+                  <strong>{editing.occupantCount || 2} Kişi</strong>
+                </div>
+                <div>
+                  <span className="text-muted block">Evcil Hayvan:</span>
+                  <strong>{editing.petCount ? `${editing.petCount} Evcil Hayvan` : "Yok"}</strong>
+                </div>
+                <div>
+                  <span className="text-muted block">Yatağa Bağlı Hasta:</span>
+                  <strong className={editing.hasBedriddenPatient ? "text-amber-600 font-bold" : ""}>
+                    {editing.hasBedriddenPatient ? `Evet (${editing.bedriddenCount || 1} Birey)` : "Hayır"}
+                  </strong>
+                </div>
+              </div>
+              {editing.hasBedriddenPatient && (
+                <div className="emergency-note-box">
+                  <small className="text-muted block">Acil Durum / Tahliye Notu:</small>
+                  <p style={{ margin: "2px 0 0 0", fontSize: "12px", fontWeight: "600", color: "var(--ink)" }}>
+                    {editing.disasterEvacuationNote || "Acil tahliye gereksinimi bulunmaktadır."}
+                  </p>
+                </div>
+              )}
             </div>
 
             <div className="invite-link-box mt-3">
@@ -905,6 +1043,257 @@ export default function Apartments({
           }}
         />
       )}
+
+      {/* TOPLU DAVET OLUŞTURMA & GÖNDERME EKRANI */}
+      {showBulkInvite && (
+        <BulkInvitationModal
+          units={units}
+          residentFor={residentFor}
+          siteName={siteName}
+          onClose={() => setShowBulkInvite(false)}
+          onNotify={onNotify}
+          onBatchComplete={(selectedIds) => {
+            const updates = {};
+            selectedIds.forEach((id) => {
+              updates[id] = {
+                status: "RENEWED",
+                expiresAt: "2026-10-07 (7 Gün)",
+                daysLeft: 7,
+              };
+            });
+            setInvitationOverrides((prev) => ({ ...prev, ...updates }));
+            onNotify?.(`${selectedIds.length} daire için yeni davetler başarıyla oluşturuldu ve süresi 7 gün olarak ayarlandı.`);
+            setShowBulkInvite(false);
+          }}
+        />
+      )}
     </>
+  );
+}
+
+// TOPLU DAVET EKRANI BİLEŞENİ
+function BulkInvitationModal({
+  units = [],
+  residentFor,
+  siteName = "Kovan Sitesi",
+  onClose,
+  onNotify,
+  onBatchComplete,
+}) {
+  const [selectedBlock, setSelectedBlock] = useState("all");
+  const [filterType, setFilterType] = useState("vacant"); // 'all' | 'vacant' | 'expired'
+  const [selectedUnitIds, setSelectedUnitIds] = useState([]);
+  const [inviteMedium, setInviteMedium] = useState("sms"); // 'sms' | 'email' | 'csv'
+  const [copiedBatch, setCopiedBatch] = useState(false);
+
+  const availableBlocks = useMemo(() => {
+    return Array.from(new Set(units.map((u) => u.block))).filter(Boolean);
+  }, [units]);
+
+  const candidateUnits = useMemo(() => {
+    return units.filter((u) => {
+      const matchBlock = selectedBlock === "all" || u.block === selectedBlock;
+      let matchFilter = true;
+      if (filterType === "vacant") matchFilter = !u.occupied;
+      if (filterType === "expired") matchFilter = u.invitationStatus === "EXPIRED";
+      return matchBlock && matchFilter;
+    });
+  }, [units, selectedBlock, filterType]);
+
+  const toggleSelectAll = () => {
+    if (selectedUnitIds.length === candidateUnits.length) {
+      setSelectedUnitIds([]);
+    } else {
+      setSelectedUnitIds(candidateUnits.map((u) => u.id));
+    }
+  };
+
+  const toggleSelectOne = (id) => {
+    if (selectedUnitIds.includes(id)) {
+      setSelectedUnitIds((prev) => prev.filter((i) => i !== id));
+    } else {
+      setSelectedUnitIds((prev) => [...prev, id]);
+    }
+  };
+
+  const generateCsvText = () => {
+    const rows = [
+      ["Daire No", "Blok", "Kat", "Daire Tipi", "Sakin", "Davet Kodu", "Davet Baglantisi", "Gecerlilik"],
+      ...candidateUnits
+        .filter((u) => selectedUnitIds.includes(u.id))
+        .map((u) => {
+          const res = residentFor(u.id);
+          const code = `KVN-${u.id.replace("-", "")}`;
+          return [
+            u.id,
+            u.block,
+            u.floor,
+            u.type || "2+1",
+            res?.name || "Boş Daire",
+            code,
+            `https://kovan.site/davet/${code}`,
+            "7 Gün Geçerli",
+          ];
+        }),
+    ];
+    return rows.map((r) => r.join("\t")).join("\n");
+  };
+
+  const handleCopyLinks = () => {
+    const text = generateCsvText();
+    navigator.clipboard?.writeText(text);
+    setCopiedBatch(true);
+    setTimeout(() => setCopiedBatch(false), 2500);
+    onNotify?.(`${selectedUnitIds.length} daire için davet listesi panoya kopyalandı! Excel'e yapıştırabilirsiniz.`);
+  };
+
+  return (
+    <Modal
+      title="Toplu Sakin Davet Ekranı"
+      description="Çoklu daire seçimi ile tek seferde SMS, e-posta veya liste formatında davet bağlantıları oluşturun."
+      onClose={onClose}
+    >
+      <div className="bulk-invite-modal-body">
+        {/* Filtre ve Blok Seçim Çubuğu */}
+        <div className="grid-2-col mb-3">
+          <Field label="Hedef Blok">
+            <select value={selectedBlock} onChange={(e) => setSelectedBlock(e.target.value)}>
+              <option value="all">Tüm Bloklar ({availableBlocks.join(", ")})</option>
+              {availableBlocks.map((b) => (
+                <option key={b} value={b}>{b} Blok</option>
+              ))}
+            </select>
+          </Field>
+          <Field label="Daire Durumu">
+            <select value={filterType} onChange={(e) => setFilterType(e.target.value)}>
+              <option value="vacant">Yalnızca Boş / Atanmamış Daireler ({units.filter((u) => !u.occupied).length})</option>
+              <option value="expired">Süresi Dolmuş Davetler ({units.filter((u) => u.invitationStatus === "EXPIRED").length})</option>
+              <option value="all">Tüm Daireler ({units.length})</option>
+            </select>
+          </Field>
+        </div>
+
+        {/* Çoklu Seçim Araç Çubuğu */}
+        <div className="bulk-selection-toolbar">
+          <button type="button" className="btn-select-toggle" onClick={toggleSelectAll}>
+            {selectedUnitIds.length === candidateUnits.length && candidateUnits.length > 0 ? (
+              <>
+                <CheckSquare size={16} className="text-gold" />
+                <span>Seçimi Temizle</span>
+              </>
+            ) : (
+              <>
+                <Square size={16} />
+                <span>Listelenen Tümünü Seç ({candidateUnits.length})</span>
+              </>
+            )}
+          </button>
+          <span className="selected-count-pill">
+            <strong>{selectedUnitIds.length}</strong> daire seçildi
+          </span>
+        </div>
+
+        {/* Daire Seçim Listesi */}
+        <div className="bulk-units-scroll-list">
+          {candidateUnits.length > 0 ? (
+            candidateUnits.map((u) => {
+              const isChecked = selectedUnitIds.includes(u.id);
+              const res = residentFor(u.id);
+              const code = `KVN-${u.id.replace("-", "")}`;
+              return (
+                <label
+                  key={u.id}
+                  className={`bulk-unit-row-item ${isChecked ? "selected" : ""}`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={isChecked}
+                    onChange={() => toggleSelectOne(u.id)}
+                  />
+                  <div className="bulk-unit-meta">
+                    <strong>{u.id}</strong>
+                    <span>{u.block} Blok · {u.floor}. Kat · {u.type || "2+1"}</span>
+                  </div>
+                  <div className="bulk-unit-resident">
+                    <span>{res?.name || (u.occupied ? "Sakin Atandı" : "Boş Daire")}</span>
+                  </div>
+                  <div className="bulk-unit-code">
+                    <code>{code}</code>
+                    <small className="muted">7 Gün Geçerli</small>
+                  </div>
+                </label>
+              );
+            })
+          ) : (
+            <div className="p-4 text-center text-muted">
+              Seçilen kriterlere uygun bağımsız bölüm bulunamadı.
+            </div>
+          )}
+        </div>
+
+        {/* Gönderim Metodu ve Aksiyonlar */}
+        <div className="bulk-action-method-card mt-3">
+          <div className="flex items-center justify-between mb-2">
+            <span className="font-semibold text-xs">Gönderim Kanalı:</span>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                className={`tab-chip ${inviteMedium === "sms" ? "active" : ""}`}
+                onClick={() => setInviteMedium("sms")}
+              >
+                SMS / WhatsApp
+              </button>
+              <button
+                type="button"
+                className={`tab-chip ${inviteMedium === "email" ? "active" : ""}`}
+                onClick={() => setInviteMedium("email")}
+              >
+                Kurumsal E-posta
+              </button>
+              <button
+                type="button"
+                className={`tab-chip ${inviteMedium === "csv" ? "active" : ""}`}
+                onClick={() => setInviteMedium("csv")}
+              >
+                Excel / CSV
+              </button>
+            </div>
+          </div>
+
+          <p className="text-xs text-muted mb-3">
+            {inviteMedium === "sms" && "Seçilen dairelerin kayıtlı cep telefonlarına 7 gün geçerli katılım linki ve SMS formatında davetiye şablonu üretilir."}
+            {inviteMedium === "email" && "Seçilen dairelere kurumsal Kovan şablonuyla kişiselleştirilmiş 7 gün süreli HTML davet e-postası iletilir."}
+            {inviteMedium === "csv" && "Yönetim kurulu veya bina panosu için toplu Excel / CSV formatında davet kodları kopyalanabilir."}
+          </p>
+
+          <div className="flex items-center gap-2 flex-wrap">
+            <Button
+              type="button"
+              secondary
+              disabled={selectedUnitIds.length === 0}
+              onClick={handleCopyLinks}
+            >
+              {copiedBatch ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
+              <span>{copiedBatch ? "Liste Kopyalandı!" : "Toplu Bağlantıları Kopyala (Excel)"}</span>
+            </Button>
+
+            <Button
+              type="button"
+              disabled={selectedUnitIds.length === 0}
+              onClick={() => onBatchComplete(selectedUnitIds)}
+            >
+              <Send size={14} />
+              <span>Seçili {selectedUnitIds.length} Daireye Toplu Davet Gönder & Yenile</span>
+            </Button>
+          </div>
+        </div>
+
+        <div className="modal-footer mt-4">
+          <Button secondary type="button" onClick={onClose}>
+            Kapat
+          </Button>
+        </div>
+      </div>
+    </Modal>
   );
 }

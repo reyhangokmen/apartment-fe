@@ -32,6 +32,7 @@ import Apartments from "./prototype/Apartments";
 import Roles from "./prototype/Roles";
 import SiteSettings from "./prototype/SiteSettings";
 import ResidentSettings from "./prototype/ResidentSettings";
+import ComingSoon from "./prototype/ComingSoon";
 import { Brand, Button, ErrorBoundary, Modal, ThemeToggle } from "./prototype/UI";
 import useTheme from "./prototype/useTheme";
 import {
@@ -93,6 +94,7 @@ export default function App() {
     blockSummary: "3 blok, 48 daire",
   });
   const [siteMenuOpen, setSiteMenuOpen] = useState(true);
+  const [showTanitim, setShowTanitim] = useState(() => window.location.pathname === "/tanitim");
 
   const manager = session?.activeMode
     ? session.activeMode === "admin"
@@ -306,7 +308,22 @@ export default function App() {
     });
   };
 
-  if (!session)
+  if (!session) {
+    if (showTanitim) {
+      return (
+        <ErrorBoundary>
+          <ComingSoon
+            theme={theme}
+            onToggleTheme={toggleTheme}
+            onBackToLogin={() => {
+              setShowTanitim(false);
+              window.history.pushState({}, "", "/login");
+            }}
+          />
+        </ErrorBoundary>
+      );
+    }
+
     return (
       <ErrorBoundary>
         <Login
@@ -315,6 +332,10 @@ export default function App() {
         users={users}
         units={units}
         onNotify={notify}
+        onNavigateTanitim={() => {
+          setShowTanitim(true);
+          window.history.pushState({}, "", "/tanitim");
+        }}
         onLogin={(identifier) => {
           const resolved = resolveLogin(identifier, users, memberships, roles);
           setSession(resolved);
@@ -343,32 +364,61 @@ export default function App() {
             blockId: null,
           };
 
-          const blocks = wizardData.blockNames
-            .split(",")
-            .map((s) => s.trim().toUpperCase());
           const generated = [];
-          blocks.forEach((blk) => {
-            let count = 1;
-            for (let f = 1; f <= wizardData.floorsPerBlock; f++) {
-              for (let u = 1; u <= wizardData.unitsPerFloor; u++) {
-                let uNum =
-                  wizardData.namingPattern === "floor"
-                    ? `${f}${String(u).padStart(2, "0")}`
-                    : wizardData.namingPattern === "block-prefix"
-                    ? `${blk}-${count}`
-                    : `${count}`;
-                generated.push({
-                  id: `${blk}-${uNum}`,
-                  block: blk,
-                  floor: f,
-                  number: uNum,
-                  occupied: false,
-                  type: "2+1 Standart",
-                });
-                count++;
+          let blockCountSummary = 0;
+          if (wizardData.blocksConfig && wizardData.blocksConfig.length > 0) {
+            blockCountSummary = wizardData.blocksConfig.length;
+            wizardData.blocksConfig.forEach((bCfg) => {
+              const blk = bCfg.name.replace(/blok/i, "").trim() || "A";
+              let count = 1;
+              for (let f = 1; f <= bCfg.floors; f++) {
+                for (let u = 1; u <= bCfg.unitsPerFloor; u++) {
+                  let uNum =
+                    wizardData.namingPattern === "floor"
+                      ? `${f}${String(u).padStart(2, "0")}`
+                      : wizardData.namingPattern === "block-prefix"
+                      ? `${blk}-${count}`
+                      : `${count}`;
+                  generated.push({
+                    id: `${blk}-${uNum}`,
+                    block: blk,
+                    floor: f,
+                    number: uNum,
+                    occupied: false,
+                    type: "2+1 Standart",
+                  });
+                  count++;
+                }
               }
-            }
-          });
+            });
+          } else {
+            const blocks = wizardData.blockNames
+              .split(",")
+              .map((s) => s.trim().toUpperCase());
+            blockCountSummary = blocks.length;
+            blocks.forEach((blk) => {
+              let count = 1;
+              for (let f = 1; f <= wizardData.floorsPerBlock; f++) {
+                for (let u = 1; u <= wizardData.unitsPerFloor; u++) {
+                  let uNum =
+                    wizardData.namingPattern === "floor"
+                      ? `${f}${String(u).padStart(2, "0")}`
+                      : wizardData.namingPattern === "block-prefix"
+                      ? `${blk}-${count}`
+                      : `${count}`;
+                  generated.push({
+                    id: `${blk}-${uNum}`,
+                    block: blk,
+                    floor: f,
+                    number: uNum,
+                    occupied: false,
+                    type: "2+1 Standart",
+                  });
+                  count++;
+                }
+              }
+            });
+          }
 
           setUsers((prev) => [newManagerUser, ...prev]);
           setMemberships((prev) => [newMembership, ...prev]);
@@ -380,7 +430,7 @@ export default function App() {
           setSiteMeta({
             name: wizardData.siteName,
             location: `${wizardData.district}, ${wizardData.city}`,
-            blockSummary: `${blocks.length} blok, ${generated.length} daire`,
+            blockSummary: `${blockCountSummary} blok, ${generated.length} daire`,
           });
           setSession({
             userId: newManagerId,
@@ -415,7 +465,7 @@ export default function App() {
           });
           setTab("dashboard");
         }}
-        onInviteRegisterNew={({ name, email, phone, password, unitId, role, siteName }) => {
+        onInviteRegisterNew={({ name, email, phone, password, unitId, role, type, siteName }) => {
           const uId = uid();
           const mId = uid();
           const newUser = { id: uId, name, email, phone, password: password || "demo123" };
@@ -432,7 +482,7 @@ export default function App() {
           ]);
           setRoles((prev) => [...prev, { membershipId: mId, role: "RESIDENT" }]);
           setUnits((prev) =>
-            prev.map((u) => (u.id === unitId ? { ...u, occupied: true } : u)),
+            prev.map((u) => (u.id === unitId ? { ...u, occupied: true, ...(type ? { type } : {}) } : u)),
           );
           setSession({
             userId: uId,
@@ -441,11 +491,12 @@ export default function App() {
             unitId,
           });
           setTab("dashboard");
-          notify(`Hoş geldiniz ${name}! Üyeliğiniz tamamlandı ve ${unitId} dairesine bağlandı.`);
+          notify(`Hoş geldiniz ${name}! Üyeliğiniz tamamlandı ve ${unitId} (${type || "Daire"}) dairesine bağlandı.`);
         }}
       />
       </ErrorBoundary>
     );
+  }
 
   const activeCount = visibleRequests.filter(
     (r) => r.status !== "Çözüldü",

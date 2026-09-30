@@ -33,15 +33,13 @@ export default function Requests({
       <div className="module-actions">
         <p>
           {manager
-            ? "Sitenizdeki tüm taleplerin çözüm sürecini takip edin."
+            ? "Sitenizdeki tüm taleplerin çözüm sürecini takip edin veya yeni arıza/bakım kaydı açın."
             : "Yaşam alanınız için bir talep bırakın, süreci buradan takip edin."}
         </p>
-        {!manager && (
-          <Button onClick={() => setCreating(true)}>
-            <Plus size={17} />
-            Yeni Talep Oluştur
-          </Button>
-        )}
+        <Button onClick={() => setCreating(true)}>
+          <Plus size={17} />
+          {manager ? "Yeni Talep / Arıza Kaydı Aç" : "Yeni Talep Oluştur"}
+        </Button>
       </div>
       <Panel
         title={manager ? "Talepler ve şikayetler" : "Taleplerim"}
@@ -121,7 +119,8 @@ export default function Requests({
       </Panel>
       {creating && (
         <RequestModal
-          unitId={unitId}
+          unitId={unitId || (manager ? "Ortak Alan" : "A-1")}
+          manager={manager}
           onClose={() => setCreating(false)}
           onSubmit={(r) => {
             onCreate(r);
@@ -132,7 +131,8 @@ export default function Requests({
     </>
   );
 }
-export function RequestModal({ unitId, onClose, onSubmit }) {
+export function RequestModal({ unitId = "Ortak Alan", manager = false, onClose, onSubmit }) {
+  const [selectedLocation, setSelectedLocation] = useState(unitId || (manager ? "Ortak Alan" : "A-1"));
   const [file, setFile] = useState(null);
   const [error, setError] = useState("");
   const selectFile = (f) => {
@@ -150,8 +150,12 @@ export function RequestModal({ unitId, onClose, onSubmit }) {
   };
   return (
     <Modal
-      title="Yeni talep oluştur"
-      description={`${unitId} · Talebiniz site yönetimine iletilecek.`}
+      title={manager ? "Yönetici Talebi / Arıza & Bakım Kaydı" : "Yeni Talep Oluştur"}
+      description={
+        manager
+          ? `${selectedLocation} · Ortak alan veya daire adına kayıt oluşturulacak.`
+          : `${unitId} · Talebiniz site yönetimine iletilecek.`
+      }
       onClose={onClose}
     >
       <form
@@ -161,7 +165,7 @@ export function RequestModal({ unitId, onClose, onSubmit }) {
           if (!f.get("title").trim() || !f.get("description").trim()) return;
           onSubmit({
             id: uid(),
-            unitId,
+            unitId: manager ? selectedLocation : unitId,
             title: f.get("title").trim(),
             description: f.get("description").trim(),
             category: f.get("category"),
@@ -171,6 +175,24 @@ export function RequestModal({ unitId, onClose, onSubmit }) {
           });
         }}
       >
+        {manager && (
+          <Field label="Konum / İlgili Alan">
+            <select
+              value={selectedLocation}
+              onChange={(e) => setSelectedLocation(e.target.value)}
+            >
+              <option value="Ortak Alan">Ortak Alan (Asansör, Jeneratör, Peyzaj vb.)</option>
+              <option value="A Blok">A Blok Genel</option>
+              <option value="B Blok">B Blok Genel</option>
+              <option value="C Blok">C Blok Genel</option>
+              <option value="Kapalı Otopark">Kapalı Otopark</option>
+              <option value="Sosyal Tesis & Havuz">Sosyal Tesis & Havuz</option>
+              <option value="A-1">A-1 Dairesi Adına</option>
+              <option value="B-2">B-2 Dairesi Adına</option>
+              <option value="C-3">C-3 Dairesi Adına</option>
+            </select>
+          </Field>
+        )}
         <Field label="Kategori">
           <select name="category">
             {[

@@ -22,6 +22,7 @@ import {
   ForgotPasswordModal,
   ManagerRegisterWizard,
   InvitationRegisterModal,
+  TermsAndPrivacyModal,
 } from "./AuthModal";
 
 // Binaların Pencerelerinde Sıcak Sarı ve Yanıp Sönen Işıklar (Mimari Efekt)
@@ -89,6 +90,7 @@ export default function Login({
   onInviteAcceptExisting,
   onInviteRegisterNew,
   onNotify,
+  onNavigateTanitim,
 }) {
   const [loginMethod, setLoginMethod] = useState("password"); // 'password' | 'otp'
   const [identifier, setIdentifier] = useState("");
@@ -490,6 +492,32 @@ export default function Login({
           </div>
         </div>
 
+        <div className="login-legal-links">
+          <button
+            type="button"
+            className="text-link-legal"
+            onClick={() => setAuthModal("terms")}
+          >
+            Üyelik Sözleşmesi
+          </button>
+          <span className="dot-sep">·</span>
+          <button
+            type="button"
+            className="text-link-legal"
+            onClick={() => setAuthModal("privacy")}
+          >
+            KVKK & Gizlilik
+          </button>
+          <span className="dot-sep">·</span>
+          <button
+            type="button"
+            className="text-link-legal highlight-tanitim"
+            onClick={() => onNavigateTanitim?.()}
+          >
+            ✨ KOVAN Tanıtım Sayfası
+          </button>
+        </div>
+
         <footer className="login-footer">
           <span>© 2026 Kovan</span>
           <span>Konut & Site Yönetim Paneli</span>
@@ -625,6 +653,13 @@ export default function Login({
           onRegisterNew={(data) => {
             onInviteRegisterNew?.(data);
           }}
+        />
+      )}
+
+      {(authModal === "terms" || authModal === "privacy") && (
+        <TermsAndPrivacyModal
+          type={authModal}
+          onClose={() => setAuthModal(null)}
         />
       )}
     </main>

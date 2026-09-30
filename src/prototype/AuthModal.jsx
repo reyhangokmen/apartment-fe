@@ -517,7 +517,47 @@ export function ManagerRegisterWizard({ onClose, onComplete, onNotify }) {
     namingPattern: "block-prefix", // 'simple' (1,2,3), 'floor' (101, 102), 'block-prefix' (A-101)
   });
 
-  const totalCalculatedUnits = formData.blockCount * formData.floorsPerBlock * formData.unitsPerFloor;
+  const [setupMode, setSetupMode] = useState("dynamic"); // 'dynamic' (Özel Blok Kutuları) | 'algorithmic'
+  const [customBlocks, setCustomBlocks] = useState([
+    { name: "A Blok", floors: 6, unitsPerFloor: 4 },
+    { name: "B Blok", floors: 5, unitsPerFloor: 4 },
+  ]);
+
+  const updateBlockCount = (num) => {
+    const val = Math.max(1, Math.min(20, num));
+    setFormData((prev) => ({
+      ...prev,
+      blockCount: val,
+      blockNames: Array.from({ length: val }, (_, i) => String.fromCharCode(65 + i)).join(", "),
+    }));
+    setCustomBlocks((prev) => {
+      const next = [];
+      for (let i = 0; i < val; i++) {
+        const letter = String.fromCharCode(65 + i);
+        next.push(
+          prev[i] || {
+            name: `${letter} Blok`,
+            floors: 6,
+            unitsPerFloor: 4,
+          }
+        );
+      }
+      return next;
+    });
+  };
+
+  const updateBlockItem = (index, field, value) => {
+    setCustomBlocks((prev) => {
+      const next = [...prev];
+      next[index] = { ...next[index], [field]: value };
+      return next;
+    });
+  };
+
+  const totalCalculatedUnits =
+    setupMode === "dynamic"
+      ? customBlocks.reduce((acc, b) => acc + (b.floors * b.unitsPerFloor), 0)
+      : formData.blockCount * formData.floorsPerBlock * formData.unitsPerFloor;
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -526,7 +566,11 @@ export function ManagerRegisterWizard({ onClose, onComplete, onNotify }) {
       return;
     }
     // Wizard Tamamlandı
-    onComplete?.(formData);
+    onComplete?.({
+      ...formData,
+      setupMode,
+      blocksConfig: setupMode === "dynamic" ? customBlocks : null,
+    });
     onNotify?.(`${formData.siteName} ve ${totalCalculatedUnits} daire için yönetim kurulumu tamamlandı!`);
     onClose();
   };
@@ -666,13 +710,30 @@ export function ManagerRegisterWizard({ onClose, onComplete, onNotify }) {
           <div className="wizard-fields">
             <div className="wizard-algo-badge">
               <Sparkles size={16} />
-              <span>Algoritmik Blok & Daire Numaratörü</span>
+              <span>Blok & Bağımsız Bölüm Mimarisi</span>
             </div>
             <p className="form-subtext">
-              Daireleri tek tek elle girmek yerine, algoritma kurallarını tanımlayın. Sistem tüm kat ve bağımsız bölümleri otomatik üretsin.
+              Sitenizin bloklarını tanımlayın. Her bloğun kat ve daire sayısını ayrı kutucuklarda belirleyebilir veya algoritmik kurulum yapabilirsiniz.
             </p>
 
-            <div className="grid-2-col">
+            <div className="source-toggle-tabs mb-3">
+              <button
+                type="button"
+                className={setupMode === "dynamic" ? "active" : ""}
+                onClick={() => setSetupMode("dynamic")}
+              >
+                Dinamik Blok Kutuları (Önerilen)
+              </button>
+              <button
+                type="button"
+                className={setupMode === "algorithmic" ? "active" : ""}
+                onClick={() => setSetupMode("algorithmic")}
+              >
+                Algoritmik Hızlı Kurulum
+              </button>
+            </div>
+
+            <div className="grid-2-col mb-3">
               <Field label="Blok Sayısı">
                 <input
                   type="number"
@@ -680,58 +741,113 @@ export function ManagerRegisterWizard({ onClose, onComplete, onNotify }) {
                   max="20"
                   required
                   value={formData.blockCount}
-                  onChange={(e) => setFormData({ ...formData, blockCount: parseInt(e.target.value) || 1 })}
+                  onChange={(e) => updateBlockCount(parseInt(e.target.value) || 1)}
                 />
               </Field>
-              <Field label="Blok İsimleri (Virgülle ayırın)">
-                <input
-                  required
-                  value={formData.blockNames}
-                  onChange={(e) => setFormData({ ...formData, blockNames: e.target.value })}
-                />
-              </Field>
-            </div>
-
-            <div className="grid-2-col">
-              <Field label="Blok Başına Kat Sayısı">
-                <input
-                  type="number"
-                  min="1"
-                  max="50"
-                  required
-                  value={formData.floorsPerBlock}
-                  onChange={(e) => setFormData({ ...formData, floorsPerBlock: parseInt(e.target.value) || 1 })}
-                />
-              </Field>
-              <Field label="Katta Daire Sayısı">
-                <input
-                  type="number"
-                  min="1"
-                  max="20"
-                  required
-                  value={formData.unitsPerFloor}
-                  onChange={(e) => setFormData({ ...formData, unitsPerFloor: parseInt(e.target.value) || 1 })}
-                />
+              <Field label="Numaralandırma Şablonu">
+                <select
+                  value={formData.namingPattern}
+                  onChange={(e) => setFormData({ ...formData, namingPattern: e.target.value })}
+                >
+                  <option value="block-prefix">Blok Önekli (Örn: A-1, A-2, B-1...)</option>
+                  <option value="floor">Kat Bazlı Numaratör (Örn: 101, 102, 201...)</option>
+                  <option value="simple">Düz Sıralı Numaralandırma (1, 2, 3...)</option>
+                </select>
               </Field>
             </div>
 
-            <Field label="Numaralandırma Şablonu">
-              <select
-                value={formData.namingPattern}
-                onChange={(e) => setFormData({ ...formData, namingPattern: e.target.value })}
-              >
-                <option value="block-prefix">Blok Önekli (Örn: A-1, A-2, B-1...)</option>
-                <option value="floor">Kat Bazlı Numaratör (Örn: 101, 102, 201, 202...)</option>
-                <option value="simple">Düz Sıralı Numaralandırma (1, 2, 3, 4, 5...)</option>
-              </select>
-            </Field>
+            {setupMode === "dynamic" ? (
+              /* DİNAMİK BLOK KUTULARI */
+              <div className="dynamic-blocks-container mb-3">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-semibold text-xs text-muted">
+                    Tanımlanan {customBlocks.length} Blok İçin Kat ve Daire Detayları:
+                  </span>
+                </div>
+                <div className="dynamic-blocks-grid">
+                  {customBlocks.map((b, idx) => (
+                    <div key={idx} className="dynamic-block-card">
+                      <div className="dynamic-block-card-header">
+                        <div className="flex items-center gap-1.5">
+                          <Building2 size={16} className="text-gold" />
+                          <strong>{b.name || `${idx + 1}. Blok`}</strong>
+                        </div>
+                        <span className="block-total-unit-badge">
+                          {b.floors * b.unitsPerFloor} Daire
+                        </span>
+                      </div>
+                      <div className="grid-3-col mt-2">
+                        <Field label="Blok Adı">
+                          <input
+                            value={b.name}
+                            onChange={(e) => updateBlockItem(idx, "name", e.target.value)}
+                          />
+                        </Field>
+                        <Field label="Kat Sayısı">
+                          <input
+                            type="number"
+                            min="1"
+                            max="50"
+                            value={b.floors}
+                            onChange={(e) =>
+                              updateBlockItem(idx, "floors", parseInt(e.target.value) || 1)
+                            }
+                          />
+                        </Field>
+                        <Field label="Katta Daire">
+                          <input
+                            type="number"
+                            min="1"
+                            max="20"
+                            value={b.unitsPerFloor}
+                            onChange={(e) =>
+                              updateBlockItem(idx, "unitsPerFloor", parseInt(e.target.value) || 1)
+                            }
+                          />
+                        </Field>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              /* ALGORİTMİK HIZLI KURULUM */
+              <div className="grid-2-col mb-3">
+                <Field label="Tüm Bloklar İçin Kat Sayısı">
+                  <input
+                    type="number"
+                    min="1"
+                    max="50"
+                    required
+                    value={formData.floorsPerBlock}
+                    onChange={(e) =>
+                      setFormData({ ...formData, floorsPerBlock: parseInt(e.target.value) || 1 })
+                    }
+                  />
+                </Field>
+                <Field label="Kat Başına Daire Sayısı">
+                  <input
+                    type="number"
+                    min="1"
+                    max="20"
+                    required
+                    value={formData.unitsPerFloor}
+                    onChange={(e) =>
+                      setFormData({ ...formData, unitsPerFloor: parseInt(e.target.value) || 1 })
+                    }
+                  />
+                </Field>
+              </div>
+            )}
 
             <div className="algo-calc-card">
               <Layers size={20} className="text-gold" />
               <div>
                 <strong>Hesaplanan Toplam Portföy:</strong>
                 <span>
-                  {formData.blockCount} Blok × {formData.floorsPerBlock} Kat × {formData.unitsPerFloor} Daire ={" "}
+                  {setupMode === "dynamic"
+                    ? `${customBlocks.length} Blok Toplamı = `
+                    : `${formData.blockCount} Blok × ${formData.floorsPerBlock} Kat × ${formData.unitsPerFloor} Daire = `}
                   <strong>{totalCalculatedUnits} Bağımsız Bölüm</strong>
                 </span>
               </div>
@@ -810,9 +926,17 @@ export function InvitationRegisterModal({
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState(initialEmail || "");
+  const [apartmentType, setApartmentType] = useState(() => {
+    if (initialUnitId) {
+      const u = units.find((un) => un.id === initialUnitId);
+      return u?.type || "2+1 Standart";
+    }
+    return "2+1 Standart";
+  });
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [acceptedTerms, setAcceptedTerms] = useState(true);
+  const [contractModal, setContractModal] = useState(null); // 'terms' | 'privacy'
 
   useEffect(() => {
     if (initialEmail) {
@@ -827,6 +951,7 @@ export function InvitationRegisterModal({
           unitId: u.id,
           role: "Kat Maliki",
         });
+        if (u.type) setApartmentType(u.type);
         setStep(2);
       }
     }
@@ -929,6 +1054,7 @@ export function InvitationRegisterModal({
       password: newPassword,
       unitId: siteDetails.unitId,
       role: siteDetails.role,
+      type: apartmentType,
       siteName: siteDetails.siteName,
     });
 
@@ -1038,12 +1164,17 @@ export function InvitationRegisterModal({
             </div>
           </div>
 
-          {/* Daire ve Sakinlik Tipi Seçimi */}
-          <div className="grid-2-col mb-3">
+          {/* Daire, Sakinlik Durumu ve Daire Tipi Seçimi */}
+          <div className="grid-3-col mb-3">
             <Field label="Daire Numaranız">
               <select
                 value={siteDetails.unitId}
-                onChange={(e) => setSiteDetails({ ...siteDetails, unitId: e.target.value })}
+                onChange={(e) => {
+                  const targetUnitId = e.target.value;
+                  const u = units.find((un) => un.id === targetUnitId);
+                  setSiteDetails({ ...siteDetails, unitId: targetUnitId });
+                  if (u?.type) setApartmentType(u.type);
+                }}
               >
                 {blockUnits.length > 0 ? (
                   blockUnits.map((u) => (
@@ -1064,6 +1195,23 @@ export function InvitationRegisterModal({
               >
                 <option value="Kat Maliki">Kat Maliki (Ev Sahibi)</option>
                 <option value="Kiracı">Kiracı (İkamet Eden)</option>
+              </select>
+            </Field>
+
+            <Field label="Daire Tipi (Mimari)">
+              <select
+                value={apartmentType}
+                onChange={(e) => setApartmentType(e.target.value)}
+              >
+                <option value="1+0">1+0 (Stüdyo)</option>
+                <option value="1+1">1+1 Daire</option>
+                <option value="2+0">2+0 Daire</option>
+                <option value="2+1">2+1 Standart</option>
+                <option value="3+0">3+0 Daire</option>
+                <option value="3+1">3+1 Geniş</option>
+                <option value="4+1">4+1 Aile</option>
+                <option value="Dubleks">Dubleks / Çatı</option>
+                <option value="Dükkan / Ticari">Dükkan / Ticari</option>
               </select>
             </Field>
           </div>
@@ -1261,15 +1409,34 @@ export function InvitationRegisterModal({
                 </Field>
               </div>
 
-              <label className="terms-checkbox mt-2">
-                <input
-                  type="checkbox"
-                  checked={acceptedTerms}
-                  onChange={(e) => setAcceptedTerms(e.target.checked)}
-                  required
-                />
-                <span>Site yönetim kurallarını ve KVKK metnini onaylıyorum.</span>
-              </label>
+              <div className="terms-checkbox-container mt-2">
+                <label className="terms-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={acceptedTerms}
+                    onChange={(e) => setAcceptedTerms(e.target.checked)}
+                    required
+                  />
+                  <span className="terms-text">
+                    <button
+                      type="button"
+                      className="contract-link-inline"
+                      onClick={() => setContractModal("terms")}
+                    >
+                      Kullanıcı Üyelik Sözleşmesi
+                    </button>
+                    'ni ve{" "}
+                    <button
+                      type="button"
+                      className="contract-link-inline"
+                      onClick={() => setContractModal("privacy")}
+                    >
+                      KVKK & Gizlilik Politikası
+                    </button>
+                    'nı okudum, kabul ediyorum.
+                  </span>
+                </label>
+              </div>
 
               {formError && (
                 <div className="auth-error-msg mt-2">
@@ -1289,6 +1456,61 @@ export function InvitationRegisterModal({
           )}
         </div>
       )}
+
+      {/* SÖZLEŞME & GİZLİLİK BİLGİLENDİRME MODALI */}
+      {contractModal && (
+        <TermsAndPrivacyModal
+          type={contractModal}
+          onClose={() => setContractModal(null)}
+        />
+      )}
+    </Modal>
+  );
+}
+
+// 4. KULLANICI SÖZLEŞMESİ & KVKK BİLGİLENDİRME MODALI (Uydurma madde içermeyen kurumsal taslak)
+export function TermsAndPrivacyModal({ type = "terms", onClose }) {
+  const isTerms = type === "terms";
+  return (
+    <Modal
+      title={isTerms ? "Kovan Kullanıcı & Üyelik Sözleşmesi" : "KVKK & Gizlilik Politikası"}
+      description="Kovan Konut & Site Yönetim Teknolojileri Hukuki ve Mevzuat Bilgilendirmesi"
+      onClose={onClose}
+    >
+      <div className="contract-modal-body">
+        <div className="contract-legal-notice-box">
+          <ShieldCheck size={24} className="text-gold flex-shrink-0" />
+          <div>
+            <strong>Hukuki Geçerlilik ve Süreç Bilgilendirmesi</strong>
+            <p>
+              Resmi onaylı nihai üyelik sözleşmesi ve aydınlatma metinleri, hukuk danışmanlığı inceleme ve onayının ardından sisteme eklenecektir. Platformumuz 6698 sayılı KVKK ve Kat Mülkiyeti Kanunu hükümlerine tam uyumlu olarak işletilmektedir.
+            </p>
+          </div>
+        </div>
+
+        <div className="contract-content-scroll mt-3">
+          <h4>{isTerms ? "1. Taraflar ve Sözleşmenin Amacı" : "1. Veri Sorumlusu ve Aydınlatma Yükümlülüğü"}</h4>
+          <p>
+            İşbu sözleşme, Kovan Konut ve Site Yönetim Portalı üzerinden site sakinleri, kat malikleri ve bina yönetimi arasındaki aidat takibi, duyuru yayınlama, afet hazırlığı ve teknik arıza talepleri süreçlerinin dijital, şeffaf ve güvenli bir şekilde yürütülmesini sağlar.
+          </p>
+
+          <h4>{isTerms ? "2. Kullanıcı Hak ve Sorumlulukları" : "2. İşlenen Kişisel Veriler ve Amaçları"}</h4>
+          <p>
+            Kullanıcı, sisteme tanımladığı bağımsız bölüm (daire), iletişim ve acil durum tahliye bilgilerinin doğruluğunu taahhüt eder. Afet durumunda kullanılacak tahliye bilgileri yalnızca can güvenliği ve site yönetim kurulu yetkililerince acil müdahale amacıyla işlenir.
+          </p>
+
+          <h4>3. Finansal Güvenlik ve Gizlilik Standartları</h4>
+          <p>
+            Kredi kartı ve aidat ödeme işlemleri, BDDK lisanslı güvenli Sanal POS sağlayıcıları üzerinden 256-bit SSL şifreleme ile gerçekleştirilir. Kart bilgileri sistem veritabanlarında asla saklanmaz.
+          </p>
+        </div>
+
+        <div className="modal-footer mt-4">
+          <Button type="button" onClick={onClose}>
+            Anladım & Kapat
+          </Button>
+        </div>
+      </div>
     </Modal>
   );
 }

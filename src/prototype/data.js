@@ -117,14 +117,25 @@ export const initialUnits = names.map((name, i) => {
     type = mod4 === 3 ? "Dubleks" : "3+1";
     m2 = mod4 === 3 ? 190 : 130;
   }
+  const unitBlock = "ABC"[Math.floor(i / 16)];
+  const unitNum = (i % 16) + 1;
+  const isA2 = unitBlock === "A" && unitNum === 2;
   return {
-    id: `${"ABC"[Math.floor(i / 16)]}-${(i % 16) + 1}`,
-    block: "ABC"[Math.floor(i / 16)],
+    id: `${unitBlock}-${unitNum}`,
+    block: unitBlock,
     floor,
-    number: (i % 16) + 1,
+    number: unitNum,
     type,
     m2,
     occupied: ![15, 31, 47].includes(i),
+    occupantCount: isA2 ? 3 : (i % 3 === 0 ? 3 : 2),
+    petCount: isA2 ? 1 : (i % 5 === 0 ? 1 : 0),
+    hasBedriddenPatient: isA2,
+    bedriddenCount: isA2 ? 1 : 0,
+    disasterEvacuationNote: isA2 ? "Yatağa bağımlı yaşlı sakinimiz bulunmaktadır, acil afet tahliyesinde önceliklidir." : "",
+    invitationStatus: i === 15 ? "EXPIRED" : (i % 6 === 0 ? "RENEWED" : "VALID"), // VALID | EXPIRED | RENEWED
+    invitationDaysLeft: i === 15 ? 0 : (i % 6 === 0 ? 7 : 5),
+    invitationExpiresAt: i === 15 ? "2026-09-20 (Süresi Doldu)" : "2026-10-07 (7 Gün)",
   };
 });
 export const initialUsers = names.map((name, i) => ({
