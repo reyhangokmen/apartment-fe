@@ -83,8 +83,21 @@ export default function App() {
   const [roles, setRoles] = useState(initialRoles);
   const [dues, setDues] = useState(initialDues);
   const [requests, setRequests] = useState(initialRequests);
-  const [session, setSession] = useState(null);
-  const [tab, setTab] = useState("dashboard");
+  const [session, setSession] = useState(() => {
+    try {
+      const saved = localStorage.getItem("kovan_session");
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+  const [tab, setTab] = useState(() => {
+    try {
+      return localStorage.getItem("kovan_active_tab") || "dashboard";
+    } catch {
+      return "dashboard";
+    }
+  });
   const [mobile, setMobile] = useState(false);
   const [modal, setModal] = useState(null);
   const [toast, setToast] = useState("");
@@ -95,6 +108,30 @@ export default function App() {
   });
   const [siteMenuOpen, setSiteMenuOpen] = useState(true);
   const [showTanitim, setShowTanitim] = useState(() => window.location.pathname === "/tanitim");
+
+  // Oturum ve Sekme Kalıcılığı (Sayfa yenilendiğinde çıkış yapmaması için)
+  useEffect(() => {
+    try {
+      if (session) {
+        localStorage.setItem("kovan_session", JSON.stringify(session));
+      } else {
+        localStorage.removeItem("kovan_session");
+        localStorage.removeItem("kovan_active_tab");
+      }
+    } catch (e) {
+      console.warn("Storage sync error", e);
+    }
+  }, [session]);
+
+  useEffect(() => {
+    try {
+      if (session && tab) {
+        localStorage.setItem("kovan_active_tab", tab);
+      }
+    } catch (e) {
+      console.warn("Tab sync error", e);
+    }
+  }, [session, tab]);
 
   const manager = session?.activeMode
     ? session.activeMode === "admin"
@@ -170,11 +207,35 @@ export default function App() {
   );
 
   useEffect(() => {
-    window.history.replaceState({}, "", "/login");
-  }, []);
+    if (showTanitim) return;
+    try {
+      const saved = localStorage.getItem("kovan_session");
+      const currentSession = saved ? JSON.parse(saved) : null;
+      if (currentSession) {
+        const isMgr = currentSession.activeMode
+          ? currentSession.activeMode === "admin"
+          : currentSession.role === "ADMIN";
+        const savedTab = localStorage.getItem("kovan_active_tab") || "dashboard";
+        window.history.replaceState(
+          {},
+          "",
+          `/${isMgr ? "manager" : "resident"}${savedTab === "dashboard" ? "" : "/" + savedTab}`
+        );
+      } else {
+        window.history.replaceState({}, "", "/login");
+      }
+    } catch {
+      window.history.replaceState({}, "", "/login");
+    }
+  }, [showTanitim]);
 
   useEffect(() => {
     const pop = () => {
+      if (window.location.pathname === "/tanitim") {
+        setShowTanitim(true);
+        return;
+      }
+      setShowTanitim(false);
       if (!session || window.location.pathname === "/login") {
         setSession(null);
         setTab("dashboard");
@@ -191,7 +252,7 @@ export default function App() {
         window.history.replaceState(
           {},
           "",
-          `/${manager ? "manager" : "resident"}`,
+          `/${manager ? "manager" : "resident"}${target === "dashboard" ? "" : "/" + target}`,
         );
         setTab("dashboard");
       } else setTab(target);
