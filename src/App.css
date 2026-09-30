@@ -394,9 +394,13 @@
   color: var(--ink);
 }
 
-.user-profile-trigger:hover,
+.user-profile-trigger.has-dropdown:hover,
 .user-profile-trigger.is-active {
   background: var(--page);
+}
+
+.user-profile-trigger.static-profile {
+  cursor: default;
 }
 
 .user-profile-meta {

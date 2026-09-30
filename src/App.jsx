@@ -660,14 +660,20 @@ export default function App() {
               <i />
             </button>
 
-            {/* Profil ve Rol Değiştirici Açılır Menüsü */}
+            {/* Profil ve Rol Değiştirici */}
             <div className="profile-dropdown-container" ref={profileRef}>
               <button
                 type="button"
-                className={`user-profile-trigger ${profileMenuOpen ? "is-active" : ""}`}
-                onClick={() => setProfileMenuOpen((prev) => !prev)}
-                aria-expanded={profileMenuOpen}
-                aria-haspopup="true"
+                className={`user-profile-trigger ${session?.accounts?.length > 1 ? "has-dropdown" : "static-profile"} ${profileMenuOpen ? "is-active" : ""}`}
+                onClick={() => {
+                  if (session?.accounts?.length > 1) {
+                    setProfileMenuOpen((prev) => !prev);
+                  }
+                }}
+                aria-expanded={session?.accounts?.length > 1 ? profileMenuOpen : undefined}
+                aria-haspopup={session?.accounts?.length > 1 ? "true" : undefined}
+                style={{ cursor: session?.accounts?.length > 1 ? "pointer" : "default" }}
+                title={session?.accounts?.length > 1 ? "Rol ve hesap değiştirmek için tıklayın" : undefined}
               >
                 <span className="avatar">
                   {(user?.name || "K")
@@ -687,14 +693,16 @@ export default function App() {
                         (session?.unitId ? `Daire ${session.unitId}` : "Konut Sakini")}
                   </small>
                 </div>
-                <ChevronDown
-                  size={14}
-                  className={`profile-chevron ${profileMenuOpen ? "rotate-180" : ""}`}
-                />
+                {session?.accounts?.length > 1 && (
+                  <ChevronDown
+                    size={14}
+                    className={`profile-chevron ${profileMenuOpen ? "rotate-180" : ""}`}
+                  />
+                )}
               </button>
 
-              {/* Açılır Menü */}
-              {profileMenuOpen && (
+              {/* Açılır Menü (Yalnızca Birden Fazla Hesabı/Rolü Olanlar İçin) */}
+              {session?.accounts?.length > 1 && profileMenuOpen && (
                 <div className="profile-dropdown-menu">
                   {/* Profil Başlığı */}
                   <div className="profile-dropdown-header">
@@ -712,58 +720,39 @@ export default function App() {
                   </div>
 
                   {/* Çoklu Rol / Hesap Geçiş Bölümü (Burak Maydan, Av. Selin vb.) */}
-                  {session?.accounts && session.accounts.length > 1 && (
-                    <div className="profile-dropdown-section">
-                      <span className="profile-section-label">Hesaplar ve Roller</span>
-                      <div className="profile-accounts-list">
-                        {session.accounts.map((acc) => {
-                          const isActive = acc.mode === (manager ? "admin" : "resident");
-                          return (
-                            <button
-                              key={acc.mode}
-                              type="button"
-                              className={`profile-account-item ${isActive ? "active" : ""}`}
-                              onClick={() => switchAccountMode(acc.mode)}
-                            >
-                              <span className="profile-account-icon">
-                                {acc.icon === "home" ? <Home size={15} /> : <Shield size={15} />}
+                  <div className="profile-dropdown-section">
+                    <span className="profile-section-label">Hesaplar ve Roller</span>
+                    <div className="profile-accounts-list">
+                      {session.accounts.map((acc) => {
+                        const isActive = acc.mode === (manager ? "admin" : "resident");
+                        return (
+                          <button
+                            key={acc.mode}
+                            type="button"
+                            className={`profile-account-item ${isActive ? "active" : ""}`}
+                            onClick={() => switchAccountMode(acc.mode)}
+                          >
+                            <span className="profile-account-icon">
+                              {acc.icon === "home" ? <Home size={15} /> : <Shield size={15} />}
+                            </span>
+                            <div className="profile-account-details">
+                              <span className="profile-account-title">{acc.title}</span>
+                              <span className="profile-account-sub">{acc.subtitle}</span>
+                            </div>
+                            {isActive ? (
+                              <span className="profile-account-active-badge">
+                                <CheckCircle2 size={14} />
+                                <span>Aktif</span>
                               </span>
-                              <div className="profile-account-details">
-                                <span className="profile-account-title">{acc.title}</span>
-                                <span className="profile-account-sub">{acc.subtitle}</span>
-                              </div>
-                              {isActive ? (
-                                <span className="profile-account-active-badge">
-                                  <CheckCircle2 size={14} />
-                                  <span>Aktif</span>
-                                </span>
-                              ) : (
-                                <span className="profile-account-switch-hint">
-                                  Geçiş Yap
-                                </span>
-                              )}
-                            </button>
-                          );
-                        })}
-                      </div>
+                            ) : (
+                              <span className="profile-account-switch-hint">
+                                Geçiş Yap
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
                     </div>
-                  )}
-
-                  <div className="profile-dropdown-divider" />
-
-                  {/* Hızlı Bağlantılar */}
-                  <div className="profile-dropdown-links">
-                    <button
-                      type="button"
-                      className="profile-link-item"
-                      onClick={() => {
-                        setProfileMenuOpen(false);
-                        navigate("settings");
-                      }}
-                    >
-                      <Settings size={15} />
-                      <span>{manager ? "Site ve Yönetim Ayarları" : "Hesap ve Daire Ayarları"}</span>
-                    </button>
                   </div>
                 </div>
               )}
