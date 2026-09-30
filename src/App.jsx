@@ -723,6 +723,21 @@ export default function App() {
             <span>Yardım ve İletişim</span>
             <ArrowChevron />
           </button>
+          <button
+            type="button"
+            className="nav-item sidebar-logout-btn"
+            onClick={() => {
+              setProfileMenuOpen(false);
+              setSession(null);
+              setModal(null);
+              setMobile(false);
+              setToast("");
+              window.history.pushState({}, "", "/login");
+            }}
+          >
+            <LogOut size={19} style={{ color: "#ef4444" }} />
+            <span style={{ color: "#ef4444", fontWeight: 600 }}>Çıkış Yap</span>
+          </button>
           <div className="sidebar-footnote">
             <span className="status-dot" />
             Kovan ERP v2.4<span>2026</span>
@@ -870,10 +885,10 @@ export default function App() {
               )}
             </div>
 
-            {/* Sağda Açık Duran Çıkış Yap Butonu */}
+            {/* Sağda Açık Duran Çıkış Yap Butonu (Mobilde Hamburger Menüde) */}
             <button
               type="button"
-              className="logout-button"
+              className="logout-button desktop-only"
               aria-label="Çıkış Yap"
               onClick={() => {
                 setProfileMenuOpen(false);
