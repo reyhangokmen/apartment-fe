@@ -2331,7 +2331,7 @@ td small {
     margin-bottom: 70px;
   }
 }
-@media (max-width: 760px) {
+@media (max-width: 860px) {
   .mobile-only {
     display: inline-flex !important;
   }
@@ -2366,21 +2366,20 @@ td small {
   .topbar-right {
     gap: 7px;
   }
-  .user-profile {
-    border-left: 0;
-    padding-left: 0;
+  .user-profile-trigger {
+    padding: 3px 6px;
     gap: 6px;
   }
-  .user-profile strong {
-    font-size: 10px;
+  .user-profile-meta strong {
+    font-size: 11px;
   }
-  .user-profile small {
-    font-size: 8px;
+  .user-profile-meta small {
+    display: none;
   }
   .avatar {
-    width: 29px;
-    height: 29px;
-    font-size: 9px;
+    width: 32px;
+    height: 32px;
+    font-size: 10px;
   }
   .notification-button {
     display: inline-flex;
@@ -2801,8 +2800,14 @@ td small {
   .date-chip {
     display: none;
   }
-  .user-profile small {
-    max-width: 113px;
+  .user-profile-meta,
+  .profile-chevron {
+    display: none;
+  }
+  .user-profile-trigger {
+    padding: 0;
+    background: transparent !important;
+    border: none !important;
   }
   .story-copy h1 {
     font-size: 32px;
@@ -2828,9 +2833,25 @@ td small {
   .form-row {
     gap: 10px;
   }
+  .modal {
+    padding: 18px 16px;
+    width: calc(100vw - 20px);
+    max-height: 92dvh;
+    border-radius: 10px;
+  }
+  .modal-heading h2 {
+    font-size: 18px;
+  }
+  .modal-footer {
+    flex-direction: column-reverse;
+    gap: 8px;
+  }
+  .modal-footer button,
   .modal-footer .button {
-    font-size: 10px;
-    padding: 10px 12px;
+    width: 100%;
+    justify-content: center;
+    min-height: 40px;
+    font-size: 12px;
   }
   .module-title > .demo-pill {
     font-size: 8px;
@@ -2875,7 +2896,7 @@ td small {
 .dashboard-aside {
   min-width: 0;
 }
-@media (max-width: 760px) {
+@media (max-width: 860px) {
   .dashboard-main .table-scroll table {
     min-width: 350px;
   }
@@ -6474,9 +6495,121 @@ td small {
   gap: 10px;
 }
 
+/* ==========================================================================
+   TABLET & MOBILE COMPATIBILITY ENHANCEMENTS
+   ========================================================================== */
 
+/* 1. Responsive Tables */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.table-responsive table {
+  min-width: 620px;
+}
 
+/* 2. Dual Role Banner on Tablet & Mobile */
+@media (max-width: 768px) {
+  .dual-role-banner-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .dual-role-banner-card button {
+    width: 100%;
+    justify-content: center;
+  }
+}
 
+/* 3. Bulk Invitation Modal on Mobile */
+@media (max-width: 550px) {
+  .bulk-unit-row-item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 8px 10px;
+    padding: 10px 12px;
+  }
+  .bulk-unit-meta {
+    width: auto;
+  }
+  .bulk-unit-resident {
+    grid-column: 2 / -1;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .bulk-unit-code {
+    text-align: right;
+  }
+}
 
+/* 4. Wizard Dynamic Block Cards on Mobile */
+@media (max-width: 500px) {
+  .dynamic-blocks-grid {
+    grid-template-columns: 1fr;
+  }
+  .dynamic-block-card .grid-3-col {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
 
+/* 5. KOVAN Landing Page on Tablet & Mobile */
+@media (max-width: 768px) {
+  .landing-header {
+    padding: 12px 18px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .landing-header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .landing-hero {
+    padding: 32px 18px;
+  }
+  .landing-hero h1 {
+    font-size: 34px;
+  }
+  .landing-lead {
+    font-size: 15px;
+  }
+  .features-grid-3 {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .landing-features-section {
+    padding: 40px 18px;
+  }
+  .landing-mobile-preview {
+    padding: 40px 18px;
+  }
+  .landing-footer {
+    padding: 20px 18px;
+  }
+}
 
+@media (max-width: 480px) {
+  .landing-hero h1 {
+    font-size: 28px;
+  }
+  .features-grid-3 {
+    grid-template-columns: 1fr;
+  }
+  .newsletter-form {
+    flex-direction: column;
+  }
+  .newsletter-form button {
+    width: 100%;
+    justify-content: center;
+  }
+  .settings-footer-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .settings-footer-actions button,
+  .settings-footer-actions .button {
+    width: 100%;
+    justify-content: center;
+  }
+}
