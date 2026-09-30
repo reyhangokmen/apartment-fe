@@ -390,16 +390,6 @@ export default function Login({
             </div>
           )}
 
-          {/* HESAP / DAİRE DEĞİŞTİRİCİ BUTONU (BMS Mentör Ekstra Hedef) */}
-          <button
-            type="button"
-            className="account-switch-trigger"
-            onClick={() => setAuthModal("accountSwitch")}
-            title="Aynı e-postaya veya farklı profillere bağlı daireler arasında şifresiz geçiş yapın"
-          >
-            <Users size={14} /> Şifresiz Hesap / Daire Değiştir (Çoklu Oturum)
-          </button>
-
           {/* YENİ KAYIT & DAVETİYE KÖPRÜLERİ */}
           <div className="onboarding-cards-grid">
             <button
