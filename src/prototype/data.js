@@ -145,11 +145,22 @@ initialUsers.push({
   email: "burak.maydan@site.com",
   phone: "0532 555 77 88",
 });
+initialUsers.push({
+  id: "u-selin",
+  name: "Av. Selin Erdem",
+  email: "av.selin@hukuk.com",
+  phone: "0544 222 33 44",
+});
 export const initialMemberships = initialUnits
   .filter((u) => u.occupied)
   .map((u) => ({
     id: `m-${u.id}`,
-    userId: u.id === "B-7" ? "u-burak" : `u${initialUnits.indexOf(u)}`,
+    userId:
+      u.id === "B-7"
+        ? "u-burak"
+        : u.id === "C-2"
+        ? "u-selin"
+        : `u${initialUnits.indexOf(u)}`,
     siteId: "kovan",
     unitId: u.id,
     blockId: u.block,
@@ -285,7 +296,7 @@ export const initialAnnouncements = [
 export function resolveLogin(identifier, users, memberships, roles) {
   const value = normalize(identifier);
 
-  // Çift Rol Kontrolü: Burak Maydan (Daire B-7 Sakini & Yönetim Kurulu Üyesi)
+  // Burak Maydan (Daire B-7 Sakini & Yönetim Kurulu Üyesi)
   if (value.includes("burak") || value === "b-7" || value.includes("burak.maydan")) {
     const burakUser = users.find((u) => u.id === "u-burak") || {
       id: "u-burak",
@@ -303,12 +314,65 @@ export function resolveLogin(identifier, users, memberships, roles) {
     return {
       userId: "u-burak",
       membershipId: b7Membership.id,
-      role: "RESIDENT", // Başlangıç modu Sakin
-      activeMode: "resident", // 'resident' | 'admin'
-      hasDualRole: true, // Çift rol (Hem Sakin hem Yönetim Kurulu)
-      boardRoleTitle: "Yönetim Kurulu Üyesi",
+      role: "RESIDENT",
+      activeMode: "resident",
+      hasDualRole: true,
       unitId: "B-7",
       user: burakUser,
+      accounts: [
+        {
+          mode: "resident",
+          title: "Sakin Portalı",
+          subtitle: "Daire B-7 (Kat Maliki)",
+          icon: "home",
+        },
+        {
+          mode: "admin",
+          title: "Site Yönetim Paneli",
+          subtitle: "Yönetim Kurulu Üyesi",
+          icon: "shield",
+        },
+      ],
+    };
+  }
+
+  // Av. Selin Erdem (Daire C-2 Sakini & Hukuk Danışmanı)
+  if (value.includes("selin") || value === "c-2" || value.includes("av.selin")) {
+    const selinUser = users.find((u) => u.id === "u-selin") || {
+      id: "u-selin",
+      name: "Av. Selin Erdem",
+      email: "av.selin@hukuk.com",
+      phone: "0544 222 33 44",
+    };
+    const c2Membership = memberships.find((m) => m.unitId === "C-2") || {
+      id: "m-C-2",
+      userId: "u-selin",
+      siteId: "kovan",
+      unitId: "C-2",
+      blockId: "C",
+    };
+    return {
+      userId: "u-selin",
+      membershipId: c2Membership.id,
+      role: "RESIDENT",
+      activeMode: "resident",
+      hasDualRole: true,
+      unitId: "C-2",
+      user: selinUser,
+      accounts: [
+        {
+          mode: "resident",
+          title: "Sakin Portalı",
+          subtitle: "Daire C-2 (Kat Maliki)",
+          icon: "home",
+        },
+        {
+          mode: "admin",
+          title: "Site Yönetim Paneli",
+          subtitle: "Hukuk Müşavirliği & Yönetim",
+          icon: "shield",
+        },
+      ],
     };
   }
 
@@ -329,14 +393,34 @@ export function resolveLogin(identifier, users, memberships, roles) {
     : unitMatch
       ? memberships.find((m) => m.unitId === unitMatch.id)
       : memberships.find((m) => m.userId === user?.id);
-  // Unrecognized identifiers open the documented default resident demo profile.
   const resolved = membership || memberships.find((m) => m.unitId === "A-12");
+  const finalUser = user || users.find((u) => u.id === resolved?.userId);
+  const defaultMode = manager ? "admin" : "resident";
+
   return {
     userId: resolved.userId,
     membershipId: resolved.id,
     role: roles.find((r) => r.membershipId === resolved.id)?.role || (manager ? "ADMIN" : "RESIDENT"),
-    activeMode: manager ? "admin" : "resident",
+    activeMode: defaultMode,
     hasDualRole: false,
     unitId: resolved.unitId,
+    user: finalUser,
+    accounts: manager
+      ? [
+          {
+            mode: "admin",
+            title: "Site Yönetim Paneli",
+            subtitle: "Site Yöneticisi",
+            icon: "shield",
+          },
+        ]
+      : [
+          {
+            mode: "resident",
+            title: "Sakin Portalı",
+            subtitle: `Daire ${resolved.unitId || "A-12"} (Kat Maliki)`,
+            icon: "home",
+          },
+        ],
   };
 }

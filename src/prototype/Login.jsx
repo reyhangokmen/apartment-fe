@@ -15,6 +15,7 @@ import {
   CheckCircle2,
   Info,
   Shield,
+  Scale,
 } from "lucide-react";
 import { Brand, Button, Field, ThemeToggle, Modal } from "./UI";
 import {
@@ -432,46 +433,70 @@ export default function Login({
             <span>Örnek Demo Hesaplar</span>
           </div>
 
-          <div className="demo-options">
-            {/* 1. ÖNE ÇIKAN ÇİFT ROL DEMO HESABI: BURAK MAYDAN */}
+          <div className="demo-options-grid">
             <button
               type="button"
-              className="featured-dual-role"
+              className="demo-account-card"
               onClick={() => fill("burak.maydan@site.com")}
-              title="Hem Sakin Portalı hem de Yönetim Paneli geçişini test edin"
+              title="Burak Maydan ile giriş yap"
             >
-              <div className="demo-icon-dual">
+              <div className="demo-account-icon">
                 <Home size={15} />
-                <span className="plus-sign">+</span>
-                <Shield size={15} />
               </div>
-              <div>
-                <strong>Burak Maydan · B-7 Sakini & YK</strong>
-                <small style={{ color: "var(--gold-dark)", fontWeight: "600" }}>
-                  ★ Çift Rol (Sakin + Yönetici Geçişi)
-                </small>
+              <div className="demo-account-info">
+                <strong>Burak Maydan</strong>
+                <small>Daire B-7 · Yönetim Kurulu</small>
               </div>
               <ArrowUpRightIcon />
             </button>
 
-            <div className="demo-options-subgrid">
-              <button type="button" onClick={() => fill("ahmet.yilmaz@site.com")}>
+            <button
+              type="button"
+              className="demo-account-card"
+              onClick={() => fill("av.selin@hukuk.com")}
+              title="Av. Selin Erdem ile giriş yap"
+            >
+              <div className="demo-account-icon">
+                <Scale size={15} />
+              </div>
+              <div className="demo-account-info">
+                <strong>Av. Selin Erdem</strong>
+                <small>Daire C-2 · Hukuk Müşaviri</small>
+              </div>
+              <ArrowUpRightIcon />
+            </button>
+
+            <button
+              type="button"
+              className="demo-account-card"
+              onClick={() => fill("ahmet.yilmaz@site.com")}
+              title="Ahmet Yılmaz ile giriş yap"
+            >
+              <div className="demo-account-icon">
                 <Home size={15} />
-                <div>
-                  <strong>Ahmet Yılmaz</strong>
-                  <small>Tek Rol · Daire A-12</small>
-                </div>
-                <ArrowUpRightIcon />
-              </button>
-              <button type="button" onClick={() => fill("yonetim@site.com")}>
+              </div>
+              <div className="demo-account-info">
+                <strong>Ahmet Yılmaz</strong>
+                <small>Daire A-12 · Kat Maliki</small>
+              </div>
+              <ArrowUpRightIcon />
+            </button>
+
+            <button
+              type="button"
+              className="demo-account-card"
+              onClick={() => fill("yonetim@site.com")}
+              title="Mehmet Demir ile giriş yap"
+            >
+              <div className="demo-account-icon">
                 <Building2 size={15} />
-                <div>
-                  <strong>Mehmet Demir</strong>
-                  <small>Tek Rol · Yönetici</small>
-                </div>
-                <ArrowUpRightIcon />
-              </button>
-            </div>
+              </div>
+              <div className="demo-account-info">
+                <strong>Mehmet Demir</strong>
+                <small>Site Yöneticisi</small>
+              </div>
+              <ArrowUpRightIcon />
+            </button>
           </div>
         </div>
 
@@ -495,9 +520,16 @@ export default function Login({
                 name: "Burak Maydan",
                 unit: "Kovan Sitesi · B Blok Daire 7",
                 email: "burak.maydan@site.com",
-                badge: "★ Çift Rol (Kat Maliki + YK Üyesi)",
-                role: "ÇİFT ROL",
+                badge: "Kat Maliki & Yönetim Kurulu Üyesi",
                 loginId: "burak.maydan@site.com",
+              },
+              {
+                id: "acc-selin",
+                name: "Av. Selin Erdem",
+                unit: "Kovan Sitesi · C Blok Daire 2",
+                email: "av.selin@hukuk.com",
+                badge: "Kat Maliki & Hukuk Müşaviri",
+                loginId: "av.selin@hukuk.com",
               },
               {
                 id: "acc-1",
@@ -505,7 +537,6 @@ export default function Login({
                 unit: "Kovan Sitesi · A Blok Daire 12",
                 email: "ahmet.yilmaz@site.com",
                 badge: "Kat Maliki (Birincil Konut)",
-                role: "SAKİN",
                 loginId: "ahmet.yilmaz@site.com",
               },
               {
@@ -514,7 +545,6 @@ export default function Login({
                 unit: "Kovan Sitesi · B Blok Daire 4",
                 email: "ahmet.yilmaz@site.com",
                 badge: "Kat Maliki (Aynı E-posta / 2. Daire)",
-                role: "SAKİN",
                 loginId: "ahmet.yilmaz@site.com",
               },
               {
@@ -522,18 +552,8 @@ export default function Login({
                 name: "Mehmet Demir",
                 unit: "Kovan Sitesi · Yönetim Ofisi",
                 email: "yonetim@site.com",
-                badge: "Yönetim Kurulu Başkanı",
-                role: "YÖNETİCİ",
+                badge: "Yönetim Kurulu Başkanı / Yönetici",
                 loginId: "yonetim@site.com",
-              },
-              {
-                id: "acc-4",
-                name: "Av. Selin Erdem",
-                unit: "Kovan Sitesi · Hukuk Müşavirliği",
-                email: "av.selin@hukuk.com",
-                badge: "Dış Hukuk Danışmanı (Farklı E-posta)",
-                role: "DIŞ UZMAN",
-                loginId: "av.selin@hukuk.com",
               },
             ].map((acc) => (
               <button

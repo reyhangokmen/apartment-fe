@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   LayoutDashboard,
   Building2,
@@ -103,26 +103,52 @@ export default function App() {
     email: "yonetim@site.com",
   };
 
-  const toggleUserRoleMode = useCallback(() => {
-    if (!session?.hasDualRole) return;
-    const nextMode = manager ? "resident" : "admin";
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const profileRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (profileRef.current && !profileRef.current.contains(e.target)) {
+        setProfileMenuOpen(false);
+      }
+    };
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") setProfileMenuOpen(false);
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
+  const switchAccountMode = useCallback((targetMode) => {
+    if (!session) return;
+    if (session.activeMode === targetMode) {
+      setProfileMenuOpen(false);
+      return;
+    }
+    const nextMode = targetMode;
     setSession((prev) => ({
       ...prev,
       activeMode: nextMode,
       role: nextMode === "admin" ? "ADMIN" : "RESIDENT",
     }));
     setTab("dashboard");
+    setProfileMenuOpen(false);
+    const targetAcc = session.accounts?.find((a) => a.mode === nextMode);
     setToast(
       nextMode === "admin"
-        ? "Yönetim Paneli moduna geçildi. Kat ve daireler, site ayarları ve yetki yönetimi aktif."
-        : `Daire ${session.unitId} Sakin Portalı moduna geçildi. Kendi dairenizin aidat ve talepleri açıldı.`
+        ? `${targetAcc?.title || "Site Yönetim Paneli"} moduna geçildi.`
+        : `${targetAcc?.title || "Sakin Portalı"} moduna geçildi (${targetAcc?.subtitle || session.unitId || ""}).`
     );
     window.history.pushState(
       {},
       "",
       `/${nextMode === "admin" ? "manager" : "resident"}`
     );
-  }, [manager, session]);
+  }, [session]);
 
   const navigate = useCallback(
     (next) => {
@@ -456,29 +482,6 @@ export default function App() {
           <ChevronsUpDown size={15} />
         </div>
 
-        {/* Çift Rol Kullanıcıları İçin Sidebar Hızlı Geçiş Kartı */}
-        {session?.hasDualRole && (
-          <div className="sidebar-dual-role-box">
-            <div className="dual-role-status-row">
-              <span className="dual-role-badge">
-                {manager ? "🛡️ Yönetim Paneli" : `🏠 Daire ${session.unitId} Sakini`}
-              </span>
-            </div>
-            <button
-              type="button"
-              className="dual-role-action-btn"
-              onClick={toggleUserRoleMode}
-            >
-              <ArrowLeftRight size={13} />
-              <span>
-                {manager
-                  ? `Sakin Portalı'na Geç (${session.unitId})`
-                  : "Yönetim Paneline Geç"}
-              </span>
-            </button>
-          </div>
-        )}
-
         <div className="nav-caption">ÇALIŞMA ALANI</div>
         <nav aria-label="Ana menü">
           {/* Genel Bakış */}
@@ -657,63 +660,136 @@ export default function App() {
               <i />
             </button>
 
-            {/* Çift Rol Geçiş Butonu (Burak Maydan vb.) */}
-            {session?.hasDualRole && (
+            {/* Profil ve Rol Değiştirici Açılır Menüsü */}
+            <div className="profile-dropdown-container" ref={profileRef}>
               <button
                 type="button"
-                className={`topbar-role-switch-btn ${manager ? "is-admin" : "is-resident"}`}
-                onClick={toggleUserRoleMode}
-                title={
-                  manager
-                    ? `Daire ${session.unitId} Sakin Portalı'na dönün`
-                    : "Yönetim Kurulu Üyesi yetkinizle Yönetim Paneline geçiş yapın"
-                }
+                className={`user-profile-trigger ${profileMenuOpen ? "is-active" : ""}`}
+                onClick={() => setProfileMenuOpen((prev) => !prev)}
+                aria-expanded={profileMenuOpen}
+                aria-haspopup="true"
               >
-                {manager ? <Home size={14} /> : <Shield size={14} />}
-                <span>
-                  {manager
-                    ? `Sakin Portalı'na Geç (${session.unitId})`
-                    : "Yönetim Paneline Geç"}
+                <span className="avatar">
+                  {(user?.name || "K")
+                    .split(" ")
+                    .map((s) => s[0])
+                    .slice(0, 2)
+                    .join("")}
                 </span>
-              </button>
-            )}
-
-            <div className="user-profile">
-              <span className="avatar">
-                {(user?.name || "K")
-                  .split(" ")
-                  .map((s) => s[0])
-                  .slice(0, 2)
-                  .join("")}
-              </span>
-              <div>
-                <div className="flex items-center gap-1">
-                  <strong>{user?.name}</strong>
-                  {session?.hasDualRole && (
-                    <span className="dual-role-chip" title="Bu kullanıcı hem Sakin hem Yönetim Kurulu Üyesidir">
-                      Çift Rol
-                    </span>
-                  )}
+                <div className="user-profile-meta">
+                  <div className="user-profile-name-row">
+                    <strong>{user?.name}</strong>
+                  </div>
+                  <small>
+                    {manager
+                      ? session?.accounts?.find((a) => a.mode === "admin")?.subtitle || "Site Yöneticisi"
+                      : session?.accounts?.find((a) => a.mode === "resident")?.subtitle ||
+                        (session?.unitId ? `Daire ${session.unitId}` : "Konut Sakini")}
+                  </small>
                 </div>
-                <small>
-                  {session?.hasDualRole ? (
-                    manager ? (
-                      "Yönetim Kurulu Üyesi (Yönetici)"
-                    ) : (
-                      `Daire ${session.unitId} (Kat Maliki)`
-                    )
-                  ) : manager ? (
-                    "Site Yöneticisi"
-                  ) : session?.unitId ? (
-                    `Blok ${session.unitId.split("-")[0]}, Daire ${session.unitId.split("-")[1]}`
-                  ) : (
-                    "Konut Sakini"
+                <ChevronDown
+                  size={14}
+                  className={`profile-chevron ${profileMenuOpen ? "rotate-180" : ""}`}
+                />
+              </button>
+
+              {/* Açılır Menü */}
+              {profileMenuOpen && (
+                <div className="profile-dropdown-menu">
+                  {/* Profil Başlığı */}
+                  <div className="profile-dropdown-header">
+                    <span className="avatar avatar-lg">
+                      {(user?.name || "K")
+                        .split(" ")
+                        .map((s) => s[0])
+                        .slice(0, 2)
+                        .join("")}
+                    </span>
+                    <div className="header-meta">
+                      <strong>{user?.name}</strong>
+                      <span className="header-email">{user?.email}</span>
+                    </div>
+                  </div>
+
+                  {/* Çoklu Rol / Hesap Geçiş Bölümü (Burak Maydan, Av. Selin vb.) */}
+                  {session?.accounts && session.accounts.length > 1 && (
+                    <div className="profile-dropdown-section">
+                      <span className="profile-section-label">Hesaplar ve Roller</span>
+                      <div className="profile-accounts-list">
+                        {session.accounts.map((acc) => {
+                          const isActive = acc.mode === (manager ? "admin" : "resident");
+                          return (
+                            <button
+                              key={acc.mode}
+                              type="button"
+                              className={`profile-account-item ${isActive ? "active" : ""}`}
+                              onClick={() => switchAccountMode(acc.mode)}
+                            >
+                              <span className="profile-account-icon">
+                                {acc.icon === "home" ? <Home size={15} /> : <Shield size={15} />}
+                              </span>
+                              <div className="profile-account-details">
+                                <span className="profile-account-title">{acc.title}</span>
+                                <span className="profile-account-sub">{acc.subtitle}</span>
+                              </div>
+                              {isActive ? (
+                                <span className="profile-account-active-badge">
+                                  <CheckCircle2 size={14} />
+                                  <span>Aktif</span>
+                                </span>
+                              ) : (
+                                <span className="profile-account-switch-hint">
+                                  Geçiş Yap
+                                </span>
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
                   )}
-                </small>
-              </div>
+
+                  <div className="profile-dropdown-divider" />
+
+                  {/* Hızlı Bağlantılar */}
+                  <div className="profile-dropdown-links">
+                    <button
+                      type="button"
+                      className="profile-link-item"
+                      onClick={() => {
+                        setProfileMenuOpen(false);
+                        navigate("settings");
+                      }}
+                    >
+                      <Settings size={15} />
+                      <span>{manager ? "Site ve Yönetim Ayarları" : "Hesap ve Daire Ayarları"}</span>
+                    </button>
+                  </div>
+
+                  <div className="profile-dropdown-divider" />
+
+                  {/* Çıkış Yap */}
+                  <button
+                    type="button"
+                    className="profile-link-item profile-logout-item"
+                    onClick={() => {
+                      setProfileMenuOpen(false);
+                      setSession(null);
+                      setModal(null);
+                      setMobile(false);
+                      setToast("");
+                      window.history.pushState({}, "", "/login");
+                    }}
+                  >
+                    <LogOut size={15} />
+                    <span>Çıkış Yap</span>
+                  </button>
+                </div>
+              )}
             </div>
+
             <button
-              className="logout-button"
+              className="logout-button desktop-only"
               aria-label="Çıkış Yap"
               onClick={() => {
                 setSession(null);
@@ -805,7 +881,7 @@ export default function App() {
                 session={session}
                 units={units}
                 onNotify={notify}
-                onSwitchToManager={toggleUserRoleMode}
+                onSwitchToManager={() => switchAccountMode("admin")}
               />
             )
           )}{" "}

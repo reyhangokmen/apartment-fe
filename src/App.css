@@ -372,117 +372,284 @@
   background: var(--accent);
   outline: 2px solid var(--surface, white);
 }
-.user-profile {
+/* Profile Dropdown Container & Trigger in Topbar */
+.profile-dropdown-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.user-profile-trigger {
   display: flex;
   align-items: center;
   gap: 10px;
+  background: transparent;
+  border: none;
   border-left: 1px solid var(--line);
-  padding-left: 18px;
-}
-.avatar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 33px;
-  height: 33px;
-  border-radius: 50%;
-  background: var(--avatar-surface, #efede8);
-  font-size: 10px;
-  color: var(--avatar-text, #796847);
-  font-weight: 600;
-}
-.user-profile strong {
-  display: block;
-  font-size: 11px;
-  font-weight: 600;
-}
-.user-profile small {
-  display: block;
-  font-size: 9px;
-  color: var(--muted, #888);
-  margin-top: 4px;
-}
-
-/* Topbar Role Switch Button for Dual-Role Users (Burak Maydan vb.) */
-.topbar-role-switch-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 600;
-  border: 1px solid var(--accent);
-  background: var(--gold-light);
-  color: var(--gold-dark);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-}
-.topbar-role-switch-btn:hover {
-  background: var(--accent);
-  color: #fff;
-  transform: translateY(-1px);
-  box-shadow: 0 3px 8px rgba(205, 166, 91, 0.3);
-}
-.topbar-role-switch-btn.is-admin {
-  background: #ecfdf5;
-  border-color: #10b981;
-  color: #047857;
-}
-.topbar-role-switch-btn.is-admin:hover {
-  background: #10b981;
-  color: #fff;
-}
-.dual-role-chip {
-  font-size: 9px;
-  padding: 1px 6px;
-  border-radius: 4px;
-  background: var(--gold-light);
-  color: var(--gold-dark);
-  border: 1px solid var(--gold-border, #e5dec9);
-  font-weight: 700;
-  margin-left: 4px;
-}
-
-/* Sidebar Dual-Role Box */
-.sidebar-dual-role-box {
-  background: var(--page);
-  border: 1px solid var(--line);
+  padding: 4px 10px 4px 16px;
   border-radius: 8px;
-  padding: 10px 12px;
-  margin: 6px 12px 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.dual-role-status-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.dual-role-badge {
-  font-size: 11px;
-  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
   color: var(--ink);
 }
-.dual-role-action-btn {
+
+.user-profile-trigger:hover,
+.user-profile-trigger.is-active {
+  background: var(--page);
+}
+
+.user-profile-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.user-profile-meta strong {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.user-profile-meta small {
+  display: block;
+  font-size: 10px;
+  color: var(--muted, #888);
+  margin-top: 1px;
+  white-space: nowrap;
+}
+
+.profile-chevron {
+  color: var(--muted);
+  transition: transform 0.2s ease;
+  margin-left: 2px;
+}
+
+.profile-chevron.rotate-180 {
+  transform: rotate(180deg);
+}
+
+/* Profile Dropdown Menu */
+.profile-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 280px;
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12), 0 2px 6px rgba(15, 23, 42, 0.05);
+  padding: 10px;
+  z-index: 999;
+  animation: dropdownFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.profile-dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.avatar-lg {
+  width: 38px;
+  height: 38px;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.profile-dropdown-header .header-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.profile-dropdown-header strong {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.header-email {
+  font-size: 11px;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-top: 1px;
+}
+
+/* Multi-Account & Multi-Role List */
+.profile-dropdown-section {
+  padding: 10px 4px 4px;
+}
+
+.profile-section-label {
+  display: block;
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--muted);
+  margin-bottom: 8px;
+  padding-left: 6px;
+}
+
+.profile-accounts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.profile-account-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+  color: var(--ink);
+}
+
+.profile-account-item:hover {
+  background: var(--page);
+}
+
+.profile-account-item.active {
+  background: var(--gold-light, #fbf7ee);
+  border-color: var(--gold-border, #e5dec9);
+}
+
+.profile-account-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 7px 10px;
-  border-radius: 6px;
-  border: 1px solid var(--accent);
   background: var(--surface);
-  color: var(--gold-dark);
-  font-size: 11px;
+  border: 1px solid var(--line);
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.profile-account-item.active .profile-account-icon {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.profile-account-details {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.profile-account-title {
+  font-size: 11.5px;
   font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profile-account-sub {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profile-account-active-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #059669;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  padding: 2px 7px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.profile-account-switch-hint {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--accent);
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--gold-light);
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.profile-dropdown-divider {
+  height: 1px;
+  background: var(--line);
+  margin: 6px 0;
+}
+
+.profile-dropdown-links {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.profile-link-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--ink);
+  font-size: 11.5px;
+  font-weight: 500;
   cursor: pointer;
+  text-align: left;
   transition: all 0.15s ease;
 }
-.dual-role-action-btn:hover {
-  background: var(--gold-light);
+
+.profile-link-item:hover {
+  background: var(--page);
+}
+
+.profile-logout-item {
+  color: #dc2626;
+}
+
+.profile-logout-item:hover {
+  background: #fef2f2;
 }
 
 /* Resident Settings Dual Role Banner */
@@ -1853,70 +2020,77 @@ td small {
   height: 1px;
   background: var(--line, #eee);
 }
-.demo-options {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
+.demo-options-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
 }
-.demo-options-subgrid {
-  display: flex;
-  gap: 7px;
+
+@media (max-width: 480px) {
+  .demo-options-grid {
+    grid-template-columns: 1fr;
+  }
 }
-.demo-options-subgrid > button {
-  flex: 1;
-}
-.demo-options > button,
-.demo-options-subgrid > button {
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  background: var(--surface, white);
-  padding: 9px 11px;
+
+.demo-account-card {
   display: flex;
   align-items: center;
   gap: 9px;
-  text-align: left;
-  color: var(--gold-dark, #9a8660);
-  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface, white);
   cursor: pointer;
+  text-align: left;
+  color: var(--ink);
+  min-width: 0;
   transition: all 0.18s ease;
 }
-.demo-options > button:hover,
-.demo-options-subgrid > button:hover {
+
+.demo-account-card:hover {
   background: var(--gold-light);
   border-color: var(--accent);
   transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(205, 166, 91, 0.12);
 }
-.demo-options > button.featured-dual-role {
-  background: linear-gradient(135deg, var(--gold-light) 0%, var(--surface) 100%);
-  border: 1.5px solid var(--accent);
-  box-shadow: 0 2px 8px rgba(205, 166, 91, 0.15);
-}
-.demo-icon-dual {
+
+.demo-account-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--gold-light);
+  color: var(--accent);
   display: flex;
   align-items: center;
-  gap: 2px;
-  color: var(--accent);
+  justify-content: center;
   flex-shrink: 0;
 }
-.demo-icon-dual .plus-sign {
+
+.demo-account-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.demo-account-info strong {
+  display: block;
   font-size: 11px;
-  font-weight: 800;
-  color: var(--gold-dark);
-}
-.demo-options strong,
-.demo-options-subgrid strong {
-  display: block;
-  font-size: 10.5px;
   font-weight: 600;
-  color: var(--ink, #333);
-}
-.demo-options small,
-.demo-options-subgrid small {
-  display: block;
-  font-size: 9px;
-  color: var(--muted, #999);
-  margin-top: 2px;
+  color: var(--ink);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.demo-account-info small {
+  display: block;
+  font-size: 9.5px;
+  color: var(--muted);
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .demo-arrow {
   display: none;
