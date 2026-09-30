@@ -23,6 +23,7 @@ import {
   Mail,
   ArrowLeftRight,
   Home,
+  User,
 } from "lucide-react";
 import Login from "./prototype/Login";
 import Dashboard from "./prototype/Dashboard";
@@ -803,11 +804,7 @@ export default function App() {
                 title={session?.accounts?.length > 1 ? "Rol ve hesap değiştirmek için tıklayın" : undefined}
               >
                 <span className="avatar">
-                  {(user?.name || "K")
-                    .split(" ")
-                    .map((s) => s[0])
-                    .slice(0, 2)
-                    .join("")}
+                  <User size={16} />
                 </span>
                 <div className="user-profile-meta">
                   <div className="user-profile-name-row">
@@ -834,11 +831,7 @@ export default function App() {
                   {/* Profil Başlığı */}
                   <div className="profile-dropdown-header">
                     <span className="avatar avatar-lg">
-                      {(user?.name || "K")
-                        .split(" ")
-                        .map((s) => s[0])
-                        .slice(0, 2)
-                        .join("")}
+                      <User size={20} />
                     </span>
                     <div className="header-meta">
                       <strong>{user?.name}</strong>

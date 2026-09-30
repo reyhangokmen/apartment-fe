@@ -18,6 +18,7 @@ import {
   Users as UsersIcon,
   RefreshCw,
   AlertCircle,
+  User,
 } from "lucide-react";
 import { Button, Field, Modal, Panel } from "./UI";
 
@@ -448,7 +449,7 @@ export default function Roles({
                       <td>
                         <div className="user-table-cell">
                           <div className="user-mini-avatar">
-                            {m.name.slice(0, 2).toUpperCase()}
+                            <User size={13} />
                           </div>
                           <div>
                             <strong>{m.name}</strong>

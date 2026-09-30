@@ -379,6 +379,20 @@
   align-items: center;
 }
 
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--gold-light, #f7f3ec);
+  color: var(--accent, #9b7a35);
+  border: 1px solid var(--gold-border, #e5dec9);
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
 .user-profile-trigger {
   display: flex;
   align-items: center;
@@ -2021,13 +2035,62 @@ td small {
   min-height: 40px;
   height: 40px;
 }
+/* Sade & Zarif Kayıt / Davet Köprüsü */
+.login-onboarding-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: var(--page, #faf8f5);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 11px;
+}
+.onboarding-prompt {
+  color: var(--muted, #888);
+  font-size: 11px;
+  white-space: nowrap;
+}
+.onboarding-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.onboarding-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+.onboarding-link-btn:hover {
+  color: var(--accent);
+}
+.link-divider {
+  color: var(--line, #ccc);
+  font-size: 10px;
+}
+
+/* Hızlı Demo Hesap Açılır Menüsü */
+.demo-selector-container {
+  margin-top: 8px;
+  position: relative;
+}
 .demo-separator {
   display: flex;
   align-items: center;
   gap: 10px;
   color: var(--muted, #aaa);
   font-size: 8.5px;
-  margin: 10px 0 6px;
+  margin: 6px 0 6px;
 }
 .demo-separator:before,
 .demo-separator:after {
@@ -2036,71 +2099,159 @@ td small {
   height: 1px;
   background: var(--line, #eee);
 }
-.demo-options-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 6px;
-}
 
-.demo-account-card {
+.demo-dropdown-wrapper {
+  position: relative;
+}
+.demo-dropdown-trigger {
+  width: 100%;
   display: flex;
   align-items: center;
-  gap: 9px;
-  padding: 8px 10px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  justify-content: space-between;
+  padding: 7px 12px;
   background: var(--surface, white);
+  border: 1px dashed var(--gold-border, #d4c5a9);
+  border-radius: 8px;
   cursor: pointer;
-  text-align: left;
   color: var(--ink);
-  min-width: 0;
-  transition: all 0.18s ease;
+  transition: all 0.2s ease;
 }
-
-.demo-account-card:hover {
-  background: var(--gold-light);
+.demo-dropdown-trigger:hover,
+.demo-dropdown-trigger.active {
+  background: var(--gold-light, #faf6ee);
+  border-style: solid;
   border-color: var(--accent);
-  transform: translateY(-1px);
-  box-shadow: 0 3px 10px rgba(205, 166, 91, 0.12);
+}
+.demo-trigger-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.demo-trigger-title {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.demo-trigger-chevron {
+  color: var(--muted);
+  transition: transform 0.2s ease;
+}
+.demo-trigger-chevron.rotate-180 {
+  transform: rotate(180deg);
 }
 
-.demo-account-icon {
-  width: 28px;
-  height: 28px;
+.demo-dropdown-menu {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: var(--surface, white);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.04);
+  padding: 8px;
+  z-index: 50;
+  animation: dropdownFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.demo-dropdown-hint {
+  font-size: 10px;
+  color: var(--muted, #888);
+  padding: 2px 6px 6px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 6px;
+}
+.demo-accounts-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.demo-account-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
   border-radius: 6px;
-  background: var(--gold-light);
+  border: 1px solid transparent;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.demo-account-row:hover {
+  background: var(--gold-light, #fbf7ee);
+  border-color: var(--gold-border, #e0d5be);
+}
+.demo-row-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--gold-soft, #f4efe4);
   color: var(--accent);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 }
-
-.demo-account-info {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
+.demo-row-meta {
   flex: 1;
+  min-width: 0;
 }
-
-.demo-account-info strong {
-  display: block;
-  font-size: 11px;
+.demo-row-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+.demo-row-top strong {
+  font-size: 11.5px;
   font-weight: 600;
   color: var(--ink);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+}
+.role-chip {
+  font-size: 9.5px;
+  padding: 1px 7px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+.role-chip.chip-admin {
+  background: rgba(162, 145, 114, 0.15);
+  color: #8b734b;
+}
+.role-chip.chip-board {
+  background: rgba(59, 130, 246, 0.1);
+  color: #2563eb;
+}
+.role-chip.chip-resident {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+}
+.role-chip.chip-legal {
+  background: rgba(139, 92, 246, 0.1);
+  color: #7c3aed;
+}
+.demo-row-meta small {
+  display: block;
+  font-size: 10px;
+  color: var(--muted, #888);
+  margin-top: 1px;
+}
+.demo-row-arrow {
+  color: var(--muted);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: all 0.15s ease;
+}
+.demo-account-row:hover .demo-row-arrow {
+  opacity: 1;
+  transform: translateX(0);
+  color: var(--accent);
 }
 
-.demo-account-info small {
-  display: block;
-  font-size: 9.5px;
-  color: var(--muted);
-  margin-top: 1px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.demo-options-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
 }
 .demo-arrow {
   display: none;
@@ -2600,32 +2751,36 @@ td small {
     font-size: 12px;
     margin-top: 2px;
   }
-  .onboarding-cards-grid {
-    margin-top: 8px;
-    gap: 6px;
-  }
-  .onboard-card {
+  .login-onboarding-row {
+    margin-top: 6px;
     padding: 6px 10px;
-  }
-  .onboard-card strong {
-    font-size: 10.5px;
-  }
-  .onboard-card span {
-    font-size: 8.5px;
-  }
-  .demo-separator {
-    margin: 8px 0 6px;
-  }
-  .demo-options {
-    flex-direction: row;
-    gap: 6px;
-  }
-  .demo-options button {
-    padding: 6px 8px;
     font-size: 10px;
   }
-  .demo-options .demo-arrow {
-    display: none;
+  .onboarding-prompt {
+    font-size: 10px;
+  }
+  .onboarding-link-btn {
+    font-size: 10.5px;
+    gap: 4px;
+  }
+  .demo-selector-container {
+    margin-top: 6px;
+  }
+  .demo-dropdown-trigger {
+    padding: 6px 10px;
+  }
+  .demo-trigger-title {
+    font-size: 11px;
+  }
+  .demo-account-row {
+    padding: 5px 6px;
+    gap: 8px;
+  }
+  .demo-row-top strong {
+    font-size: 11px;
+  }
+  .demo-separator {
+    margin: 6px 0 4px;
   }
   .login-footer {
     position: static;

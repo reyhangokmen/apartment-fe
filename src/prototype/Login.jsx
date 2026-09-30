@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   ArrowRight,
   Eye,
@@ -16,6 +16,9 @@ import {
   Info,
   Shield,
   Scale,
+  User,
+  Zap,
+  ChevronDown,
 } from "lucide-react";
 import { Brand, Button, Field, ThemeToggle, Modal } from "./UI";
 import {
@@ -132,6 +135,59 @@ export default function Login({
     setPassword("demo123");
     setLoginMethod("password");
   };
+
+  // Demo Hesap Açılır Menüsü Durumu & Dış Tıklama Dinleyicisi
+  const [demoDropdownOpen, setDemoDropdownOpen] = useState(false);
+  const demoDropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (demoDropdownRef.current && !demoDropdownRef.current.contains(e.target)) {
+        setDemoDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const demoAccounts = [
+    {
+      email: "yonetim@site.com",
+      name: "Mehmet Demir",
+      role: "Site Yöneticisi & Başkan",
+      unit: "Yönetim Ofisi",
+      badge: "Yönetici",
+      chipClass: "admin",
+      icon: Building2,
+    },
+    {
+      email: "burak.maydan@site.com",
+      name: "Burak Maydan",
+      role: "Yönetim Kurulu Üyesi",
+      unit: "Daire B-7",
+      badge: "Yönetim",
+      chipClass: "board",
+      icon: Home,
+    },
+    {
+      email: "ahmet.yilmaz@site.com",
+      name: "Ahmet Yılmaz",
+      role: "Kat Maliki (Sakin)",
+      unit: "Daire A-12",
+      badge: "Kat Maliki",
+      chipClass: "resident",
+      icon: Home,
+    },
+    {
+      email: "av.selin@hukuk.com",
+      name: "Av. Selin Erdem",
+      role: "Hukuk Müşaviri",
+      unit: "Daire C-2",
+      badge: "Hukuk",
+      chipClass: "legal",
+      icon: Scale,
+    },
+  ];
 
   // OTP Geri Sayım Sayacı
   useEffect(() => {
@@ -392,103 +448,93 @@ export default function Login({
             </div>
           )}
 
-          {/* YENİ KAYIT & DAVETİYE KÖPRÜLERİ */}
-          <div className="onboarding-cards-grid">
-            <button
-              type="button"
-              className="onboard-card"
-              onClick={() => setAuthModal("wizard")}
-            >
-              <Building2 size={16} className="text-gold" />
-              <div>
-                <strong>Site Yöneticisi Misiniz?</strong>
-                <span>Yeni site kurulum sihirbazını başlatın</span>
-              </div>
-              <ArrowRight size={13} />
-            </button>
-
-            <button
-              type="button"
-              className="onboard-card"
-              onClick={() => setAuthModal("invite")}
-            >
-              <KeyRound size={16} className="text-gold" />
-              <div>
-                <strong>Sakin Katılım Kodu ile Kaydol</strong>
-                <span>Yöneticinizin verdiği kod ile üye olun</span>
-              </div>
-              <ArrowRight size={13} />
-            </button>
+          {/* YENİ KAYIT & DAVETİYE KÖPRÜLERİ (ZARİF & SADE) */}
+          <div className="login-onboarding-row">
+            <span className="onboarding-prompt">Hesabınız yok mu?</span>
+            <div className="onboarding-links">
+              <button
+                type="button"
+                className="onboarding-link-btn"
+                onClick={() => setAuthModal("wizard")}
+              >
+                <Building2 size={13} className="text-gold" />
+                <span>Site Kurulumu Yap</span>
+              </button>
+              <span className="link-divider">•</span>
+              <button
+                type="button"
+                className="onboarding-link-btn"
+                onClick={() => setAuthModal("invite")}
+              >
+                <KeyRound size={13} className="text-gold" />
+                <span>Katılım Kodu Gir</span>
+              </button>
+            </div>
           </div>
 
-          <div className="demo-separator">
-            <span>Örnek Demo Hesaplar</span>
-          </div>
+          {/* HIZLI DEMO HESABI AÇILIR SEÇİCİSİ */}
+          <div className="demo-selector-container" ref={demoDropdownRef}>
+            <div className="demo-separator">
+              <span>veya test için</span>
+            </div>
 
-          <div className="demo-options-grid">
-            <button
-              type="button"
-              className="demo-account-card"
-              onClick={() => fill("burak.maydan@site.com")}
-              title="Burak Maydan ile giriş yap"
-            >
-              <div className="demo-account-icon">
-                <Home size={15} />
-              </div>
-              <div className="demo-account-info">
-                <strong>Burak Maydan</strong>
-                <small>Daire B-7 · Yönetim Kurulu</small>
-              </div>
-              <ArrowUpRightIcon />
-            </button>
+            <div className="demo-dropdown-wrapper">
+              <button
+                type="button"
+                className={`demo-dropdown-trigger ${demoDropdownOpen ? "active" : ""}`}
+                onClick={() => setDemoDropdownOpen((prev) => !prev)}
+                aria-expanded={demoDropdownOpen}
+              >
+                <div className="demo-trigger-left">
+                  <Zap size={14} className="text-gold" />
+                  <span className="demo-trigger-title">Hızlı Demo Hesabı ile Giriş Yap</span>
+                </div>
+                <ChevronDown
+                  size={15}
+                  className={`demo-trigger-chevron ${demoDropdownOpen ? "rotate-180" : ""}`}
+                />
+              </button>
 
-            <button
-              type="button"
-              className="demo-account-card"
-              onClick={() => fill("av.selin@hukuk.com")}
-              title="Av. Selin Erdem ile giriş yap"
-            >
-              <div className="demo-account-icon">
-                <Scale size={15} />
-              </div>
-              <div className="demo-account-info">
-                <strong>Av. Selin Erdem</strong>
-                <small>Daire C-2 · Hukuk Müşaviri</small>
-              </div>
-              <ArrowUpRightIcon />
-            </button>
-
-            <button
-              type="button"
-              className="demo-account-card"
-              onClick={() => fill("ahmet.yilmaz@site.com")}
-              title="Ahmet Yılmaz ile giriş yap"
-            >
-              <div className="demo-account-icon">
-                <Home size={15} />
-              </div>
-              <div className="demo-account-info">
-                <strong>Ahmet Yılmaz</strong>
-                <small>Daire A-12 · Kat Maliki</small>
-              </div>
-              <ArrowUpRightIcon />
-            </button>
-
-            <button
-              type="button"
-              className="demo-account-card"
-              onClick={() => fill("yonetim@site.com")}
-              title="Mehmet Demir ile giriş yap"
-            >
-              <div className="demo-account-icon">
-                <Building2 size={15} />
-              </div>
-              <div className="demo-account-info">
-                <strong>Mehmet Demir</strong>
-                <small>Site Yöneticisi</small>
-              </div>
-              <ArrowUpRightIcon />
-            </button>
+              {demoDropdownOpen && (
+                <div className="demo-dropdown-menu">
+                  <div className="demo-dropdown-hint">
+                    Giriş yapmak istediğiniz demo hesabı seçin:
+                  </div>
+                  <div className="demo-accounts-stack">
+                    {demoAccounts.map((acc) => {
+                      const IconComp = acc.icon;
+                      return (
+                        <button
+                          key={acc.email}
+                          type="button"
+                          className="demo-account-row"
+                          onClick={() => {
+                            setIdentifier(acc.email);
+                            setPassword("demo123");
+                            setLoginMethod("password");
+                            setDemoDropdownOpen(false);
+                            onNotify?.(`${acc.name} (${acc.role}) ile giriş yapılıyor...`);
+                            onLogin(acc.email);
+                          }}
+                        >
+                          <div className="demo-row-avatar">
+                            <IconComp size={15} />
+                          </div>
+                          <div className="demo-row-meta">
+                            <div className="demo-row-top">
+                              <strong>{acc.name}</strong>
+                              <span className={`role-chip chip-${acc.chipClass}`}>{acc.badge}</span>
+                            </div>
+                            <small>{acc.unit} · {acc.role}</small>
+                          </div>
+                          <ArrowRight size={14} className="demo-row-arrow" />
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -586,7 +632,7 @@ export default function Login({
               >
                 <div className="account-card-info">
                   <div className="account-card-avatar">
-                    {acc.name.slice(0, 2).toUpperCase()}
+                    <User size={16} />
                   </div>
                   <div className="account-card-text">
                     <strong>{acc.name}</strong>
