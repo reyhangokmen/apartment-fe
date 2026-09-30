@@ -1439,39 +1439,46 @@ td small {
   background: var(--accent);
   border-radius: 50%;
 }
-/* Login */
+/* Login - Zero-Scroll Desktop View & Realistic Architecture */
 .login-page {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  min-height: 100dvh;
+  grid-template-columns: 1.15fr 0.85fr;
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
   background: var(--surface, white);
+  position: relative;
 }
 .login-story {
   background: var(--page, #f7f7f8);
   border-right: 1px solid var(--line, #eee);
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   position: relative;
   overflow: hidden;
-  padding: 44px 55px 28px;
+  padding: clamp(20px, 3vh, 36px) clamp(28px, 3.5vw, 50px) 18px;
+  height: 100%;
+  max-height: 100dvh;
+  box-sizing: border-box;
 }
 .login-story > .brand {
-  margin-bottom: 80px;
+  margin-bottom: clamp(14px, 2.5vh, 40px);
 }
 .story-copy .eyebrow {
   font-size: 10px;
   color: var(--gold-dark, #a28b5c);
 }
 .story-copy h1 {
-  font-size: clamp(35px, 3.8vw, 60px);
+  font-size: clamp(26px, 2.8vw, 48px);
   font-weight: 400;
-  line-height: 1.18;
-  letter-spacing: -2.6px;
-  margin: 18px 0 22px;
+  line-height: 1.15;
+  letter-spacing: -2px;
+  margin: 10px 0 12px;
 }
 .story-copy p {
-  font-size: 13px;
-  line-height: 1.9;
+  font-size: clamp(11px, 0.9vw, 13px);
+  line-height: 1.7;
   color: var(--muted, #929292);
 }
 .architecture {
@@ -1479,24 +1486,25 @@ td small {
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  gap: 20px;
+  gap: 18px;
   width: 100%;
-  min-height: 275px;
+  min-height: 180px;
   flex: 1;
-  max-height: 400px;
-  margin-top: 20px;
+  max-height: 320px;
+  margin-top: 10px;
   border-bottom: 1px solid var(--border-strong, #ddd);
 }
 .building {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  padding: 17px;
+  gap: 11px;
+  padding: 15px;
   background: var(--page, #f7f7f8);
   border: 1px solid var(--building-line, #bababa);
   border-bottom: none;
-  width: 25%;
+  width: 26%;
   position: relative;
+  transition: all 0.3s ease;
 }
 .building:before {
   content: "";
@@ -1520,27 +1528,116 @@ td small {
 }
 .building i {
   border: 1px solid var(--border-strong, #d0d0d0);
-  min-height: 16px;
+  min-height: 15px;
   background: var(--line, #eee);
+  border-radius: 2px;
+  transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
 }
+
+/* Yanıp Sönen & Yanan Sarı Mimari Pencere Işıkları */
+.building i.lit-steady {
+  background: #f59e0b !important;
+  border-color: #d97706 !important;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.75);
+  opacity: 0.95;
+}
+
+.building i.lit-twinkle-1 {
+  animation: windowPulseGlow 3.8s ease-in-out infinite;
+}
+
+.building i.lit-twinkle-2 {
+  animation: windowEveningToggle 6s ease-in-out infinite 1.2s;
+}
+
+.building i.lit-twinkle-3 {
+  animation: windowWarmBreath 5s ease-in-out infinite 2.4s;
+}
+
+.building i.lit-twinkle-4 {
+  animation: windowFlickerGentle 6.6s ease-in-out infinite 0.6s;
+}
+
+@keyframes windowPulseGlow {
+  0%, 100% {
+    background: #f59e0b;
+    border-color: #d97706;
+    box-shadow: 0 0 5px rgba(245, 158, 11, 0.45);
+    opacity: 0.88;
+  }
+  50% {
+    background: #fbbf24;
+    border-color: #f59e0b;
+    box-shadow: 0 0 12px rgba(251, 191, 36, 0.95);
+    opacity: 1;
+  }
+}
+
+@keyframes windowEveningToggle {
+  0%, 25%, 75%, 100% {
+    background: #fde047;
+    border-color: #ca8a04;
+    box-shadow: 0 0 8px rgba(253, 224, 71, 0.75);
+    opacity: 0.92;
+  }
+  45%, 58% {
+    background: var(--line, #eee);
+    border-color: var(--border-strong, #d0d0d0);
+    box-shadow: none;
+    opacity: 0.35;
+  }
+}
+
+@keyframes windowWarmBreath {
+  0%, 100% {
+    background: #fbbf24;
+    border-color: #d97706;
+    box-shadow: 0 0 5px rgba(251, 191, 36, 0.4);
+  }
+  50% {
+    background: #fef08a;
+    border-color: #eab308;
+    box-shadow: 0 0 11px rgba(254, 240, 138, 0.95);
+  }
+}
+
+@keyframes windowFlickerGentle {
+  0%, 35%, 100% {
+    background: #f59e0b;
+    border-color: #b45309;
+    box-shadow: 0 0 7px rgba(245, 158, 11, 0.65);
+    opacity: 0.9;
+  }
+  55%, 68% {
+    background: var(--line, #eee);
+    border-color: var(--border-strong, #d0d0d0);
+    box-shadow: none;
+    opacity: 0.3;
+  }
+}
+
+:root[data-theme="dark"] .building i.lit-steady,
+:root[data-theme="dark"] .building i.lit-twinkle-1,
+:root[data-theme="dark"] .building i.lit-twinkle-2,
+:root[data-theme="dark"] .building i.lit-twinkle-3,
+:root[data-theme="dark"] .building i.lit-twinkle-4 {
+  filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.7));
+}
+
 .building-one {
-  height: 190px;
+  height: 180px;
 }
 .building-two {
-  height: 260px;
+  height: 250px;
 }
 .building-three {
-  height: 165px;
-}
-.building i:nth-child(7n) {
-  background: var(--window-lit, #e8d9b9);
-  border-color: var(--window-line, #ccb783);
+  height: 155px;
 }
 .architecture-caption {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: -28px;
+  bottom: -24px;
   display: flex;
   justify-content: space-between;
   font-size: 8px;
@@ -1552,24 +1649,29 @@ td small {
   justify-content: space-between;
   font-size: 9px;
   color: var(--muted, #999);
-  margin-top: 68px;
+  margin-top: 14px;
 }
 .login-form-area {
   position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 75px 65px;
-  min-height: 100dvh;
+  padding: clamp(18px, 2.5vh, 36px) clamp(24px, 4vw, 55px);
+  height: 100%;
+  max-height: 100dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  box-sizing: border-box;
 }
 .login-top-actions {
   position: absolute;
-  right: 37px;
-  top: 32px;
+  right: 32px;
+  top: 24px;
+  z-index: 10;
 }
 .login-form-wrap {
   width: 100%;
-  max-width: 360px;
+  max-width: 375px;
   margin: auto;
 }
 .login-form-wrap > .eyebrow {
@@ -1578,25 +1680,25 @@ td small {
   color: var(--gold-dark, #a29172);
 }
 .login-form-wrap h2 {
-  font-size: 31px;
+  font-size: clamp(22px, 2.2vw, 29px);
   letter-spacing: -1.1px;
   font-weight: 500;
-  margin: 14px 0 10px;
+  margin: 8px 0 4px;
 }
 .login-intro {
-  font-size: 12px;
+  font-size: 11.5px;
   color: var(--muted, #999);
-  margin-bottom: 32px;
+  margin-bottom: 18px;
 }
 .login-form-wrap .field {
-  margin-bottom: 19px;
+  margin-bottom: 13px;
 }
 .login-form-wrap .field > span {
   font-size: 11px;
 }
 .login-form-wrap .field input {
-  height: 45px;
-  font-size: 11px;
+  height: 42px;
+  font-size: 12px;
 }
 .password-field {
   position: relative;
@@ -2020,86 +2122,183 @@ td small {
     font-size: 11px;
     bottom: 15px;
   }
+  /* Mobile Login Screen - Zero Scroll, Keyboard Resilient, Strong Architecture Backdrop */
   .login-page {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
+    position: relative;
+    background: var(--page, #f7f7f8);
     grid-template-columns: 1fr;
   }
   .login-story {
-    padding: 28px 26px;
-    min-height: 290px;
-  }
-  .login-story > .brand {
-    margin-bottom: 30px;
-  }
-  .login-story .brand img {
-    width: 110px;
-  }
-  .story-copy h1 {
-    font-size: 34px;
-    letter-spacing: -1.5px;
-    margin: 10px 0;
-  }
-  .story-copy p {
-    font-size: 11px;
-    max-width: 210px;
-  }
-  .architecture {
-    position: absolute;
-    right: 30px;
-    bottom: 0;
-    min-height: 0;
-    width: 145px;
-    height: 150px;
-    margin: 0;
-    gap: 9px;
-    opacity: 0.35;
-  }
-  .building {
-    padding: 6px;
-    gap: 5px;
-    width: 30%;
-  }
-  .building i {
-    min-height: 5px;
-  }
-  .building-one {
-    height: 95px;
-  }
-  .building-two {
-    height: 140px;
-  }
-  .building-three {
-    height: 90px;
-  }
-  .building:before,
-  .building:after,
-  .architecture-caption,
-  .story-footer {
     display: none;
   }
+
+  /* Mobil Arka Plandaki Güçlü Mimari Görsel & Yanıp Sönen Işıklar */
+  .mobile-architecture-backdrop {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 250px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.42;
+  }
+  :root[data-theme="dark"] .mobile-architecture-backdrop {
+    opacity: 0.65;
+  }
+  .mobile-architecture-backdrop .architecture {
+    width: 290px;
+    height: 220px;
+    min-height: 0;
+    max-height: none;
+    margin: 0;
+    border-bottom: none;
+    gap: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+  }
+  .mobile-architecture-backdrop .building {
+    padding: 8px;
+    gap: 7px;
+    width: 28%;
+    background: var(--surface, white);
+  }
+  .mobile-architecture-backdrop .building i {
+    min-height: 9px;
+  }
+  .mobile-architecture-backdrop .building-one { height: 115px; }
+  .mobile-architecture-backdrop .building-two { height: 170px; }
+  .mobile-architecture-backdrop .building-three { height: 105px; }
+  .mobile-architecture-backdrop .building:before,
+  .mobile-architecture-backdrop .building:after,
+  .mobile-architecture-backdrop .architecture-caption {
+    display: none;
+  }
+
+  /* Mobil Üst Çubuk (Logo + Tema) */
+  .mobile-header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 18px 6px;
+    z-index: 15;
+    flex-shrink: 0;
+  }
+  .mobile-header-bar .brand img {
+    width: 105px;
+    height: auto;
+  }
+
+  /* Mobil Form Alanı (Sayfa Kaymaz, Klavye Açılınca Kendi İçinde Esner) */
   .login-form-area {
-    min-height: 650px;
-    padding: 57px 26px 68px;
+    flex: 1;
+    min-height: 0;
+    height: auto;
+    max-height: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding: 6px 16px 14px;
+    z-index: 10;
+    position: relative;
   }
   .login-top-actions {
-    right: 26px;
-    top: 19px;
-    font-size: 8px;
+    display: none;
   }
   .login-form-wrap {
-    max-width: 400px;
+    width: 100%;
+    max-width: 420px;
+    margin: auto 0;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 18px 18px 14px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
   .login-form-wrap h2 {
-    font-size: 29px;
+    font-size: 22px;
+    letter-spacing: -0.8px;
+    margin: 4px 0 2px;
+  }
+  .login-intro {
+    font-size: 11px;
+    margin-bottom: 12px;
+  }
+  .login-method-tabs {
+    margin-bottom: 12px;
+  }
+  .login-method-tabs button {
+    padding: 7px 10px;
+    font-size: 11px;
+  }
+  .login-form-wrap .field {
+    margin-bottom: 10px;
+  }
+  .login-form-wrap .field > span {
+    font-size: 10.5px;
+  }
+  .login-form-wrap .field input {
+    height: 40px;
+    font-size: 16px; /* iOS Safari otomatik zoom'u engeller */
+  }
+  .forgot-password-row {
+    margin-top: -2px;
+    margin-bottom: 8px;
+  }
+  .login-submit {
+    height: 42px;
+    font-size: 12px;
+    margin-top: 4px;
+  }
+  .onboarding-cards-grid {
+    margin-top: 12px;
+    gap: 8px;
+  }
+  .onboard-card {
+    padding: 8px 12px;
+  }
+  .onboard-card strong {
+    font-size: 11px;
+  }
+  .onboard-card span {
+    font-size: 9.5px;
+  }
+  .demo-separator {
+    margin: 10px 0 8px;
   }
   .demo-options {
     flex-direction: row;
+    gap: 6px;
+  }
+  .demo-options button {
+    padding: 6px 8px;
+    font-size: 10px;
   }
   .demo-options .demo-arrow {
     display: none;
   }
   .login-footer {
-    left: 26px;
-    right: 26px;
+    position: static;
+    margin-top: 10px;
+    padding-top: 6px;
+    font-size: 9px;
+    text-align: center;
+    justify-content: center;
+    gap: 12px;
   }
   .login-form-wrap > .eyebrow {
     font-size: 8px;
@@ -4932,6 +5131,105 @@ td small {
   color: var(--gold-dark, #806123);
   font-weight: 600;
 }
+
+/* Şifresiz Hesap / Daire Değiştirici UI (BMS Extra Goal) */
+.account-switch-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  margin-top: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--page, #f7f7f8);
+  border: 1px dashed var(--line, #e2e8f0);
+  color: var(--ink, #334155);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.account-switch-trigger:hover {
+  background: var(--gold-light);
+  color: var(--gold-dark);
+  border-color: var(--accent);
+}
+
+.account-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.account-card-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--line, #e2e8f0);
+  background: var(--page, #f8fafc);
+  transition: all 0.18s ease;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+
+.account-card-item:hover {
+  border-color: var(--accent);
+  background: var(--gold-light);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.account-card-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.account-card-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--gold-light);
+  color: var(--gold-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 12px;
+  border: 1px solid var(--gold-border, #e5dec9);
+  flex-shrink: 0;
+}
+
+.account-card-text strong {
+  display: block;
+  font-size: 12px;
+  color: var(--ink);
+}
+
+.account-card-text span {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 1px;
+}
+
+.account-card-badge {
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  white-space: nowrap;
+}
+
 
 
 

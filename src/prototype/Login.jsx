@@ -3,23 +3,79 @@ import {
   ArrowRight,
   Eye,
   EyeOff,
-  ShieldCheck,
   Home,
   Building2,
   Smartphone,
   Lock,
-  Sparkles,
   RotateCcw,
   AlertCircle,
   Phone,
   KeyRound,
+  Users,
+  CheckCircle2,
+  Info,
 } from "lucide-react";
-import { Brand, Button, Field, ThemeToggle } from "./UI";
+import { Brand, Button, Field, ThemeToggle, Modal } from "./UI";
 import {
   ForgotPasswordModal,
   ManagerRegisterWizard,
   InvitationRegisterModal,
 } from "./AuthModal";
+
+// Binaların Pencerelerinde Sıcak Sarı ve Yanıp Sönen Işıklar (Mimari Efekt)
+function BuildingsGraphic({ className = "" }) {
+  const getWindowLitClass = (buildingNum, index) => {
+    // 1. Bina (24 pencere)
+    if (buildingNum === 1) {
+      if ([2, 10, 18].includes(index)) return "lit-steady";
+      if ([5, 14].includes(index)) return "lit-twinkle-1";
+      if ([7, 21].includes(index)) return "lit-twinkle-2";
+      if ([11, 23].includes(index)) return "lit-twinkle-3";
+      return "";
+    }
+    // 2. Bina (32 pencere - Ana Kule)
+    if (buildingNum === 2) {
+      if ([3, 11, 19, 27].includes(index)) return "lit-steady";
+      if ([6, 17, 25].includes(index)) return "lit-twinkle-1";
+      if ([9, 22, 30].includes(index)) return "lit-twinkle-2";
+      if ([14, 28].includes(index)) return "lit-twinkle-3";
+      if ([1, 20].includes(index)) return "lit-twinkle-4";
+      return "";
+    }
+    // 3. Bina (20 pencere)
+    if (buildingNum === 3) {
+      if ([1, 9, 17].includes(index)) return "lit-steady";
+      if ([4, 13].includes(index)) return "lit-twinkle-1";
+      if ([8, 16].includes(index)) return "lit-twinkle-2";
+      if ([12, 19].includes(index)) return "lit-twinkle-4";
+      return "";
+    }
+    return "";
+  };
+
+  return (
+    <div className={`architecture ${className}`} aria-hidden="true">
+      <div className="building building-one">
+        {Array.from({ length: 24 }, (_, i) => (
+          <i key={i} className={getWindowLitClass(1, i)} />
+        ))}
+      </div>
+      <div className="building building-two">
+        {Array.from({ length: 32 }, (_, i) => (
+          <i key={i} className={getWindowLitClass(2, i)} />
+        ))}
+      </div>
+      <div className="building building-three">
+        {Array.from({ length: 20 }, (_, i) => (
+          <i key={i} className={getWindowLitClass(3, i)} />
+        ))}
+      </div>
+      <span className="architecture-caption">
+        KOVAN SİTESİ <span>03 BLOK / 48 DAİRE</span>
+      </span>
+    </div>
+  );
+}
 
 export default function Login({
   onLogin,
@@ -45,7 +101,7 @@ export default function Login({
   const [otpError, setOtpError] = useState("");
 
   // Auth Modalları
-  const [authModal, setAuthModal] = useState(null); // 'forgot' | 'wizard' | 'invite'
+  const [authModal, setAuthModal] = useState(null); // 'forgot' | 'wizard' | 'invite' | 'accountSwitch'
   const [inviteData, setInviteData] = useState({ email: "", unitId: "", isLocked: false });
 
   // URL parametresi ile davet bağlantısı kontrolü (BMS-140)
@@ -107,7 +163,19 @@ export default function Login({
 
   return (
     <main className="login-page">
-      <section className="login-story">
+      {/* MOBİL ÜST BAR (Yalnızca mobilde görünür, sayfa kaymasını önler) */}
+      <div className="mobile-header-bar mobile-only">
+        <Brand />
+        <ThemeToggle theme={theme} onToggle={onToggleTheme} />
+      </div>
+
+      {/* MOBİLDE GÜÇLÜ MİMARİ ARKA PLAN (Yanıp sönen sarı pencere ışıkları) */}
+      <div className="mobile-architecture-backdrop mobile-only" aria-hidden="true">
+        <BuildingsGraphic className="mobile-arch" />
+      </div>
+
+      {/* MASAÜSTÜ SOL HİKAYE BÖLÜMÜ */}
+      <section className="login-story desktop-only">
         <Brand />
         <div className="story-copy">
           <span className="eyebrow">KONUT & SİTE YÖNETİMİ</span>
@@ -121,34 +189,19 @@ export default function Login({
             <br className="desktop-only" /> her şey tek bir yerde.
           </p>
         </div>
-        <div className="architecture" aria-hidden="true">
-          <div className="building building-one">
-            {Array.from({ length: 24 }, (_, i) => (
-              <i key={i} />
-            ))}
-          </div>
-          <div className="building building-two">
-            {Array.from({ length: 32 }, (_, i) => (
-              <i key={i} />
-            ))}
-          </div>
-          <div className="building building-three">
-            {Array.from({ length: 20 }, (_, i) => (
-              <i key={i} />
-            ))}
-          </div>
-          <span className="architecture-caption">
-            KOVAN SİTESİ <span>03 BLOK / 48 DAİRE</span>
-          </span>
-        </div>
+
+        {/* Masaüstü Mimari Binalar */}
+        <BuildingsGraphic />
+
         <div className="story-footer">
           <span>Yaşamın düzeni, kovan.</span>
           <span>İstanbul · Ataşehir</span>
         </div>
       </section>
 
+      {/* SAĞ FORM ALANI (Web & Mobil: Sayfa kaydırması kaldırılmış, klavye uyumlu) */}
       <section className="login-form-area">
-        <div className="login-top-actions">
+        <div className="login-top-actions desktop-only">
           <ThemeToggle theme={theme} onToggle={onToggleTheme} />
         </div>
 
@@ -164,7 +217,7 @@ export default function Login({
               className={loginMethod === "password" ? "active" : ""}
               onClick={() => setLoginMethod("password")}
             >
-              <Lock size={15} /> Şifre ile Giriş
+              <Lock size={14} /> Şifre ile Giriş
             </button>
             <button
               type="button"
@@ -174,7 +227,7 @@ export default function Login({
                 if (identifier && !otpTarget) setOtpTarget(identifier);
               }}
             >
-              <Smartphone size={15} /> Şifresiz OTP Girişi
+              <Smartphone size={14} /> Şifresiz OTP Girişi
             </button>
           </div>
 
@@ -240,11 +293,11 @@ export default function Login({
               {otpStep === 1 ? (
                 <form onSubmit={handleSendOtp}>
                   <p className="otp-explainer-text">
-                    Şifrenizi hatırlamanıza gerek yok. Kayıtlı telefon numaranıza veya e-postanıza tek kullanımlık 6 haneli giriş kodu göndereceğiz.
+                    Şifrenizi hatırlamanıza gerek yok. Kayıtlı telefon veya e-postanıza 6 haneli tek kullanımlık giriş kodu göndereceğiz.
                   </p>
-                  <Field label="Kayıtlı Telefon Numarası veya E-posta">
+                  <Field label="Telefon Numarası veya E-posta">
                     <div className="input-with-icon">
-                      <Phone size={17} className="field-icon" />
+                      <Phone size={16} className="field-icon" />
                       <input
                         autoFocus
                         required
@@ -335,19 +388,29 @@ export default function Login({
             </div>
           )}
 
-          {/* YENİ KAYIT & DAVETİYE KÖPRÜLERİ (BMS-137) */}
+          {/* HESAP / DAİRE DEĞİŞTİRİCİ BUTONU (BMS Mentör Ekstra Hedef) */}
+          <button
+            type="button"
+            className="account-switch-trigger"
+            onClick={() => setAuthModal("accountSwitch")}
+            title="Aynı e-postaya veya farklı profillere bağlı daireler arasında şifresiz geçiş yapın"
+          >
+            <Users size={14} /> Şifresiz Hesap / Daire Değiştir (Çoklu Oturum)
+          </button>
+
+          {/* YENİ KAYIT & DAVETİYE KÖPRÜLERİ */}
           <div className="onboarding-cards-grid">
             <button
               type="button"
               className="onboard-card"
               onClick={() => setAuthModal("wizard")}
             >
-              <Building2 size={18} className="text-gold" />
+              <Building2 size={16} className="text-gold" />
               <div>
                 <strong>Site Yöneticisi Misiniz?</strong>
                 <span>Yeni site kurulum sihirbazını başlatın</span>
               </div>
-              <ArrowRight size={14} />
+              <ArrowRight size={13} />
             </button>
 
             <button
@@ -355,12 +418,12 @@ export default function Login({
               className="onboard-card"
               onClick={() => setAuthModal("invite")}
             >
-              <KeyRound size={18} className="text-gold" />
+              <KeyRound size={16} className="text-gold" />
               <div>
                 <strong>Sakin Katılım Kodu ile Kaydol</strong>
-                <span>Yöneticinizin verdiği site & blok kodu ile üye olun</span>
+                <span>Yöneticinizin verdiği kod ile üye olun</span>
               </div>
-              <ArrowRight size={14} />
+              <ArrowRight size={13} />
             </button>
           </div>
 
@@ -370,7 +433,7 @@ export default function Login({
 
           <div className="demo-options">
             <button type="button" onClick={() => fill("ahmet.yilmaz@site.com")}>
-              <Home size={19} />
+              <Home size={17} />
               <span>
                 <strong>Sakin Hesabı</strong>
                 <small>Ahmet Yılmaz · A-12</small>
@@ -378,7 +441,7 @@ export default function Login({
               <ArrowUpRightIcon />
             </button>
             <button type="button" onClick={() => fill("yonetim@site.com")}>
-              <Building2 size={19} />
+              <Building2 size={17} />
               <span>
                 <strong>Yönetici Hesabı</strong>
                 <small>Mehmet Demir · Yönetim</small>
@@ -394,7 +457,93 @@ export default function Login({
         </footer>
       </section>
 
-      {/* MODALLAR */}
+      {/* ŞİFRESİZ HESAP & DAİRE DEĞİŞTİRİCİ MODALI (Ekstra Hedef) */}
+      {authModal === "accountSwitch" && (
+        <Modal
+          title="Şifresiz Hesap & Daire Değiştir"
+          description="Aynı e-postaya bağlı birden fazla daireniz veya farklı hesaplarınız arasında tek tıkla şifresiz geçiş yapın."
+          onClose={() => setAuthModal(null)}
+        >
+          <div className="account-card-list">
+            {[
+              {
+                id: "acc-1",
+                name: "Ahmet Yılmaz",
+                unit: "Kovan Sitesi · A Blok Daire 12",
+                email: "ahmet.yilmaz@site.com",
+                badge: "Kat Maliki (Birincil Konut)",
+                role: "SAKİN",
+                loginId: "ahmet.yilmaz@site.com",
+              },
+              {
+                id: "acc-2",
+                name: "Ahmet Yılmaz (Yatırım)",
+                unit: "Kovan Sitesi · B Blok Daire 4",
+                email: "ahmet.yilmaz@site.com",
+                badge: "Kat Maliki (Aynı E-posta / 2. Daire)",
+                role: "SAKİN",
+                loginId: "ahmet.yilmaz@site.com",
+              },
+              {
+                id: "acc-3",
+                name: "Mehmet Demir",
+                unit: "Kovan Sitesi · Yönetim Ofisi",
+                email: "yonetim@site.com",
+                badge: "Yönetim Kurulu Başkanı",
+                role: "YÖNETİCİ",
+                loginId: "yonetim@site.com",
+              },
+              {
+                id: "acc-4",
+                name: "Av. Selin Erdem",
+                unit: "Kovan Sitesi · Hukuk Müşavirliği",
+                email: "av.selin@hukuk.com",
+                badge: "Dış Hukuk Danışmanı (Farklı E-posta)",
+                role: "DIŞ UZMAN",
+                loginId: "av.selin@hukuk.com",
+              },
+            ].map((acc) => (
+              <button
+                key={acc.id}
+                type="button"
+                className="account-card-item"
+                onClick={() => {
+                  setAuthModal(null);
+                  onNotify?.(`${acc.name} (${acc.unit}) hesabına geçiş yapıldı.`);
+                  onLogin(acc.loginId);
+                }}
+              >
+                <div className="account-card-info">
+                  <div className="account-card-avatar">
+                    {acc.name.slice(0, 2).toUpperCase()}
+                  </div>
+                  <div className="account-card-text">
+                    <strong>{acc.name}</strong>
+                    <span>{acc.unit}</span>
+                    <small style={{ color: "var(--muted)", fontSize: "10.5px" }}>{acc.email}</small>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="account-card-badge">{acc.badge}</span>
+                  <ArrowRight size={15} style={{ color: "var(--accent)" }} />
+                </div>
+              </button>
+            ))}
+          </div>
+
+          <div className="info-banner-sm mt-3">
+            <Info size={16} /> <strong>Ekip & Mimari Notu:</strong> Çoklu oturum, token saklama (JWT) ve süresi dolma davranışı ekip politikası doğrultusunda backend ile tam senkronize çalışacaktır.
+          </div>
+
+          <div className="modal-footer mt-4">
+            <Button secondary onClick={() => setAuthModal(null)}>
+              Kapat
+            </Button>
+          </div>
+        </Modal>
+      )}
+
+      {/* DİĞER MODALLAR */}
       {authModal === "forgot" && (
         <ForgotPasswordModal
           onClose={() => setAuthModal(null)}
@@ -440,5 +589,5 @@ export default function Login({
 }
 
 function ArrowUpRightIcon() {
-  return <ArrowRight size={15} className="demo-arrow" />;
+  return <ArrowRight size={14} className="demo-arrow" />;
 }
