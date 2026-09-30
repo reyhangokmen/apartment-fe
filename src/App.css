@@ -797,10 +797,13 @@
   margin-top: 19px;
 }
 .stat-note {
-  font-size: 10px;
+  font-size: 11px;
   color: var(--muted, #909090);
   margin-top: 10px;
-  line-height: 1.5;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .accent-stat {
   background: var(--gold-surface, #fcfaf6);

@@ -98,16 +98,18 @@ export default function Dashboard({
             <Stat
               icon={MessageSquare}
               label="Bekleyen talep"
-              value={active.length.toString().padStart(2, "0")}
-              note={`${requests.filter((r) => r.status === "Yeni").length} yeni · ${requests.filter((r) => r.status === "İnceleniyor").length} inceleniyor`}
+              value={active.length}
+              note={
+                active.length > 0
+                  ? `${requests.filter((r) => r.status === "Yeni").length} yeni · ${requests.filter((r) => r.status === "İnceleniyor").length} inceleniyor`
+                  : "Bekleyen talep bulunmuyor"
+              }
             />
             <Stat
               icon={CreditCard}
               label="Borçlu daire"
-              value={new Set(unpaid.map((d) => d.unitId)).size
-                .toString()
-                .padStart(2, "0")}
-              note={`${money(debt)} toplam bakiye`}
+              value={new Set(unpaid.map((d) => d.unitId)).size}
+              note={debt > 0 ? `${money(debt)} toplam bakiye` : "Tüm aidatlar ödendi"}
             />
           </>
         ) : (
@@ -119,21 +121,31 @@ export default function Dashboard({
               note={
                 unpaid.length
                   ? `${unpaid.length} bekleyen ödeme`
-                  : "Tüm ödemeleriniz tamamlandı"
+                  : "Tüm aidatlar ödendi"
               }
               accent
             />
             <Stat
               icon={MessageSquare}
               label="Aktif talepleriniz"
-              value={active.length.toString().padStart(2, "0")}
-              note={`${requests.filter((r) => r.status === "Çözüldü").length} talebiniz çözüldü`}
+              value={active.length}
+              note={
+                active.length > 0
+                  ? `${active.length} talebiniz inceleniyor`
+                  : requests.filter((r) => r.status === "Çözüldü").length > 0
+                    ? `${requests.filter((r) => r.status === "Çözüldü").length} talebiniz çözümlendi`
+                    : "Bekleyen talebiniz bulunmuyor"
+              }
             />
             <Stat
               icon={Megaphone}
-              label="Son duyuru"
-              value="14 Eyl"
-              note={announcements[0].title}
+              label="Site duyuruları"
+              value={announcements.length}
+              note={
+                announcements[0]
+                  ? `Son: ${announcements[0].title}`
+                  : "Aktif duyuru bulunmuyor"
+              }
             />
           </>
         )}
