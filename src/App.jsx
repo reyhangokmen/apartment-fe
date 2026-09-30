@@ -21,6 +21,8 @@ import {
   Clock,
   Wrench,
   Mail,
+  ArrowLeftRight,
+  Home,
 } from "lucide-react";
 import Login from "./prototype/Login";
 import Dashboard from "./prototype/Dashboard";
@@ -92,11 +94,35 @@ export default function App() {
   });
   const [siteMenuOpen, setSiteMenuOpen] = useState(true);
 
-  const manager = session?.role === "ADMIN";
-  const user = users.find((u) => u.id === session?.userId) || {
+  const manager = session?.activeMode
+    ? session.activeMode === "admin"
+    : session?.role === "ADMIN";
+
+  const user = users.find((u) => u.id === session?.userId) || session?.user || {
     name: "Mehmet Demir",
     email: "yonetim@site.com",
   };
+
+  const toggleUserRoleMode = useCallback(() => {
+    if (!session?.hasDualRole) return;
+    const nextMode = manager ? "resident" : "admin";
+    setSession((prev) => ({
+      ...prev,
+      activeMode: nextMode,
+      role: nextMode === "admin" ? "ADMIN" : "RESIDENT",
+    }));
+    setTab("dashboard");
+    setToast(
+      nextMode === "admin"
+        ? "Yönetim Paneli moduna geçildi. Kat ve daireler, site ayarları ve yetki yönetimi aktif."
+        : `Daire ${session.unitId} Sakin Portalı moduna geçildi. Kendi dairenizin aidat ve talepleri açıldı.`
+    );
+    window.history.pushState(
+      {},
+      "",
+      `/${nextMode === "admin" ? "manager" : "resident"}`
+    );
+  }, [manager, session]);
 
   const navigate = useCallback(
     (next) => {
@@ -429,6 +455,30 @@ export default function App() {
           </div>
           <ChevronsUpDown size={15} />
         </div>
+
+        {/* Çift Rol Kullanıcıları İçin Sidebar Hızlı Geçiş Kartı */}
+        {session?.hasDualRole && (
+          <div className="sidebar-dual-role-box">
+            <div className="dual-role-status-row">
+              <span className="dual-role-badge">
+                {manager ? "🛡️ Yönetim Paneli" : `🏠 Daire ${session.unitId} Sakini`}
+              </span>
+            </div>
+            <button
+              type="button"
+              className="dual-role-action-btn"
+              onClick={toggleUserRoleMode}
+            >
+              <ArrowLeftRight size={13} />
+              <span>
+                {manager
+                  ? `Sakin Portalı'na Geç (${session.unitId})`
+                  : "Yönetim Paneline Geç"}
+              </span>
+            </button>
+          </div>
+        )}
+
         <div className="nav-caption">ÇALIŞMA ALANI</div>
         <nav aria-label="Ana menü">
           {/* Genel Bakış */}
@@ -606,6 +656,28 @@ export default function App() {
               <Bell size={19} />
               <i />
             </button>
+
+            {/* Çift Rol Geçiş Butonu (Burak Maydan vb.) */}
+            {session?.hasDualRole && (
+              <button
+                type="button"
+                className={`topbar-role-switch-btn ${manager ? "is-admin" : "is-resident"}`}
+                onClick={toggleUserRoleMode}
+                title={
+                  manager
+                    ? `Daire ${session.unitId} Sakin Portalı'na dönün`
+                    : "Yönetim Kurulu Üyesi yetkinizle Yönetim Paneline geçiş yapın"
+                }
+              >
+                {manager ? <Home size={14} /> : <Shield size={14} />}
+                <span>
+                  {manager
+                    ? `Sakin Portalı'na Geç (${session.unitId})`
+                    : "Yönetim Paneline Geç"}
+                </span>
+              </button>
+            )}
+
             <div className="user-profile">
               <span className="avatar">
                 {(user?.name || "K")
@@ -615,13 +687,28 @@ export default function App() {
                   .join("")}
               </span>
               <div>
-                <strong>{user?.name}</strong>
+                <div className="flex items-center gap-1">
+                  <strong>{user?.name}</strong>
+                  {session?.hasDualRole && (
+                    <span className="dual-role-chip" title="Bu kullanıcı hem Sakin hem Yönetim Kurulu Üyesidir">
+                      Çift Rol
+                    </span>
+                  )}
+                </div>
                 <small>
-                  {manager
-                    ? "Site Yöneticisi"
-                    : session?.unitId
-                    ? `Blok ${session.unitId.split("-")[0]}, Daire ${session.unitId.split("-")[1]}`
-                    : "Konut Sakini"}
+                  {session?.hasDualRole ? (
+                    manager ? (
+                      "Yönetim Kurulu Üyesi (Yönetici)"
+                    ) : (
+                      `Daire ${session.unitId} (Kat Maliki)`
+                    )
+                  ) : manager ? (
+                    "Site Yöneticisi"
+                  ) : session?.unitId ? (
+                    `Blok ${session.unitId.split("-")[0]}, Daire ${session.unitId.split("-")[1]}`
+                  ) : (
+                    "Konut Sakini"
+                  )}
                 </small>
               </div>
             </div>
@@ -718,6 +805,7 @@ export default function App() {
                 session={session}
                 units={units}
                 onNotify={notify}
+                onSwitchToManager={toggleUserRoleMode}
               />
             )
           )}{" "}

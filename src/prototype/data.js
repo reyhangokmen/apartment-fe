@@ -139,11 +139,17 @@ initialUsers.push({
   email: "yonetim@site.com",
   phone: "0532 555 99 00",
 });
+initialUsers.push({
+  id: "u-burak",
+  name: "Burak Maydan",
+  email: "burak.maydan@site.com",
+  phone: "0532 555 77 88",
+});
 export const initialMemberships = initialUnits
   .filter((u) => u.occupied)
   .map((u) => ({
     id: `m-${u.id}`,
-    userId: `u${initialUnits.indexOf(u)}`,
+    userId: u.id === "B-7" ? "u-burak" : `u${initialUnits.indexOf(u)}`,
     siteId: "kovan",
     unitId: u.id,
     blockId: u.block,
@@ -278,6 +284,34 @@ export const initialAnnouncements = [
 ];
 export function resolveLogin(identifier, users, memberships, roles) {
   const value = normalize(identifier);
+
+  // Çift Rol Kontrolü: Burak Maydan (Daire B-7 Sakini & Yönetim Kurulu Üyesi)
+  if (value.includes("burak") || value === "b-7" || value.includes("burak.maydan")) {
+    const burakUser = users.find((u) => u.id === "u-burak") || {
+      id: "u-burak",
+      name: "Burak Maydan",
+      email: "burak.maydan@site.com",
+      phone: "0532 555 77 88",
+    };
+    const b7Membership = memberships.find((m) => m.unitId === "B-7") || {
+      id: "m-B-7",
+      userId: "u-burak",
+      siteId: "kovan",
+      unitId: "B-7",
+      blockId: "B",
+    };
+    return {
+      userId: "u-burak",
+      membershipId: b7Membership.id,
+      role: "RESIDENT", // Başlangıç modu Sakin
+      activeMode: "resident", // 'resident' | 'admin'
+      hasDualRole: true, // Çift rol (Hem Sakin hem Yönetim Kurulu)
+      boardRoleTitle: "Yönetim Kurulu Üyesi",
+      unitId: "B-7",
+      user: burakUser,
+    };
+  }
+
   const manager = ["yonetici", "admin", "yonetim"].some((word) =>
     value.includes(word),
   );
@@ -300,7 +334,9 @@ export function resolveLogin(identifier, users, memberships, roles) {
   return {
     userId: resolved.userId,
     membershipId: resolved.id,
-    role: roles.find((r) => r.membershipId === resolved.id).role,
+    role: roles.find((r) => r.membershipId === resolved.id)?.role || (manager ? "ADMIN" : "RESIDENT"),
+    activeMode: manager ? "admin" : "resident",
+    hasDualRole: false,
     unitId: resolved.unitId,
   };
 }

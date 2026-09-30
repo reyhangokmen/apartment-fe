@@ -16,6 +16,7 @@ import {
   Sparkles,
   Info,
   Heart,
+  ArrowLeftRight,
 } from "lucide-react";
 import { Button, Field, Panel } from "./UI";
 
@@ -24,6 +25,7 @@ export default function ResidentSettings({
   session,
   units = [],
   onNotify,
+  onSwitchToManager,
 }) {
   const [activeTab, setActiveTab] = useState("profile"); // 'profile' | 'vehicles' | 'notifications' | 'security'
 
@@ -174,6 +176,25 @@ export default function ResidentSettings({
       {/* SEKME 1: PROFİL & DAİRE KÜNYESİ */}
       {activeTab === "profile" && (
         <form onSubmit={handleSaveProfile}>
+          {session?.hasDualRole && (
+            <div className="dual-role-banner-card">
+              <div className="flex items-center gap-3">
+                <div className="dual-role-banner-icon">
+                  <Shield size={20} />
+                </div>
+                <div>
+                  <strong>Yönetim Kurulu Üyeliği Aktif</strong>
+                  <p>
+                    Hesabınız Daire {session.unitId} sakinliğinize ek olarak Kovan Sitesi Yönetim Kurulu Üyesi yetkisine sahiptir. İstediğiniz an Yönetim Paneline geçiş yapabilirsiniz.
+                  </p>
+                </div>
+              </div>
+              <Button type="button" onClick={onSwitchToManager}>
+                <ArrowLeftRight size={14} /> Yönetim Paneline Geçiş Yap
+              </Button>
+            </div>
+          )}
+
           <Panel
             title="Kişisel Bilgiler & İletişim"
             subtitle="Yönetim ile iletişimde kullanılacak ad-soyad, telefon ve acil durum irtibatı"

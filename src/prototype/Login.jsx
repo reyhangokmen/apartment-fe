@@ -14,6 +14,7 @@ import {
   Users,
   CheckCircle2,
   Info,
+  Shield,
 } from "lucide-react";
 import { Brand, Button, Field, ThemeToggle, Modal } from "./UI";
 import {
@@ -428,26 +429,49 @@ export default function Login({
           </div>
 
           <div className="demo-separator">
-            <span>Hızlı Giriş</span>
+            <span>Örnek Demo Hesaplar</span>
           </div>
 
           <div className="demo-options">
-            <button type="button" onClick={() => fill("ahmet.yilmaz@site.com")}>
-              <Home size={17} />
-              <span>
-                <strong>Sakin Hesabı</strong>
-                <small>Ahmet Yılmaz · A-12</small>
-              </span>
+            {/* 1. ÖNE ÇIKAN ÇİFT ROL DEMO HESABI: BURAK MAYDAN */}
+            <button
+              type="button"
+              className="featured-dual-role"
+              onClick={() => fill("burak.maydan@site.com")}
+              title="Hem Sakin Portalı hem de Yönetim Paneli geçişini test edin"
+            >
+              <div className="demo-icon-dual">
+                <Home size={15} />
+                <span className="plus-sign">+</span>
+                <Shield size={15} />
+              </div>
+              <div>
+                <strong>Burak Maydan · B-7 Sakini & YK</strong>
+                <small style={{ color: "var(--gold-dark)", fontWeight: "600" }}>
+                  ★ Çift Rol (Sakin + Yönetici Geçişi)
+                </small>
+              </div>
               <ArrowUpRightIcon />
             </button>
-            <button type="button" onClick={() => fill("yonetim@site.com")}>
-              <Building2 size={17} />
-              <span>
-                <strong>Yönetici Hesabı</strong>
-                <small>Mehmet Demir · Yönetim</small>
-              </span>
-              <ArrowUpRightIcon />
-            </button>
+
+            <div className="demo-options-subgrid">
+              <button type="button" onClick={() => fill("ahmet.yilmaz@site.com")}>
+                <Home size={15} />
+                <div>
+                  <strong>Ahmet Yılmaz</strong>
+                  <small>Tek Rol · Daire A-12</small>
+                </div>
+                <ArrowUpRightIcon />
+              </button>
+              <button type="button" onClick={() => fill("yonetim@site.com")}>
+                <Building2 size={15} />
+                <div>
+                  <strong>Mehmet Demir</strong>
+                  <small>Tek Rol · Yönetici</small>
+                </div>
+                <ArrowUpRightIcon />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -466,6 +490,15 @@ export default function Login({
         >
           <div className="account-card-list">
             {[
+              {
+                id: "acc-burak",
+                name: "Burak Maydan",
+                unit: "Kovan Sitesi · B Blok Daire 7",
+                email: "burak.maydan@site.com",
+                badge: "★ Çift Rol (Kat Maliki + YK Üyesi)",
+                role: "ÇİFT ROL",
+                loginId: "burak.maydan@site.com",
+              },
               {
                 id: "acc-1",
                 name: "Ahmet Yılmaz",

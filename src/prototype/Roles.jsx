@@ -52,6 +52,21 @@ export default function Roles({
       isActive: true, // MembershipRole.is_active
     },
     {
+      id: "bm-burak",
+      name: "Burak Maydan",
+      email: "burak.maydan@site.com",
+      phone: "0532 555 77 88",
+      role: "Yönetim Kurulu Üyesi",
+      scope: "Tüm Site Geneli",
+      scopeType: "SITE",
+      type: "MALIK",
+      unitId: "B-7",
+      hasResidentMembership: true, // Hem Daire B-7 Sakini hem Yönetim Kurulu
+      startDate: "2026-01-01",
+      endDate: "2027-01-01",
+      isActive: true,
+    },
+    {
       id: "bm-2",
       name: "Ahmet Yılmaz",
       email: "ahmet.yilmaz@site.com",
