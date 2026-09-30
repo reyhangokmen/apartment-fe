@@ -251,18 +251,29 @@ export default function ResidentSettings({
                     }
                   />
                 </Field>
+                <Field label="E-posta Adresi">
+                  <input
+                    required
+                    type="email"
+                    value={profileData.email}
+                    onChange={(e) =>
+                      setProfileData({ ...profileData, email: e.target.value })
+                    }
+                  />
+                </Field>
+                <Field label="İkamet & Mülkiyet Durumu">
+                  <select
+                    value={profileData.role}
+                    onChange={(e) =>
+                      setProfileData({ ...profileData, role: e.target.value })
+                    }
+                  >
+                    <option value="Kat Maliki (Ev Sahibi)">Kat Maliki (Ev Sahibi)</option>
+                    <option value="Kiracı">Kiracı</option>
+                    <option value="Aile Bireyi / Sakin">Aile Bireyi / Sakin</option>
+                  </select>
+                </Field>
               </div>
-
-              <Field label="E-posta Adresi">
-                <input
-                  required
-                  type="email"
-                  value={profileData.email}
-                  onChange={(e) =>
-                    setProfileData({ ...profileData, email: e.target.value })
-                  }
-                />
-              </Field>
 
               {/* Dairede Yaşam & Afet Tahliye Özeti (KVKK Uyumlu Sayısal Alan) */}
               <div className="settings-sub-section">
