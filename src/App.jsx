@@ -787,21 +787,6 @@ export default function App() {
                 </div>
               )}
             </div>
-
-            <button
-              className="logout-button desktop-only"
-              aria-label="Çıkış Yap"
-              onClick={() => {
-                setSession(null);
-                setModal(null);
-                setMobile(false);
-                setToast("");
-                window.history.pushState({}, "", "/login");
-              }}
-            >
-              <LogOut size={16} />
-              <span>Çıkış Yap</span>
-            </button>
           </div>
         </header>
         <main className="page-content">
