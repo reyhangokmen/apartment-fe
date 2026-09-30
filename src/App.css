@@ -688,18 +688,7 @@
   margin: 2px 0 0;
 }
 .logout-button {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--surface, white);
-  border: 1px solid var(--line);
-  padding: 8px 9px;
-  border-radius: 5px;
-  font-size: 10px;
-  color: var(--text-secondary, #777);
-}
-.logout-button:hover {
-  background: var(--page, #f7f7f8);
+  display: none !important;
 }
 .page-content {
   max-width: 1540px;
