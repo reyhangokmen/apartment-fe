@@ -3968,11 +3968,22 @@ td small {
   color: var(--muted);
 }
 
-/* Site Settings UI (BMS-138) */
+/* Site & Resident Settings Form Grid */
 .settings-grid {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
+  padding: 4px 24px 24px 24px;
+}
+.settings-grid .field {
+  margin-bottom: 0;
+}
+.settings-grid .field input,
+.settings-grid .field select {
+  height: 42px;
+  min-height: 42px;
+  box-sizing: border-box;
+  font-size: 12.5px;
 }
 .checkbox-item-custom {
   display: flex;
@@ -3998,14 +4009,17 @@ td small {
 .grid-2-col {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 16px;
 }
 .grid-3-col {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 12px;
+  gap: 16px;
 }
 @media (max-width: 650px) {
+  .settings-grid {
+    padding: 0 16px 20px 16px;
+  }
   .grid-2-col, .grid-3-col {
     grid-template-columns: 1fr;
   }
@@ -4869,24 +4883,56 @@ td small {
   gap: 16px;
 }
 .settings-tabs-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 4px;
+  display: grid;
+  gap: 8px;
+  margin-bottom: 16px;
+  width: 100%;
+}
+.resident-settings-container .settings-tabs-nav {
+  grid-template-columns: repeat(4, 1fr);
+}
+.site-settings-container .settings-tabs-nav {
+  grid-template-columns: repeat(6, 1fr);
+}
+@media (max-width: 1100px) {
+  .site-settings-container .settings-tabs-nav {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (max-width: 850px) {
+  .resident-settings-container .settings-tabs-nav {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .site-settings-container .settings-tabs-nav {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 500px) {
+  .resident-settings-container .settings-tabs-nav,
+  .site-settings-container .settings-tabs-nav {
+    grid-template-columns: 1fr;
+  }
 }
 .settings-tabs-nav button {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 7px;
-  padding: 9px 14px;
-  font-size: 11px;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  height: 42px;
+  padding: 0 14px;
+  font-size: 12px;
   font-weight: 600;
-  border-radius: 6px;
+  border-radius: 7px;
   border: 1px solid var(--line, #e4e4e7);
   background: var(--surface, #ffffff);
   color: var(--muted, #71717a);
   cursor: pointer;
   transition: all 0.15s ease;
+  width: 100%;
+  text-align: center;
+  box-sizing: border-box;
+  white-space: nowrap;
 }
 .settings-tabs-nav button:hover {
   background: var(--page, #f8f8fa);
@@ -4899,33 +4945,46 @@ td small {
   color: var(--gold-dark, #806123);
   box-shadow: 0 1px 3px rgba(205, 166, 91, 0.12);
 }
+:root[data-theme="dark"] .settings-tabs-nav button {
+  background: var(--surface, #202122);
+  border-color: var(--line, #343536);
+  color: var(--muted, #a3a3a1);
+}
+:root[data-theme="dark"] .settings-tabs-nav button:hover {
+  background: var(--surface-hover, #2c2d2e);
+  color: var(--text, #eeedea);
+}
 :root[data-theme="dark"] .settings-tabs-nav button.active {
-  background: #252119;
+  background: #2b271d;
   border-color: var(--accent, #cda65b);
   color: var(--accent, #cda65b);
 }
 
 /* Settings Card Boxes */
 .settings-card-box {
-  background: var(--page, #f8f8fa);
+  background: var(--surface-subtle, #f9fafb);
   border: 1px solid var(--line, #e4e4e7);
   border-radius: 8px;
-  padding: 14px 16px;
-  margin-top: 6px;
+  padding: 16px 18px;
+  margin-top: 4px;
+}
+:root[data-theme="dark"] .settings-card-box {
+  background: #252628;
+  border-color: #38393b;
 }
 .settings-card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 6px;
+  margin-bottom: 12px;
 }
 .settings-sub-section {
   border-top: 1px solid var(--line, #e4e4e7);
-  padding-top: 14px;
-  margin-top: 10px;
+  padding-top: 16px;
+  margin-top: 12px;
 }
 .settings-sub-section h4 {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--ink, #18181b);
   margin: 0;
@@ -4949,8 +5008,25 @@ td small {
 /* Settings Bottom Action */
 .settings-footer-actions {
   display: flex;
+  align-items: center;
   justify-content: flex-end;
-  padding: 14px 0 20px;
+  gap: 12px;
+  padding: 18px 0 0;
+  border-top: 1px solid var(--line, #e4e4e7);
+  margin-top: 10px;
+}
+.settings-footer-actions button,
+.settings-footer-actions .button {
+  min-height: 42px;
+  height: 42px;
+  padding: 0 24px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 /* ==========================================================================
@@ -4967,19 +5043,34 @@ td small {
   background: var(--surface, #ffffff);
   border: 1px solid var(--line, #e4e4e7);
   border-radius: 6px;
-  padding: 8px 12px;
+  padding: 10px 14px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  justify-content: center;
+  gap: 4px;
+  min-height: 60px;
+  box-sizing: border-box;
+}
+:root[data-theme="dark"] .info-stat-pill {
+  background: #2d2f33;
+  border-color: #3e4045;
 }
 .info-stat-pill small {
-  font-size: 10px;
+  font-size: 10.5px;
   color: var(--muted, #71717a);
-  font-weight: 500;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+:root[data-theme="dark"] .info-stat-pill small {
+  color: #a8a7ae;
 }
 .info-stat-pill strong {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--ink, #18181b);
+}
+:root[data-theme="dark"] .info-stat-pill strong {
+  color: #f3f3f5;
 }
 
 /* Vehicle List & Realistic License Plate */
