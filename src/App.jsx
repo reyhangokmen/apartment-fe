@@ -595,6 +595,35 @@ export default function App() {
           <ChevronsUpDown size={15} />
         </div>
 
+        {/* Mobilde Çekmece Üstünde Kullanıcı Bilgisi & Doğrudan Çıkış Butonu */}
+        <div className="sidebar-user-card mobile-only">
+          <div className="sidebar-user-info">
+            <span className="avatar">
+              <User size={15} />
+            </span>
+            <div className="sidebar-user-text">
+              <strong>{user?.name}</strong>
+              <small>{manager ? "Site Yöneticisi" : "Konut Sakini"}</small>
+            </div>
+          </div>
+          <button
+            type="button"
+            className="sidebar-quick-logout"
+            onClick={() => {
+              setProfileMenuOpen(false);
+              setSession(null);
+              setModal(null);
+              setMobile(false);
+              setToast("");
+              window.history.pushState({}, "", "/login");
+            }}
+            title="Çıkış Yap"
+          >
+            <LogOut size={14} />
+            <span>Çıkış</span>
+          </button>
+        </div>
+
         <div className="nav-caption">ÇALIŞMA ALANI</div>
         <nav aria-label="Ana menü">
           {/* Genel Bakış */}
@@ -708,22 +737,6 @@ export default function App() {
           )}
         </nav>
         <div className="sidebar-bottom">
-          <div className="site-mini">
-            <span className="eyebrow">BİRLİKTE DAHA İYİ</span>
-            <img src="/brand/KOVAN_Binalar.svg" alt="" />
-            <strong>Yaşamın düzeni.</strong>
-            <span>
-              {siteMeta.name} · {siteMeta.blockSummary}
-            </span>
-          </div>
-          <button
-            className="nav-item"
-            onClick={() => setModal({ type: "help" })}
-          >
-            <CircleHelp size={19} />
-            <span>Yardım ve İletişim</span>
-            <ArrowChevron />
-          </button>
           <button
             type="button"
             className="nav-item sidebar-logout-btn"
@@ -736,10 +749,26 @@ export default function App() {
               window.history.pushState({}, "", "/login");
             }}
           >
-            <LogOut size={19} style={{ color: "#ef4444" }} />
-            <span style={{ color: "#ef4444", fontWeight: 600 }}>Çıkış Yap</span>
+            <LogOut size={18} style={{ color: "#ef4444" }} />
+            <span style={{ color: "#ef4444", fontWeight: 700 }}>Çıkış Yap</span>
           </button>
-          <div className="sidebar-footnote">
+          <button
+            className="nav-item"
+            onClick={() => setModal({ type: "help" })}
+          >
+            <CircleHelp size={18} />
+            <span>Yardım ve İletişim</span>
+            <ArrowChevron />
+          </button>
+          <div className="site-mini desktop-only">
+            <span className="eyebrow">BİRLİKTE DAHA İYİ</span>
+            <img src="/brand/KOVAN_Binalar.svg" alt="" />
+            <strong>Yaşamın düzeni.</strong>
+            <span>
+              {siteMeta.name} · {siteMeta.blockSummary}
+            </span>
+          </div>
+          <div className="sidebar-footnote desktop-only">
             <span className="status-dot" />
             Kovan ERP v2.4<span>2026</span>
           </div>
@@ -788,20 +817,16 @@ export default function App() {
               <i />
             </button>
 
-            {/* Profil ve Rol Değiştirici */}
+            {/* Profil ve Rol Değiştirici (Tüm Kullanıcılar İçin Açılır ve Çıkış Yap İçerir) */}
             <div className="profile-dropdown-container" ref={profileRef}>
               <button
                 type="button"
-                className={`user-profile-trigger ${session?.accounts?.length > 1 ? "has-dropdown" : "static-profile"} ${profileMenuOpen ? "is-active" : ""}`}
-                onClick={() => {
-                  if (session?.accounts?.length > 1) {
-                    setProfileMenuOpen((prev) => !prev);
-                  }
-                }}
-                aria-expanded={session?.accounts?.length > 1 ? profileMenuOpen : undefined}
-                aria-haspopup={session?.accounts?.length > 1 ? "true" : undefined}
-                style={{ cursor: session?.accounts?.length > 1 ? "pointer" : "default" }}
-                title={session?.accounts?.length > 1 ? "Rol ve hesap değiştirmek için tıklayın" : undefined}
+                className={`user-profile-trigger has-dropdown ${profileMenuOpen ? "is-active" : ""}`}
+                onClick={() => setProfileMenuOpen((prev) => !prev)}
+                aria-expanded={profileMenuOpen}
+                aria-haspopup="true"
+                style={{ cursor: "pointer" }}
+                title="Profil menüsü ve oturumu kapat"
               >
                 <span className="avatar">
                   <User size={16} />
@@ -817,16 +842,14 @@ export default function App() {
                         (session?.unitId ? `Daire ${session.unitId}` : "Konut Sakini")}
                   </small>
                 </div>
-                {session?.accounts?.length > 1 && (
-                  <ChevronDown
-                    size={14}
-                    className={`profile-chevron ${profileMenuOpen ? "rotate-180" : ""}`}
-                  />
-                )}
+                <ChevronDown
+                  size={14}
+                  className={`profile-chevron ${profileMenuOpen ? "rotate-180" : ""}`}
+                />
               </button>
 
-              {/* Açılır Menü (Yalnızca Birden Fazla Hesabı/Rolü Olanlar İçin) */}
-              {session?.accounts?.length > 1 && profileMenuOpen && (
+              {/* Açılır Menü (Tüm Kullanıcılar İçin Profil ve Çıkış Paneli) */}
+              {profileMenuOpen && (
                 <div className="profile-dropdown-menu">
                   {/* Profil Başlığı */}
                   <div className="profile-dropdown-header">
@@ -836,43 +859,70 @@ export default function App() {
                     <div className="header-meta">
                       <strong>{user?.name}</strong>
                       <span className="header-email">{user?.email}</span>
+                      <span className="header-role-badge">
+                        {manager ? "Site Yöneticisi" : "Konut Sakini"}
+                      </span>
                     </div>
                   </div>
 
-                  {/* Çoklu Rol / Hesap Geçiş Bölümü (Burak Maydan, Av. Selin vb.) */}
-                  <div className="profile-dropdown-section">
-                    <span className="profile-section-label">Hesaplar ve Roller</span>
-                    <div className="profile-accounts-list">
-                      {session.accounts.map((acc) => {
-                        const isActive = acc.mode === (manager ? "admin" : "resident");
-                        return (
-                          <button
-                            key={acc.mode}
-                            type="button"
-                            className={`profile-account-item ${isActive ? "active" : ""}`}
-                            onClick={() => switchAccountMode(acc.mode)}
-                          >
-                            <span className="profile-account-icon">
-                              {acc.icon === "home" ? <Home size={15} /> : <Shield size={15} />}
-                            </span>
-                            <div className="profile-account-details">
-                              <span className="profile-account-title">{acc.title}</span>
-                              <span className="profile-account-sub">{acc.subtitle}</span>
-                            </div>
-                            {isActive ? (
-                              <span className="profile-account-active-badge">
-                                <CheckCircle2 size={14} />
-                                <span>Aktif</span>
+                  {/* Çoklu Rol / Hesap Geçiş Bölümü (varsa) */}
+                  {session?.accounts?.length > 1 && (
+                    <div className="profile-dropdown-section">
+                      <span className="profile-section-label">Hesaplar ve Roller</span>
+                      <div className="profile-accounts-list">
+                        {session.accounts.map((acc) => {
+                          const isActive = acc.mode === (manager ? "admin" : "resident");
+                          return (
+                            <button
+                              key={acc.mode}
+                              type="button"
+                              className={`profile-account-item ${isActive ? "active" : ""}`}
+                              onClick={() => {
+                                switchAccountMode(acc.mode);
+                                setProfileMenuOpen(false);
+                              }}
+                            >
+                              <span className="profile-account-icon">
+                                {acc.icon === "home" ? <Home size={15} /> : <Shield size={15} />}
                               </span>
-                            ) : (
-                              <span className="profile-account-switch-hint">
-                                Geçiş Yap
-                              </span>
-                            )}
-                          </button>
-                        );
-                      })}
+                              <div className="profile-account-details">
+                                <span className="profile-account-title">{acc.title}</span>
+                                <span className="profile-account-sub">{acc.subtitle}</span>
+                              </div>
+                              {isActive ? (
+                                <span className="profile-account-active-badge">
+                                  <CheckCircle2 size={14} />
+                                  <span>Aktif</span>
+                                </span>
+                              ) : (
+                                <span className="profile-account-switch-hint">
+                                  Geçiş Yap
+                                </span>
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
+                  )}
+
+                  {/* Profil Menüsü Alt Çıkış Butonu */}
+                  <div className="profile-dropdown-footer">
+                    <button
+                      type="button"
+                      className="profile-dropdown-logout-btn"
+                      onClick={() => {
+                        setProfileMenuOpen(false);
+                        setSession(null);
+                        setModal(null);
+                        setMobile(false);
+                        setToast("");
+                        window.history.pushState({}, "", "/login");
+                      }}
+                    >
+                      <LogOut size={16} />
+                      <span>Çıkış Yap</span>
+                    </button>
                   </div>
                 </div>
               )}
