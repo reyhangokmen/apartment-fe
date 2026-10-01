@@ -2833,33 +2833,37 @@ td small {
     display: none;
   }
 
-  /* Mobil Mimari Arka Plan (Bina Fotoğrafı & Atmosfer) */
+  /* Mobil Mimari Arka Plan (Yalnızca koyu temada zarif atmosfer sunar) */
   .mobile-login-backdrop {
+    display: none;
     position: fixed;
     inset: 0;
     z-index: 1;
     pointer-events: none;
     overflow: hidden;
   }
+  :root[data-theme="dark"] .mobile-login-backdrop {
+    display: block;
+  }
   .mobile-login-img {
     position: absolute;
     inset: -8px;
     background: url('/login-building.jpg') center 22% / cover no-repeat;
     transform: scale(1.02);
-    filter: brightness(0.9) contrast(1.05);
+    filter: brightness(0.85) contrast(1.05);
   }
   .mobile-login-overlay {
     position: absolute;
     inset: 0;
     background: linear-gradient(
       180deg,
-      rgba(15, 23, 42, 0.58) 0%,
-      rgba(15, 23, 42, 0.28) 32%,
-      rgba(15, 23, 42, 0.82) 100%
+      rgba(15, 23, 42, 0.62) 0%,
+      rgba(15, 23, 42, 0.32) 32%,
+      rgba(15, 23, 42, 0.85) 100%
     );
   }
 
-  /* Mobil Üst Çubuk (Logo + Tema) */
+  /* Mobil Üst Çubuk (Logo + Tema) - Açık ve Koyu Temaya Uyumlu */
   .mobile-header-bar {
     display: flex;
     align-items: center;
@@ -2867,25 +2871,43 @@ td small {
     padding: 10px 16px 8px;
     z-index: 15;
     flex-shrink: 0;
-    background: rgba(15, 23, 42, 0.45);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    background: var(--surface, #ffffff);
+    border-bottom: 1px solid var(--line, #e9e9eb);
   }
   .mobile-header-bar .brand img {
-    filter: brightness(0) invert(1);
     width: 105px;
     height: auto;
   }
   .mobile-header-bar .brand span {
-    color: #dfc18b;
+    color: var(--muted, #787878);
   }
   .mobile-header-bar .theme-toggle {
+    background: var(--surface-hover, #f4f4f5);
+    color: var(--ink, #4d4d4d);
+    border: 1px solid var(--line, #e9e9eb);
+  }
+  .mobile-header-bar .theme-toggle:hover {
+    background: var(--line, #e9e9eb);
+  }
+
+  :root[data-theme="dark"] .mobile-header-bar {
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  }
+  :root[data-theme="dark"] .mobile-header-bar .brand img {
+    filter: brightness(0) invert(1);
+  }
+  :root[data-theme="dark"] .mobile-header-bar .brand span {
+    color: #dfc18b;
+  }
+  :root[data-theme="dark"] .mobile-header-bar .theme-toggle {
     background: rgba(255, 255, 255, 0.15);
     color: #ffffff;
     border: 1px solid rgba(255, 255, 255, 0.25);
   }
-  .mobile-header-bar .theme-toggle:hover {
+  :root[data-theme="dark"] .mobile-header-bar .theme-toggle:hover {
     background: rgba(255, 255, 255, 0.25);
   }
 
@@ -2911,13 +2933,20 @@ td small {
     width: 100%;
     max-width: 400px;
     margin: auto 0;
-    background: var(--surface);
-    border: 1px solid var(--line);
+    background: #ffffff !important;
+    border: 1px solid var(--line, #e9e9eb);
     border-radius: 14px;
     padding: 12px 16px 8px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  :root[data-theme="dark"] .login-form-wrap {
+    background: rgba(22, 27, 38, 0.94) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
   }
   .login-form-wrap h2 {
     font-size: 20px;

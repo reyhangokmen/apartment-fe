@@ -10,11 +10,17 @@
   background: var(--page, #f7f7f8);
   font-synthesis: none;
   -webkit-font-smoothing: antialiased;
+  --page: #f7f7f8;
+  --surface: #ffffff;
+  --surface-subtle: #fafafb;
+  --surface-hover: #f4f4f5;
+  --text: #303030;
   --accent: #cda65b;
   --ink: #4d4d4d;
   --gold-dark: #806123;
   --gold-light: #f7f1e5;
   --line: #e9e9eb;
+  --border-strong: #dedee1;
   --muted: #787878;
 }
 * {
