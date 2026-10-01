@@ -595,35 +595,6 @@ export default function App() {
           <ChevronsUpDown size={15} />
         </div>
 
-        {/* Mobilde Çekmece Üstünde Kullanıcı Bilgisi & Doğrudan Çıkış Butonu */}
-        <div className="sidebar-user-card mobile-only">
-          <div className="sidebar-user-info">
-            <span className="avatar">
-              <User size={15} />
-            </span>
-            <div className="sidebar-user-text">
-              <strong>{user?.name}</strong>
-              <small>{manager ? "Site Yöneticisi" : "Konut Sakini"}</small>
-            </div>
-          </div>
-          <button
-            type="button"
-            className="sidebar-quick-logout"
-            onClick={() => {
-              setProfileMenuOpen(false);
-              setSession(null);
-              setModal(null);
-              setMobile(false);
-              setToast("");
-              window.history.pushState({}, "", "/login");
-            }}
-            title="Çıkış Yap"
-          >
-            <LogOut size={14} />
-            <span>Çıkış</span>
-          </button>
-        </div>
-
         <div className="nav-caption">ÇALIŞMA ALANI</div>
         <nav aria-label="Ana menü">
           {/* Genel Bakış */}
@@ -737,21 +708,6 @@ export default function App() {
           )}
         </nav>
         <div className="sidebar-bottom">
-          <button
-            type="button"
-            className="nav-item sidebar-logout-btn"
-            onClick={() => {
-              setProfileMenuOpen(false);
-              setSession(null);
-              setModal(null);
-              setMobile(false);
-              setToast("");
-              window.history.pushState({}, "", "/login");
-            }}
-          >
-            <LogOut size={18} style={{ color: "#ef4444" }} />
-            <span style={{ color: "#ef4444", fontWeight: 700 }}>Çıkış Yap</span>
-          </button>
           <button
             className="nav-item"
             onClick={() => setModal({ type: "help" })}
@@ -927,24 +883,6 @@ export default function App() {
                 </div>
               )}
             </div>
-
-            {/* Sağda Açık Duran Çıkış Yap Butonu (Mobilde Hamburger Menüde) */}
-            <button
-              type="button"
-              className="logout-button desktop-only"
-              aria-label="Çıkış Yap"
-              onClick={() => {
-                setProfileMenuOpen(false);
-                setSession(null);
-                setModal(null);
-                setMobile(false);
-                setToast("");
-                window.history.pushState({}, "", "/login");
-              }}
-            >
-              <LogOut size={16} />
-              <span>Çıkış Yap</span>
-            </button>
           </div>
         </header>
         <main className="page-content">

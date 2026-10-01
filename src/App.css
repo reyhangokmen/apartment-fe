@@ -290,24 +290,6 @@
   bottom: 0;
   z-index: 10;
 }
-.sidebar-logout-btn {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 9px 12px;
-  border-radius: 6px;
-  background: #fef2f2 !important;
-  color: #ef4444 !important;
-  border: 1px solid #fecaca !important;
-  margin-bottom: 6px;
-  cursor: pointer;
-  font-weight: 700;
-  transition: all 0.15s ease;
-}
-.sidebar-logout-btn:hover {
-  background: #fee2e2 !important;
-  border-color: #fca5a5 !important;
-}
 .site-mini {
   position: relative;
   overflow: hidden;
@@ -688,67 +670,6 @@
 .profile-dropdown-logout-btn:hover {
   background: #fee2e2;
   border-color: #fca5a5;
-}
-
-/* Sidebar User Card on Mobile */
-.sidebar-user-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: 0 15px 12px;
-  padding: 8px 10px;
-  background: var(--page, #faf8f5);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-}
-
-.sidebar-user-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-}
-
-.sidebar-user-text {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.sidebar-user-text strong {
-  font-size: 11.5px;
-  font-weight: 600;
-  color: var(--ink);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 95px;
-}
-
-.sidebar-user-text small {
-  font-size: 9.5px;
-  color: var(--muted);
-  white-space: nowrap;
-}
-
-.sidebar-quick-logout {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: #fee2e2;
-  color: #ef4444;
-  border: 1px solid #fca5a5;
-  border-radius: 6px;
-  padding: 4px 8px;
-  font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: background 0.15s ease;
-}
-
-.sidebar-quick-logout:hover {
-  background: #fecaca;
 }
 
 .profile-account-switch-hint {
