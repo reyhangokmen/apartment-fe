@@ -505,35 +505,37 @@ export default function Login({
           </div>
         </div>
 
-        <div className="login-legal-links">
-          <button
-            type="button"
-            className="text-link-legal"
-            onClick={() => setAuthModal("terms")}
-          >
-            Üyelik Sözleşmesi
-          </button>
-          <span className="dot-sep">·</span>
-          <button
-            type="button"
-            className="text-link-legal"
-            onClick={() => setAuthModal("privacy")}
-          >
-            KVKK & Gizlilik
-          </button>
-          <span className="dot-sep">·</span>
-          <button
-            type="button"
-            className="text-link-legal highlight-tanitim"
-            onClick={() => onNavigateTanitim?.()}
-          >
-            ✨ KOVAN Tanıtım Sayfası
-          </button>
-        </div>
-
         <footer className="login-footer">
-          <span>© 2026 Kovan</span>
-          <span>Konut & Site Yönetim Paneli</span>
+          <div className="login-legal-links">
+            <button
+              type="button"
+              className="text-link-legal"
+              onClick={() => setAuthModal("terms")}
+            >
+              Üyelik Sözleşmesi
+            </button>
+            <span className="dot-sep">·</span>
+            <button
+              type="button"
+              className="text-link-legal"
+              onClick={() => setAuthModal("privacy")}
+            >
+              KVKK & Gizlilik
+            </button>
+            <span className="dot-sep">·</span>
+            <button
+              type="button"
+              className="text-link-legal highlight-tanitim"
+              onClick={() => onNavigateTanitim?.()}
+            >
+              ✨ KOVAN Tanıtım Sayfası
+            </button>
+          </div>
+          <div className="login-footer-meta">
+            <span>© 2026 Kovan</span>
+            <span className="dot-sep">·</span>
+            <span>Konut & Site Yönetim Paneli</span>
+          </div>
         </footer>
       </section>
 

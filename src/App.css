@@ -2445,14 +2445,39 @@ td small {
   color: var(--gold-dark, #b3a080);
 }
 .login-footer {
-  position: absolute;
-  bottom: 27px;
-  left: 40px;
-  right: 40px;
+  position: static;
+  margin-top: auto;
+  padding: 10px 16px 8px;
   display: flex;
-  justify-content: space-between;
-  color: var(--muted, #aaa);
-  font-size: 9px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-align: center;
+  z-index: 5;
+  width: 100%;
+  box-sizing: border-box;
+}
+.login-footer .login-legal-links {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 11.5px;
+  flex-wrap: wrap;
+}
+.login-footer-meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 10px;
+  color: var(--muted, #999);
+  letter-spacing: 0.2px;
+}
+.login-footer-meta .dot-sep {
+  opacity: 0.5;
 }
 @media (min-width: 1600px) {
   .page-content {
@@ -2962,12 +2987,20 @@ td small {
   }
   .login-footer {
     position: static;
-    margin-top: 10px;
-    padding-top: 6px;
+    margin-top: 6px;
+    padding: 4px 8px 6px;
     font-size: 9px;
     text-align: center;
     justify-content: center;
-    gap: 12px;
+    gap: 4px;
+  }
+  .login-footer .login-legal-links {
+    font-size: 10px;
+    gap: 6px;
+  }
+  .login-footer-meta {
+    font-size: 8.5px;
+    gap: 5px;
   }
   .login-form-wrap > .eyebrow {
     font-size: 8px;
@@ -6363,7 +6396,7 @@ td small {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin: 16px 0 6px 0;
+  margin: 0;
   font-size: 11.5px;
   flex-wrap: wrap;
 }
