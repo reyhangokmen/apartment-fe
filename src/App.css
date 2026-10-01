@@ -2719,200 +2719,460 @@ td small {
     font-size: 11px;
     bottom: 15px;
   }
-  /* Mobile Login Screen - Zero Scroll, Keyboard Resilient, Strong Architecture Backdrop */
+  /* ====================================================================
+     MOBİL GİRİŞ EKRANI (LÜKS MİMARİ ARKA PLAN & BUĞULU CAM BOTTOM SHEET)
+     ==================================================================== */
   .login-page {
-    display: flex;
-    flex-direction: column;
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 100dvh;
     height: 100dvh;
     max-height: 100dvh;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
     position: relative;
-    background: var(--page, #f7f7f8);
+    background: #0d1117;
     grid-template-columns: 1fr;
+    -webkit-overflow-scrolling: touch;
   }
   .login-story {
-    display: none;
+    display: none !important;
   }
 
-  /* Mobil Mimari Arka Plan (Gerçek Bina Fotoğrafı & Lüks Atmosfer) */
+  /* Mobil Arka Plan Görseli (Bina arkada lüks ve buğulu atmosfer sunar) */
   .mobile-login-backdrop {
     position: fixed;
     inset: 0;
     z-index: 1;
     pointer-events: none;
     overflow: hidden;
+    display: block !important;
   }
   .mobile-login-img {
     position: absolute;
-    inset: -8px;
-    background: url('/login-building.jpg') center 22% / cover no-repeat;
-    transform: scale(1.02);
-    filter: brightness(0.9) contrast(1.05);
+    inset: 0;
+    background: url('/login-building.jpg') center top / cover no-repeat;
+    filter: brightness(0.92) contrast(1.04);
+    transform: scale(1.01);
   }
   .mobile-login-overlay {
     position: absolute;
     inset: 0;
     background: linear-gradient(
       180deg,
-      rgba(15, 23, 42, 0.58) 0%,
-      rgba(15, 23, 42, 0.28) 32%,
-      rgba(15, 23, 42, 0.82) 100%
+      rgba(10, 13, 18, 0.35) 0%,
+      rgba(10, 13, 18, 0.15) 30%,
+      rgba(10, 13, 18, 0.55) 70%,
+      rgba(10, 13, 18, 0.85) 100%
     );
   }
 
-  /* Mobil Üst Çubuk (Logo + Tema) */
-  .mobile-header-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 16px 8px;
-    z-index: 15;
+  /* Mobil Üst Kahraman Bölümü (Bina Üstünde Logo ve Slogan) */
+  .mobile-hero-section {
+    position: relative;
+    z-index: 10;
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    box-sizing: border-box;
+    padding: max(22px, env(safe-area-inset-top, 22px)) 24px 16px 24px;
     flex-shrink: 0;
-    background: rgba(15, 23, 42, 0.45);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    gap: 24px;
   }
-  .mobile-header-bar .brand img {
-    filter: brightness(0) invert(1);
-    width: 105px;
-    height: auto;
+  .mobile-hero-top {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
   }
-  .mobile-header-bar .brand span {
-    color: #dfc18b;
+  .mobile-hero-top .brand {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 3px !important;
   }
-  .mobile-header-bar .theme-toggle {
-    background: rgba(255, 255, 255, 0.15);
-    color: #ffffff;
-    border: 1px solid rgba(255, 255, 255, 0.25);
+  .mobile-hero-top .brand img {
+    height: 32px !important;
+    width: auto !important;
+    filter: none !important;
   }
-  .mobile-header-bar .theme-toggle:hover {
-    background: rgba(255, 255, 255, 0.25);
+  .mobile-hero-top .brand span {
+    color: #dfc18b !important;
+    font-size: 8.5px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.16em !important;
+  }
+  .mobile-hero-top .theme-toggle {
+    background: rgba(255, 255, 255, 0.12) !important;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
+    color: #ffffff !important;
+    border-radius: 50% !important;
+    width: 36px !important;
+    height: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+    cursor: pointer !important;
+  }
+  .mobile-hero-top .theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.22) !important;
+  }
+  .mobile-hero-copy h1 {
+    font-size: clamp(28px, 7.8vw, 34px) !important;
+    font-weight: 700 !important;
+    color: #ffffff !important;
+    line-height: 1.15 !important;
+    letter-spacing: -0.02em !important;
+    margin: 0 !important;
+    text-shadow: 0 2px 14px rgba(0, 0, 0, 0.65) !important;
   }
 
-  /* Mobil Form Alanı (Sayfa Kaymaz - Sıfır Scroll) */
+  /* Mobil Form Alanı & Alt Panel (Bottom Sheet) */
   .login-form-area {
+    position: relative;
+    z-index: 10;
     flex: 1;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-end !important;
+    padding: 0 !important;
     min-height: 0;
     height: auto;
     max-height: none;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    overflow-y: hidden;
-    overscroll-behavior: contain;
-    padding: 4px 14px 8px;
-    z-index: 10;
-    position: relative;
+    overflow-y: visible;
   }
   .login-top-actions {
-    display: none;
+    display: none !important;
   }
   .login-form-wrap {
-    width: 100%;
-    max-width: 400px;
-    margin: auto 0;
-    background: rgba(255, 255, 255, 0.94);
-    border: 1px solid rgba(255, 255, 255, 0.65);
-    border-radius: 16px;
-    padding: 12px 16px 8px;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.15);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    background: rgba(18, 22, 30, 0.88) !important;
+    backdrop-filter: blur(28px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-bottom: none !important;
+    border-radius: 28px 28px 0 0 !important;
+    padding: 24px 22px 18px 22px !important;
+    box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.65) !important;
+    display: flex !important;
+    flex-direction: column !important;
   }
   :root[data-theme="dark"] .login-form-wrap {
-    background: rgba(22, 27, 38, 0.92);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+    background: rgba(14, 18, 25, 0.9) !important;
+  }
+
+  /* Form Başlıkları */
+  .login-form-wrap > .eyebrow {
+    color: #cda65b !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.08em !important;
+    text-transform: uppercase !important;
+    margin-bottom: 5px !important;
+    display: block !important;
   }
   .login-form-wrap h2 {
-    font-size: 20px;
-    letter-spacing: -0.6px;
-    margin: 2px 0;
+    color: #ffffff !important;
+    font-size: 23px !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.02em !important;
+    margin: 0 0 3px 0 !important;
   }
   .login-intro {
-    font-size: 10.5px;
-    margin-bottom: 8px;
+    color: rgba(255, 255, 255, 0.62) !important;
+    font-size: 12.5px !important;
+    margin: 0 0 16px 0 !important;
   }
-  .login-method-tabs {
-    margin-bottom: 8px;
-  }
-  .login-method-tabs button {
-    padding: 6px 8px;
-    font-size: 10.5px;
-  }
+
+  /* Form Alanları ve Etiketler */
   .login-form-wrap .field {
-    margin-bottom: 8px;
+    margin-bottom: 13px !important;
   }
   .login-form-wrap .field > span {
-    font-size: 10.5px;
+    color: rgba(255, 255, 255, 0.82) !important;
+    font-size: 12.5px !important;
+    font-weight: 500 !important;
+    margin-bottom: 6px !important;
+    display: block !important;
   }
   .login-form-wrap .field input {
-    height: 38px;
-    font-size: 15px;
+    width: 100% !important;
+    height: 46px !important;
+    box-sizing: border-box !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    border-radius: 12px !important;
+    padding: 0 14px !important;
+    color: #ffffff !important;
+    font-size: 14px !important;
+    transition: all 0.2s ease !important;
   }
-  .forgot-password-row {
-    margin-top: -2px;
-    margin-bottom: 6px;
+  .login-form-wrap .field input::placeholder {
+    color: rgba(255, 255, 255, 0.38) !important;
   }
+  .login-form-wrap .field input:focus {
+    background: rgba(255, 255, 255, 0.09) !important;
+    border-color: #cda65b !important;
+    box-shadow: 0 0 0 3px rgba(205, 166, 91, 0.2) !important;
+    outline: none !important;
+  }
+
+  /* Şifre Satırı (Etiket Sol, Şifremi Unuttum Sağ) */
+  .field-label-split {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin-bottom: 6px !important;
+  }
+  .field-label-split span {
+    color: rgba(255, 255, 255, 0.82) !important;
+    font-size: 12.5px !important;
+    font-weight: 500 !important;
+  }
+  .forgot-link-inline {
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
+    color: #dfc18b !important;
+    font-size: 12.5px !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+    text-decoration: none !important;
+    transition: color 0.15s ease;
+  }
+  .forgot-link-inline:hover {
+    color: #f3dfb7 !important;
+  }
+
+  /* Şifre Input & Göz İkonu */
+  .password-field {
+    position: relative !important;
+    width: 100% !important;
+  }
+  .password-field input {
+    padding-right: 44px !important;
+  }
+  .password-field button {
+    position: absolute !important;
+    right: 12px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    background: none !important;
+    border: none !important;
+    color: rgba(255, 255, 255, 0.5) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 4px !important;
+    cursor: pointer !important;
+    transition: color 0.15s;
+  }
+  .password-field button:hover {
+    color: rgba(255, 255, 255, 0.9) !important;
+  }
+
+  /* Buton 1: Giriş Yap (Gri Slate) */
   .login-submit {
-    height: 38px;
-    font-size: 12px;
-    margin-top: 2px;
+    width: 100% !important;
+    height: 46px !important;
+    background: #505763 !important;
+    color: #ffffff !important;
+    border-radius: 12px !important;
+    font-size: 14.5px !important;
+    font-weight: 600 !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 0 18px !important;
+    border: none !important;
+    margin-top: 14px !important;
+    cursor: pointer !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;
+    transition: background-color 0.2s ease, transform 0.1s ease !important;
   }
+  .login-submit:hover {
+    background: #5e6674 !important;
+  }
+  .login-submit:active {
+    transform: scale(0.99) !important;
+  }
+
+  /* Buton 2: E-posta OTP ile Giriş (Koyu Şeffaf + Altın Çerçeve) */
+  .login-otp-switch-btn {
+    width: 100% !important;
+    height: 44px !important;
+    background: rgba(18, 22, 30, 0.75) !important;
+    border: 1px solid rgba(205, 166, 91, 0.45) !important;
+    color: #ffffff !important;
+    border-radius: 12px !important;
+    font-size: 13.5px !important;
+    font-weight: 500 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin-top: 9px !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+  }
+  .login-otp-switch-btn:hover {
+    background: rgba(205, 166, 91, 0.12) !important;
+    border-color: rgba(205, 166, 91, 0.7) !important;
+  }
+
+  /* Kayıt / Davet Satırı (Kompakt ve Şık) */
   .login-onboarding-row {
-    margin-top: 6px;
-    padding: 6px 10px;
-    font-size: 10px;
+    margin-top: 12px !important;
+    padding: 7px 10px !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.07) !important;
+    border-radius: 10px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
   }
   .onboarding-prompt {
-    font-size: 10px;
+    font-size: 11px !important;
+    color: rgba(255, 255, 255, 0.55) !important;
+  }
+  .onboarding-links {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
   }
   .onboarding-link-btn {
-    font-size: 10.5px;
-    gap: 4px;
+    font-size: 11px !important;
+    color: #dfc18b !important;
+    background: none !important;
+    border: none !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    padding: 0 !important;
+    font-weight: 500 !important;
   }
+  .link-divider {
+    color: rgba(255, 255, 255, 0.3) !important;
+    font-size: 10px !important;
+  }
+
+  /* Hızlı Demo Seçici (Kompakt ve Açılır) */
   .demo-selector-container {
-    margin-top: 6px;
-  }
-  .demo-dropdown-trigger {
-    padding: 6px 10px;
-  }
-  .demo-trigger-title {
-    font-size: 11px;
-  }
-  .demo-account-row {
-    padding: 5px 6px;
-    gap: 8px;
-  }
-  .demo-row-top strong {
-    font-size: 11px;
+    margin-top: 8px !important;
+    position: relative !important;
   }
   .demo-separator {
-    margin: 6px 0 4px;
+    display: flex !important;
+    align-items: center !important;
+    text-align: center !important;
+    margin: 6px 0 !important;
+    font-size: 10.5px !important;
+    color: rgba(255, 255, 255, 0.35) !important;
   }
-  .login-footer {
-    position: static;
-    margin-top: 10px;
-    padding-top: 6px;
-    font-size: 9px;
-    text-align: center;
-    justify-content: center;
-    gap: 12px;
+  .demo-separator::before,
+  .demo-separator::after {
+    content: '' !important;
+    flex: 1 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  }
+  .demo-separator span {
+    padding: 0 8px !important;
+  }
+  .demo-dropdown-trigger {
+    width: 100% !important;
+    padding: 7px 12px !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 10px !important;
+    color: rgba(255, 255, 255, 0.8) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    cursor: pointer !important;
+    box-sizing: border-box !important;
+  }
+  .demo-dropdown-trigger:hover,
+  .demo-dropdown-trigger.active {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(205, 166, 91, 0.35) !important;
+  }
+  .demo-trigger-left {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+  }
+  .demo-trigger-title {
+    font-size: 11.5px !important;
+    font-weight: 500 !important;
+    color: rgba(255, 255, 255, 0.85) !important;
+  }
+  .demo-dropdown-menu {
+    background: #141822 !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6) !important;
+    padding: 8px !important;
+    margin-top: 6px !important;
+  }
+  .demo-account-row {
+    width: 100% !important;
+    padding: 6px 8px !important;
+    border-radius: 8px !important;
+    border: none !important;
+    background: transparent !important;
+    color: #fff !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    text-align: left !important;
+    cursor: pointer !important;
+  }
+  .demo-account-row:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+  }
+  .demo-row-top strong {
+    font-size: 11px !important;
+    color: #fff !important;
+  }
+
+  /* Alt Yasal Linkler & Footer */
+  .login-legal-links {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 10px 16px 4px !important;
+    font-size: 10.5px !important;
   }
   .login-legal-links .text-link-legal {
-    color: rgba(255, 255, 255, 0.88) !important;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+    color: rgba(255, 255, 255, 0.5) !important;
+    background: none !important;
+    border: none !important;
+    cursor: pointer !important;
+    text-decoration: none !important;
+    font-size: 10.5px !important;
   }
   .login-legal-links .dot-sep {
-    color: rgba(255, 255, 255, 0.5) !important;
+    color: rgba(255, 255, 255, 0.25) !important;
   }
-  .login-legal-links .text-link-legal.highlight-tanitim {
-    color: #fde047 !important;
-    font-weight: 600;
+  .login-legal-links .highlight-tanitim {
+    color: #dfc18b !important;
+    font-weight: 500 !important;
   }
-  .login-form-wrap > .eyebrow {
-    font-size: 8px;
+  .login-footer {
+    display: flex !important;
+    justify-content: center !important;
+    gap: 12px !important;
+    font-size: 9.5px !important;
+    color: rgba(255, 255, 255, 0.35) !important;
+    padding: 2px 16px max(14px, env(safe-area-inset-bottom, 14px)) !important;
+    text-align: center !important;
   }
   .modal {
     padding: 22px;

@@ -176,10 +176,19 @@ export default function Login({
         <div className="mobile-login-overlay" />
       </div>
 
-      {/* MOBİL ÜST BAR (Yalnızca mobilde görünür, sayfa kaymasını önler) */}
-      <div className="mobile-header-bar mobile-only">
-        <Brand />
-        <ThemeToggle theme={theme} onToggle={onToggleTheme} />
+      {/* MOBİL ÜST KAHRAMAN ALANI (BİNA FOTOĞRAFI ÜZERİNDE LOGO VE SLOGAN) */}
+      <div className="mobile-hero-section mobile-only">
+        <div className="mobile-hero-top">
+          <Brand />
+          <ThemeToggle theme={theme} onToggle={onToggleTheme} />
+        </div>
+        <div className="mobile-hero-copy">
+          <h1>
+            Birlikte yaşamak.
+            <br />
+            Kolayca yönetmek.
+          </h1>
+        </div>
       </div>
 
       {/* MASAÜSTÜ SOL HİKAYE BÖLÜMÜ (MİMARİ FOTOĞRAF ARKA PLANLI) */}
@@ -223,11 +232,11 @@ export default function Login({
 
         <div className="login-form-wrap">
           <span className="eyebrow">KOVAN’A HOŞ GELDİNİZ</span>
-          <h2>Sitenize giriş yapın.</h2>
+          <h2>Sitenize giriş yapın</h2>
           <p className="login-intro">Yaşam alanınızla bağlantıda kalın.</p>
 
-          {/* GİRİŞ METODU SEÇİCİ (Şifre vs. Şifresiz OTP) */}
-          <div className="login-method-tabs">
+          {/* GİRİŞ METODU SEÇİCİ (Masaüstünde sekmeli) */}
+          <div className="login-method-tabs desktop-only">
             <button
               type="button"
               className={loginMethod === "password" ? "active" : ""}
@@ -255,18 +264,29 @@ export default function Login({
                 if (identifier.trim() && password.trim()) onLogin(identifier);
               }}
             >
-              <Field label="E-posta / Telefon / Daire Kodu">
+              <div className="field">
+                <span>E-posta</span>
                 <input
                   autoFocus
                   autoComplete="username"
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
                   required
-                  placeholder="ahmet.yilmaz@site.com veya A-12"
+                  placeholder="E-posta adresinizi girin"
                 />
-              </Field>
+              </div>
 
-              <Field label="Şifre">
+              <div className="field">
+                <div className="field-label-split">
+                  <span>Şifre</span>
+                  <button
+                    type="button"
+                    className="forgot-link-inline"
+                    onClick={() => setAuthModal("forgot")}
+                  >
+                    Şifremi unuttum
+                  </button>
+                </div>
                 <div className="password-field">
                   <input
                     value={password}
@@ -284,22 +304,23 @@ export default function Login({
                     {visible ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
-              </Field>
-
-              <div className="forgot-password-row">
-                <button
-                  type="button"
-                  className="forgot-link"
-                  onClick={() => setAuthModal("forgot")}
-                >
-                  Şifremi unuttum?
-                </button>
               </div>
 
               <Button className="login-submit" type="submit">
                 Giriş Yap
                 <ArrowRight size={18} />
               </Button>
+
+              <button
+                type="button"
+                className="login-otp-switch-btn"
+                onClick={() => {
+                  setLoginMethod("otp");
+                  if (identifier && !otpTarget) setOtpTarget(identifier);
+                }}
+              >
+                E-posta OTP ile giriş
+              </button>
             </form>
           )}
 
@@ -327,6 +348,13 @@ export default function Login({
                     Tek Kullanımlık Kod Gönder
                     <ArrowRight size={18} />
                   </Button>
+                  <button
+                    type="button"
+                    className="login-otp-switch-btn"
+                    onClick={() => setLoginMethod("password")}
+                  >
+                    Şifre ile giriş
+                  </button>
                 </form>
               ) : (
                 <form onSubmit={handleVerifyOtp}>
