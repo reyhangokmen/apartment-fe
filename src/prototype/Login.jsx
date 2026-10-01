@@ -28,7 +28,60 @@ import {
   TermsAndPrivacyModal,
 } from "./AuthModal";
 
+// Binaların Pencerelerinde Sıcak Sarı ve Yanıp Sönen Işıklar (Mimari Efekt)
+function BuildingsGraphic({ className = "" }) {
+  const getWindowLitClass = (buildingNum, index) => {
+    // 1. Bina (24 pencere)
+    if (buildingNum === 1) {
+      if ([2, 10, 18].includes(index)) return "lit-steady";
+      if ([5, 14].includes(index)) return "lit-twinkle-1";
+      if ([7, 21].includes(index)) return "lit-twinkle-2";
+      if ([11, 23].includes(index)) return "lit-twinkle-3";
+      return "";
+    }
+    // 2. Bina (32 pencere - Ana Kule)
+    if (buildingNum === 2) {
+      if ([3, 11, 19, 27].includes(index)) return "lit-steady";
+      if ([6, 17, 25].includes(index)) return "lit-twinkle-1";
+      if ([9, 22, 30].includes(index)) return "lit-twinkle-2";
+      if ([14, 28].includes(index)) return "lit-twinkle-3";
+      if ([1, 20].includes(index)) return "lit-twinkle-4";
+      return "";
+    }
+    // 3. Bina (20 pencere)
+    if (buildingNum === 3) {
+      if ([1, 9, 17].includes(index)) return "lit-steady";
+      if ([4, 13].includes(index)) return "lit-twinkle-1";
+      if ([8, 16].includes(index)) return "lit-twinkle-2";
+      if ([12, 19].includes(index)) return "lit-twinkle-4";
+      return "";
+    }
+    return "";
+  };
 
+  return (
+    <div className={`architecture ${className}`} aria-hidden="true">
+      <div className="building building-one">
+        {Array.from({ length: 24 }, (_, i) => (
+          <i key={i} className={getWindowLitClass(1, i)} />
+        ))}
+      </div>
+      <div className="building building-two">
+        {Array.from({ length: 32 }, (_, i) => (
+          <i key={i} className={getWindowLitClass(2, i)} />
+        ))}
+      </div>
+      <div className="building building-three">
+        {Array.from({ length: 20 }, (_, i) => (
+          <i key={i} className={getWindowLitClass(3, i)} />
+        ))}
+      </div>
+      <span className="architecture-caption">
+        KOVAN SİTESİ <span>03 BLOK / 48 DAİRE</span>
+      </span>
+    </div>
+  );
+}
 
 export default function Login({
   onLogin,
@@ -170,28 +223,18 @@ export default function Login({
 
   return (
     <main className="login-page">
-      {/* MOBİL ARKA PLAN GÖRSELİ (MİMARİ BİNA & SICAK IŞIKLAR) */}
-      <div className="mobile-login-backdrop mobile-only" aria-hidden="true">
-        <div className="mobile-login-img" />
-        <div className="mobile-login-overlay" />
+      {/* MOBİL ÜST BAR (Yalnızca mobilde görünür, sayfa kaymasını önler) */}
+      <div className="mobile-header-bar mobile-only">
+        <Brand />
+        <ThemeToggle theme={theme} onToggle={onToggleTheme} />
       </div>
 
-      {/* MOBİL ÜST KAHRAMAN ALANI (BİNA FOTOĞRAFI ÜZERİNDE LOGO VE SLOGAN) */}
-      <div className="mobile-hero-section mobile-only">
-        <div className="mobile-hero-top">
-          <Brand />
-          <ThemeToggle theme={theme} onToggle={onToggleTheme} />
-        </div>
-        <div className="mobile-hero-copy">
-          <h1>
-            Birlikte yaşamak.
-            <br />
-            Kolayca yönetmek.
-          </h1>
-        </div>
+      {/* MOBİLDE GÜÇLÜ MİMARİ ARKA PLAN (Yanıp sönen sarı pencere ışıkları) */}
+      <div className="mobile-architecture-backdrop mobile-only" aria-hidden="true">
+        <BuildingsGraphic className="mobile-arch" />
       </div>
 
-      {/* MASAÜSTÜ SOL HİKAYE BÖLÜMÜ (MİMARİ FOTOĞRAF ARKA PLANLI) */}
+      {/* MASAÜSTÜ SOL HİKAYE BÖLÜMÜ */}
       <section className="login-story desktop-only">
         <Brand />
         <div className="story-copy">
@@ -207,16 +250,8 @@ export default function Login({
           </p>
         </div>
 
-        {/* Masaüstü Mimari Cam Rozet */}
-        <div className="story-architecture-badge">
-          <div className="story-badge-glass">
-            <Building2 size={16} className="text-gold" />
-            <div>
-              <strong>Kovan Yaşam Kompleksi</strong>
-              <span>03 Blok · 48 Bağımsız Bölüm · Ataşehir / İstanbul</span>
-            </div>
-          </div>
-        </div>
+        {/* Masaüstü Mimari Binalar */}
+        <BuildingsGraphic />
 
         <div className="story-footer">
           <span>Yaşamın düzeni, kovan.</span>
@@ -232,29 +267,8 @@ export default function Login({
 
         <div className="login-form-wrap">
           <span className="eyebrow">KOVAN’A HOŞ GELDİNİZ</span>
-          <h2>Sitenize giriş yapın</h2>
+          <h2>Sitenize giriş yapın.</h2>
           <p className="login-intro">Yaşam alanınızla bağlantıda kalın.</p>
-
-          {/* GİRİŞ METODU SEÇİCİ (Masaüstünde sekmeli) */}
-          <div className="login-method-tabs desktop-only">
-            <button
-              type="button"
-              className={loginMethod === "password" ? "active" : ""}
-              onClick={() => setLoginMethod("password")}
-            >
-              <Lock size={14} /> Şifre ile Giriş
-            </button>
-            <button
-              type="button"
-              className={loginMethod === "otp" ? "active" : ""}
-              onClick={() => {
-                setLoginMethod("otp");
-                if (identifier && !otpTarget) setOtpTarget(identifier);
-              }}
-            >
-              <Smartphone size={14} /> Şifresiz OTP Girişi
-            </button>
-          </div>
 
           {/* 1. SEÇENEK: ŞİFRE İLE GİRİŞ FORMU */}
           {loginMethod === "password" && (
@@ -319,7 +333,8 @@ export default function Login({
                   if (identifier && !otpTarget) setOtpTarget(identifier);
                 }}
               >
-                E-posta OTP ile giriş
+                <Smartphone size={15} />
+                <span>Şifresiz OTP ile Giriş</span>
               </button>
             </form>
           )}
@@ -353,7 +368,8 @@ export default function Login({
                     className="login-otp-switch-btn"
                     onClick={() => setLoginMethod("password")}
                   >
-                    Şifre ile giriş
+                    <Lock size={14} />
+                    <span>Şifre ile Giriş Yap</span>
                   </button>
                 </form>
               ) : (
@@ -427,6 +443,17 @@ export default function Login({
                     Doğrula & Giriş Yap
                     <ArrowRight size={18} />
                   </Button>
+                  <button
+                    type="button"
+                    className="login-otp-switch-btn"
+                    onClick={() => {
+                      setLoginMethod("password");
+                      setOtpStep(1);
+                    }}
+                  >
+                    <Lock size={14} />
+                    <span>Şifre ile Giriş Yap</span>
+                  </button>
                 </form>
               )}
             </div>

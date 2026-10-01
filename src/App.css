@@ -1816,83 +1816,36 @@ td small {
   position: relative;
 }
 .login-story {
-  position: relative;
-  background: linear-gradient(
-    180deg,
-    rgba(15, 23, 42, 0.78) 0%,
-    rgba(15, 23, 42, 0.35) 42%,
-    rgba(15, 23, 42, 0.90) 100%
-  ), url('/login-building.jpg') center 30% / cover no-repeat;
+  background: var(--page, #f7f7f8);
   border-right: 1px solid var(--line, #eee);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  position: relative;
   overflow: hidden;
-  padding: clamp(24px, 3.5vh, 44px) clamp(32px, 4vw, 55px) 24px;
+  padding: clamp(20px, 3vh, 36px) clamp(28px, 3.5vw, 50px) 18px;
   height: 100%;
   max-height: 100dvh;
   box-sizing: border-box;
-  color: #ffffff;
 }
 .login-story > .brand {
   margin-bottom: clamp(14px, 2.5vh, 40px);
 }
-.login-story .brand img {
-  filter: brightness(0) invert(1);
+.story-copy .eyebrow {
+  font-size: 10px;
+  color: var(--gold-dark, #a28b5c);
 }
-.login-story .brand span {
-  color: #dfc18b;
-  font-weight: 600;
-  letter-spacing: 1.5px;
-}
-.login-story .story-copy .eyebrow {
-  font-size: 10.5px;
-  color: #dfc18b;
-  letter-spacing: 1.4px;
-  font-weight: 600;
-}
-.login-story .story-copy h1 {
-  font-size: clamp(26px, 2.8vw, 44px);
-  font-weight: 500;
+.story-copy h1 {
+  font-size: clamp(26px, 2.8vw, 48px);
+  font-weight: 400;
   line-height: 1.15;
-  letter-spacing: -1.5px;
+  letter-spacing: -2px;
   margin: 10px 0 12px;
-  color: #ffffff;
-  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.5);
 }
-.login-story .story-copy p {
-  font-size: clamp(11.5px, 0.95vw, 13.5px);
+.story-copy p {
+  font-size: clamp(11px, 0.9vw, 13px);
   line-height: 1.7;
-  color: rgba(255, 255, 255, 0.9);
-  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
-}
-.story-architecture-badge {
-  margin: auto 0 20px;
-}
-.story-badge-glass {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: 12px;
-  padding: 12px 18px;
-  color: #ffffff;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
-}
-.story-badge-glass strong {
-  display: block;
-  font-size: 13px;
-  font-weight: 600;
-  color: #ffffff;
-}
-.story-badge-glass span {
-  display: block;
-  font-size: 10.5px;
-  color: rgba(255, 255, 255, 0.8);
-  margin-top: 2px;
+  color: var(--muted, #929292);
 }
 .architecture {
   position: relative;
@@ -2128,12 +2081,79 @@ td small {
 .password-field input {
   padding-right: 40px;
 }
+.field-label-split {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.field-label-split > span {
+  font-size: 11px;
+}
+.forgot-link-inline {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--accent, #cda65b);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+.forgot-link-inline:hover {
+  color: var(--gold-dark, #a29172);
+  text-decoration: underline;
+}
+
 .login-submit {
   width: 100%;
   justify-content: space-between;
   margin-top: 2px;
   min-height: 40px;
   height: 40px;
+}
+
+/* Şifresiz OTP ile Giriş Butonu (Temaya Uygun Zarif Çerçeve) */
+.login-otp-switch-btn {
+  width: 100%;
+  height: 40px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+  border: 1px solid var(--gold-border, #d4c5a9);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+.login-otp-switch-btn:hover {
+  background: var(--gold-light, #faf6ee);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.login-otp-switch-btn svg {
+  color: var(--accent);
+}
+
+[data-theme="dark"] .login-otp-switch-btn,
+.theme-dark .login-otp-switch-btn {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(205, 166, 91, 0.45);
+  color: #f3f4f6;
+}
+[data-theme="dark"] .login-otp-switch-btn:hover,
+.theme-dark .login-otp-switch-btn:hover {
+  background: rgba(205, 166, 91, 0.12);
+  border-color: rgba(205, 166, 91, 0.7);
+  color: #dfc18b;
 }
 /* Sade & Zarif Kayıt / Davet Köprüsü */
 .login-onboarding-row {
@@ -2719,460 +2739,189 @@ td small {
     font-size: 11px;
     bottom: 15px;
   }
-  /* ====================================================================
-     MOBİL GİRİŞ EKRANI (LÜKS MİMARİ ARKA PLAN & BUĞULU CAM BOTTOM SHEET)
-     ==================================================================== */
+  /* Mobile Login Screen - Zero Scroll, Keyboard Resilient, Strong Architecture Backdrop */
   .login-page {
-    display: flex !important;
-    flex-direction: column !important;
-    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
     height: 100dvh;
     max-height: 100dvh;
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow: hidden;
     position: relative;
-    background: #0d1117;
+    background: var(--page, #f7f7f8);
     grid-template-columns: 1fr;
-    -webkit-overflow-scrolling: touch;
   }
   .login-story {
-    display: none !important;
+    display: none;
   }
 
-  /* Mobil Arka Plan Görseli (Bina arkada lüks ve buğulu atmosfer sunar) */
-  .mobile-login-backdrop {
-    position: fixed;
-    inset: 0;
-    z-index: 1;
+  /* Mobil Arka Plandaki Güçlü Mimari Görsel & Yanıp Sönen Işıklar */
+  .mobile-architecture-backdrop {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 250px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
     pointer-events: none;
-    overflow: hidden;
-    display: block !important;
+    z-index: 1;
+    opacity: 0.42;
   }
-  .mobile-login-img {
-    position: absolute;
-    inset: 0;
-    background: url('/login-building.jpg') center top / cover no-repeat;
-    filter: brightness(0.92) contrast(1.04);
-    transform: scale(1.01);
+  :root[data-theme="dark"] .mobile-architecture-backdrop {
+    opacity: 0.65;
   }
-  .mobile-login-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      180deg,
-      rgba(10, 13, 18, 0.35) 0%,
-      rgba(10, 13, 18, 0.15) 30%,
-      rgba(10, 13, 18, 0.55) 70%,
-      rgba(10, 13, 18, 0.85) 100%
-    );
+  .mobile-architecture-backdrop .architecture {
+    width: 290px;
+    height: 220px;
+    min-height: 0;
+    max-height: none;
+    margin: 0;
+    border-bottom: none;
+    gap: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+  }
+  .mobile-architecture-backdrop .building {
+    padding: 8px;
+    gap: 7px;
+    width: 28%;
+    background: var(--surface, white);
+  }
+  .mobile-architecture-backdrop .building i {
+    min-height: 9px;
+  }
+  .mobile-architecture-backdrop .building-one { height: 115px; }
+  .mobile-architecture-backdrop .building-two { height: 170px; }
+  .mobile-architecture-backdrop .building-three { height: 105px; }
+  .mobile-architecture-backdrop .building:before,
+  .mobile-architecture-backdrop .building:after,
+  .mobile-architecture-backdrop .architecture-caption {
+    display: none;
   }
 
-  /* Mobil Üst Kahraman Bölümü (Bina Üstünde Logo ve Slogan) */
-  .mobile-hero-section {
-    position: relative;
-    z-index: 10;
-    display: flex !important;
-    flex-direction: column !important;
-    width: 100% !important;
-    box-sizing: border-box;
-    padding: max(22px, env(safe-area-inset-top, 22px)) 24px 16px 24px;
+  /* Mobil Üst Çubuk (Logo + Tema) */
+  .mobile-header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 18px 6px;
+    z-index: 15;
     flex-shrink: 0;
-    gap: 24px;
   }
-  .mobile-hero-top {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    width: 100% !important;
-  }
-  .mobile-hero-top .brand {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 3px !important;
-  }
-  .mobile-hero-top .brand img {
-    height: 32px !important;
-    width: auto !important;
-    filter: none !important;
-  }
-  .mobile-hero-top .brand span {
-    color: #dfc18b !important;
-    font-size: 8.5px !important;
-    font-weight: 600 !important;
-    letter-spacing: 0.16em !important;
-  }
-  .mobile-hero-top .theme-toggle {
-    background: rgba(255, 255, 255, 0.12) !important;
-    border: 1px solid rgba(255, 255, 255, 0.18) !important;
-    color: #ffffff !important;
-    border-radius: 50% !important;
-    width: 36px !important;
-    height: 36px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    backdrop-filter: blur(12px) !important;
-    -webkit-backdrop-filter: blur(12px) !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
-    cursor: pointer !important;
-  }
-  .mobile-hero-top .theme-toggle:hover {
-    background: rgba(255, 255, 255, 0.22) !important;
-  }
-  .mobile-hero-copy h1 {
-    font-size: clamp(28px, 7.8vw, 34px) !important;
-    font-weight: 700 !important;
-    color: #ffffff !important;
-    line-height: 1.15 !important;
-    letter-spacing: -0.02em !important;
-    margin: 0 !important;
-    text-shadow: 0 2px 14px rgba(0, 0, 0, 0.65) !important;
+  .mobile-header-bar .brand img {
+    width: 105px;
+    height: auto;
   }
 
-  /* Mobil Form Alanı & Alt Panel (Bottom Sheet) */
+  /* Mobil Form Alanı (Sayfa Kaymaz - Sıfır Scroll) */
   .login-form-area {
-    position: relative;
-    z-index: 10;
     flex: 1;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: flex-end !important;
-    padding: 0 !important;
     min-height: 0;
     height: auto;
     max-height: none;
-    overflow-y: visible;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow-y: hidden;
+    overscroll-behavior: contain;
+    padding: 4px 14px 8px;
+    z-index: 10;
+    position: relative;
   }
   .login-top-actions {
-    display: none !important;
+    display: none;
   }
   .login-form-wrap {
-    width: 100% !important;
-    max-width: none !important;
-    margin: 0 !important;
-    box-sizing: border-box !important;
-    background: rgba(18, 22, 30, 0.88) !important;
-    backdrop-filter: blur(28px) saturate(180%) !important;
-    -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
-    border-bottom: none !important;
-    border-radius: 28px 28px 0 0 !important;
-    padding: 24px 22px 18px 22px !important;
-    box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.65) !important;
-    display: flex !important;
-    flex-direction: column !important;
-  }
-  :root[data-theme="dark"] .login-form-wrap {
-    background: rgba(14, 18, 25, 0.9) !important;
-  }
-
-  /* Form Başlıkları */
-  .login-form-wrap > .eyebrow {
-    color: #cda65b !important;
-    font-size: 11px !important;
-    font-weight: 600 !important;
-    letter-spacing: 0.08em !important;
-    text-transform: uppercase !important;
-    margin-bottom: 5px !important;
-    display: block !important;
+    width: 100%;
+    max-width: 400px;
+    margin: auto 0;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 12px 16px 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
   .login-form-wrap h2 {
-    color: #ffffff !important;
-    font-size: 23px !important;
-    font-weight: 700 !important;
-    letter-spacing: -0.02em !important;
-    margin: 0 0 3px 0 !important;
+    font-size: 20px;
+    letter-spacing: -0.6px;
+    margin: 2px 0;
   }
   .login-intro {
-    color: rgba(255, 255, 255, 0.62) !important;
-    font-size: 12.5px !important;
-    margin: 0 0 16px 0 !important;
+    font-size: 10.5px;
+    margin-bottom: 8px;
   }
-
-  /* Form Alanları ve Etiketler */
+  .login-method-tabs {
+    margin-bottom: 8px;
+  }
+  .login-method-tabs button {
+    padding: 6px 8px;
+    font-size: 10.5px;
+  }
   .login-form-wrap .field {
-    margin-bottom: 13px !important;
+    margin-bottom: 8px;
   }
   .login-form-wrap .field > span {
-    color: rgba(255, 255, 255, 0.82) !important;
-    font-size: 12.5px !important;
-    font-weight: 500 !important;
-    margin-bottom: 6px !important;
-    display: block !important;
+    font-size: 10.5px;
   }
   .login-form-wrap .field input {
-    width: 100% !important;
-    height: 46px !important;
-    box-sizing: border-box !important;
-    background: rgba(255, 255, 255, 0.06) !important;
-    border: 1px solid rgba(255, 255, 255, 0.14) !important;
-    border-radius: 12px !important;
-    padding: 0 14px !important;
-    color: #ffffff !important;
-    font-size: 14px !important;
-    transition: all 0.2s ease !important;
+    height: 38px;
+    font-size: 15px;
   }
-  .login-form-wrap .field input::placeholder {
-    color: rgba(255, 255, 255, 0.38) !important;
+  .forgot-password-row {
+    margin-top: -2px;
+    margin-bottom: 6px;
   }
-  .login-form-wrap .field input:focus {
-    background: rgba(255, 255, 255, 0.09) !important;
-    border-color: #cda65b !important;
-    box-shadow: 0 0 0 3px rgba(205, 166, 91, 0.2) !important;
-    outline: none !important;
-  }
-
-  /* Şifre Satırı (Etiket Sol, Şifremi Unuttum Sağ) */
-  .field-label-split {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    margin-bottom: 6px !important;
-  }
-  .field-label-split span {
-    color: rgba(255, 255, 255, 0.82) !important;
-    font-size: 12.5px !important;
-    font-weight: 500 !important;
-  }
-  .forgot-link-inline {
-    background: none !important;
-    border: none !important;
-    padding: 0 !important;
-    color: #dfc18b !important;
-    font-size: 12.5px !important;
-    font-weight: 500 !important;
-    cursor: pointer !important;
-    text-decoration: none !important;
-    transition: color 0.15s ease;
-  }
-  .forgot-link-inline:hover {
-    color: #f3dfb7 !important;
-  }
-
-  /* Şifre Input & Göz İkonu */
-  .password-field {
-    position: relative !important;
-    width: 100% !important;
-  }
-  .password-field input {
-    padding-right: 44px !important;
-  }
-  .password-field button {
-    position: absolute !important;
-    right: 12px !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-    background: none !important;
-    border: none !important;
-    color: rgba(255, 255, 255, 0.5) !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    padding: 4px !important;
-    cursor: pointer !important;
-    transition: color 0.15s;
-  }
-  .password-field button:hover {
-    color: rgba(255, 255, 255, 0.9) !important;
-  }
-
-  /* Buton 1: Giriş Yap (Gri Slate) */
   .login-submit {
-    width: 100% !important;
-    height: 46px !important;
-    background: #505763 !important;
-    color: #ffffff !important;
-    border-radius: 12px !important;
-    font-size: 14.5px !important;
-    font-weight: 600 !important;
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    padding: 0 18px !important;
-    border: none !important;
-    margin-top: 14px !important;
-    cursor: pointer !important;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;
-    transition: background-color 0.2s ease, transform 0.1s ease !important;
+    height: 38px;
+    font-size: 12px;
+    margin-top: 2px;
   }
-  .login-submit:hover {
-    background: #5e6674 !important;
-  }
-  .login-submit:active {
-    transform: scale(0.99) !important;
-  }
-
-  /* Buton 2: E-posta OTP ile Giriş (Koyu Şeffaf + Altın Çerçeve) */
-  .login-otp-switch-btn {
-    width: 100% !important;
-    height: 44px !important;
-    background: rgba(18, 22, 30, 0.75) !important;
-    border: 1px solid rgba(205, 166, 91, 0.45) !important;
-    color: #ffffff !important;
-    border-radius: 12px !important;
-    font-size: 13.5px !important;
-    font-weight: 500 !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    margin-top: 9px !important;
-    cursor: pointer !important;
-    transition: all 0.2s ease !important;
-  }
-  .login-otp-switch-btn:hover {
-    background: rgba(205, 166, 91, 0.12) !important;
-    border-color: rgba(205, 166, 91, 0.7) !important;
-  }
-
-  /* Kayıt / Davet Satırı (Kompakt ve Şık) */
   .login-onboarding-row {
-    margin-top: 12px !important;
-    padding: 7px 10px !important;
-    background: rgba(255, 255, 255, 0.03) !important;
-    border: 1px solid rgba(255, 255, 255, 0.07) !important;
-    border-radius: 10px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
+    margin-top: 6px;
+    padding: 6px 10px;
+    font-size: 10px;
   }
   .onboarding-prompt {
-    font-size: 11px !important;
-    color: rgba(255, 255, 255, 0.55) !important;
-  }
-  .onboarding-links {
-    display: flex !important;
-    align-items: center !important;
-    gap: 6px !important;
+    font-size: 10px;
   }
   .onboarding-link-btn {
-    font-size: 11px !important;
-    color: #dfc18b !important;
-    background: none !important;
-    border: none !important;
-    cursor: pointer !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 4px !important;
-    padding: 0 !important;
-    font-weight: 500 !important;
+    font-size: 10.5px;
+    gap: 4px;
   }
-  .link-divider {
-    color: rgba(255, 255, 255, 0.3) !important;
-    font-size: 10px !important;
-  }
-
-  /* Hızlı Demo Seçici (Kompakt ve Açılır) */
   .demo-selector-container {
-    margin-top: 8px !important;
-    position: relative !important;
-  }
-  .demo-separator {
-    display: flex !important;
-    align-items: center !important;
-    text-align: center !important;
-    margin: 6px 0 !important;
-    font-size: 10.5px !important;
-    color: rgba(255, 255, 255, 0.35) !important;
-  }
-  .demo-separator::before,
-  .demo-separator::after {
-    content: '' !important;
-    flex: 1 !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-  }
-  .demo-separator span {
-    padding: 0 8px !important;
+    margin-top: 6px;
   }
   .demo-dropdown-trigger {
-    width: 100% !important;
-    padding: 7px 12px !important;
-    background: rgba(255, 255, 255, 0.04) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    border-radius: 10px !important;
-    color: rgba(255, 255, 255, 0.8) !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    cursor: pointer !important;
-    box-sizing: border-box !important;
-  }
-  .demo-dropdown-trigger:hover,
-  .demo-dropdown-trigger.active {
-    background: rgba(255, 255, 255, 0.08) !important;
-    border-color: rgba(205, 166, 91, 0.35) !important;
-  }
-  .demo-trigger-left {
-    display: flex !important;
-    align-items: center !important;
-    gap: 6px !important;
+    padding: 6px 10px;
   }
   .demo-trigger-title {
-    font-size: 11.5px !important;
-    font-weight: 500 !important;
-    color: rgba(255, 255, 255, 0.85) !important;
-  }
-  .demo-dropdown-menu {
-    background: #141822 !important;
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
-    border-radius: 12px !important;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6) !important;
-    padding: 8px !important;
-    margin-top: 6px !important;
+    font-size: 11px;
   }
   .demo-account-row {
-    width: 100% !important;
-    padding: 6px 8px !important;
-    border-radius: 8px !important;
-    border: none !important;
-    background: transparent !important;
-    color: #fff !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 8px !important;
-    text-align: left !important;
-    cursor: pointer !important;
-  }
-  .demo-account-row:hover {
-    background: rgba(255, 255, 255, 0.08) !important;
+    padding: 5px 6px;
+    gap: 8px;
   }
   .demo-row-top strong {
-    font-size: 11px !important;
-    color: #fff !important;
+    font-size: 11px;
   }
-
-  /* Alt Yasal Linkler & Footer */
-  .login-legal-links {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    gap: 8px !important;
-    padding: 10px 16px 4px !important;
-    font-size: 10.5px !important;
-  }
-  .login-legal-links .text-link-legal {
-    color: rgba(255, 255, 255, 0.5) !important;
-    background: none !important;
-    border: none !important;
-    cursor: pointer !important;
-    text-decoration: none !important;
-    font-size: 10.5px !important;
-  }
-  .login-legal-links .dot-sep {
-    color: rgba(255, 255, 255, 0.25) !important;
-  }
-  .login-legal-links .highlight-tanitim {
-    color: #dfc18b !important;
-    font-weight: 500 !important;
+  .demo-separator {
+    margin: 6px 0 4px;
   }
   .login-footer {
-    display: flex !important;
-    justify-content: center !important;
-    gap: 12px !important;
-    font-size: 9.5px !important;
-    color: rgba(255, 255, 255, 0.35) !important;
-    padding: 2px 16px max(14px, env(safe-area-inset-bottom, 14px)) !important;
-    text-align: center !important;
+    position: static;
+    margin-top: 10px;
+    padding-top: 6px;
+    font-size: 9px;
+    text-align: center;
+    justify-content: center;
+    gap: 12px;
+  }
+  .login-form-wrap > .eyebrow {
+    font-size: 8px;
   }
   .modal {
     padding: 22px;
