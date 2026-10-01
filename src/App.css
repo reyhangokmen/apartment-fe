@@ -1816,36 +1816,83 @@ td small {
   position: relative;
 }
 .login-story {
-  background: var(--page, #f7f7f8);
+  position: relative;
+  background: linear-gradient(
+    180deg,
+    rgba(15, 23, 42, 0.78) 0%,
+    rgba(15, 23, 42, 0.35) 42%,
+    rgba(15, 23, 42, 0.90) 100%
+  ), url('/login-building.jpg') center 30% / cover no-repeat;
   border-right: 1px solid var(--line, #eee);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  position: relative;
   overflow: hidden;
-  padding: clamp(20px, 3vh, 36px) clamp(28px, 3.5vw, 50px) 18px;
+  padding: clamp(24px, 3.5vh, 44px) clamp(32px, 4vw, 55px) 24px;
   height: 100%;
   max-height: 100dvh;
   box-sizing: border-box;
+  color: #ffffff;
 }
 .login-story > .brand {
   margin-bottom: clamp(14px, 2.5vh, 40px);
 }
-.story-copy .eyebrow {
-  font-size: 10px;
-  color: var(--gold-dark, #a28b5c);
+.login-story .brand img {
+  filter: brightness(0) invert(1);
 }
-.story-copy h1 {
-  font-size: clamp(26px, 2.8vw, 48px);
-  font-weight: 400;
+.login-story .brand span {
+  color: #dfc18b;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+}
+.login-story .story-copy .eyebrow {
+  font-size: 10.5px;
+  color: #dfc18b;
+  letter-spacing: 1.4px;
+  font-weight: 600;
+}
+.login-story .story-copy h1 {
+  font-size: clamp(26px, 2.8vw, 44px);
+  font-weight: 500;
   line-height: 1.15;
-  letter-spacing: -2px;
+  letter-spacing: -1.5px;
   margin: 10px 0 12px;
+  color: #ffffff;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.5);
 }
-.story-copy p {
-  font-size: clamp(11px, 0.9vw, 13px);
+.login-story .story-copy p {
+  font-size: clamp(11.5px, 0.95vw, 13.5px);
   line-height: 1.7;
-  color: var(--muted, #929292);
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+}
+.story-architecture-badge {
+  margin: auto 0 20px;
+}
+.story-badge-glass {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 12px;
+  padding: 12px 18px;
+  color: #ffffff;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+}
+.story-badge-glass strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+}
+.story-badge-glass span {
+  display: block;
+  font-size: 10.5px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 2px;
 }
 .architecture {
   position: relative;
@@ -2687,51 +2734,30 @@ td small {
     display: none;
   }
 
-  /* Mobil Arka Plandaki Güçlü Mimari Görsel & Yanıp Sönen Işıklar */
-  .mobile-architecture-backdrop {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 250px;
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    pointer-events: none;
+  /* Mobil Mimari Arka Plan (Gerçek Bina Fotoğrafı & Lüks Atmosfer) */
+  .mobile-login-backdrop {
+    position: fixed;
+    inset: 0;
     z-index: 1;
-    opacity: 0.42;
+    pointer-events: none;
+    overflow: hidden;
   }
-  :root[data-theme="dark"] .mobile-architecture-backdrop {
-    opacity: 0.65;
+  .mobile-login-img {
+    position: absolute;
+    inset: -8px;
+    background: url('/login-building.jpg') center 22% / cover no-repeat;
+    transform: scale(1.02);
+    filter: brightness(0.9) contrast(1.05);
   }
-  .mobile-architecture-backdrop .architecture {
-    width: 290px;
-    height: 220px;
-    min-height: 0;
-    max-height: none;
-    margin: 0;
-    border-bottom: none;
-    gap: 12px;
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-  }
-  .mobile-architecture-backdrop .building {
-    padding: 8px;
-    gap: 7px;
-    width: 28%;
-    background: var(--surface, white);
-  }
-  .mobile-architecture-backdrop .building i {
-    min-height: 9px;
-  }
-  .mobile-architecture-backdrop .building-one { height: 115px; }
-  .mobile-architecture-backdrop .building-two { height: 170px; }
-  .mobile-architecture-backdrop .building-three { height: 105px; }
-  .mobile-architecture-backdrop .building:before,
-  .mobile-architecture-backdrop .building:after,
-  .mobile-architecture-backdrop .architecture-caption {
-    display: none;
+  .mobile-login-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(15, 23, 42, 0.58) 0%,
+      rgba(15, 23, 42, 0.28) 32%,
+      rgba(15, 23, 42, 0.82) 100%
+    );
   }
 
   /* Mobil Üst Çubuk (Logo + Tema) */
@@ -2739,13 +2765,29 @@ td small {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 18px 6px;
+    padding: 10px 16px 8px;
     z-index: 15;
     flex-shrink: 0;
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   }
   .mobile-header-bar .brand img {
+    filter: brightness(0) invert(1);
     width: 105px;
     height: auto;
+  }
+  .mobile-header-bar .brand span {
+    color: #dfc18b;
+  }
+  .mobile-header-bar .theme-toggle {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+  }
+  .mobile-header-bar .theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.25);
   }
 
   /* Mobil Form Alanı (Sayfa Kaymaz - Sıfır Scroll) */
@@ -2770,13 +2812,18 @@ td small {
     width: 100%;
     max-width: 400px;
     margin: auto 0;
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    border-radius: 16px;
     padding: 12px 16px 8px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+  :root[data-theme="dark"] .login-form-wrap {
+    background: rgba(22, 27, 38, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
   }
   .login-form-wrap h2 {
     font-size: 20px;
@@ -2852,6 +2899,17 @@ td small {
     text-align: center;
     justify-content: center;
     gap: 12px;
+  }
+  .login-legal-links .text-link-legal {
+    color: rgba(255, 255, 255, 0.88) !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+  }
+  .login-legal-links .dot-sep {
+    color: rgba(255, 255, 255, 0.5) !important;
+  }
+  .login-legal-links .text-link-legal.highlight-tanitim {
+    color: #fde047 !important;
+    font-weight: 600;
   }
   .login-form-wrap > .eyebrow {
     font-size: 8px;
