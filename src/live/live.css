@@ -1,0 +1,225 @@
+/* Backend'e bağlı ekranların ek stilleri; mevcut tasarım değişkenlerini (--accent, --line…) kullanır. */
+
+.live-demo-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border: 1px dashed var(--accent);
+  border-radius: 10px;
+  background: var(--gold-light, rgba(205, 166, 91, 0.08));
+  color: var(--ink);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.live-demo-banner svg {
+  flex-shrink: 0;
+  color: var(--accent);
+  margin-top: 1px;
+}
+
+.live-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 8px 0 12px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  border: 1px solid var(--line);
+  background: var(--page);
+  color: var(--ink);
+}
+.live-notice svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.live-notice.error {
+  border-color: #f5c2c2;
+  background: #fde8e8;
+  color: #b42318;
+}
+.live-notice.success {
+  border-color: #b7e4cc;
+  background: #e8f7ef;
+  color: #11734a;
+}
+[data-theme="dark"] .live-notice.error {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #fca5a5;
+}
+[data-theme="dark"] .live-notice.success {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.35);
+  color: #6ee7b7;
+}
+
+.live-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 24px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.live-spin {
+  animation: live-spin 0.9s linear infinite;
+}
+@keyframes live-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.live-stack {
+  display: grid;
+  gap: 16px;
+}
+.live-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.live-row.end {
+  justify-content: flex-end;
+}
+.live-muted {
+  color: var(--muted);
+  font-size: 12.5px;
+}
+.live-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--page);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.live-chip.gold {
+  border-color: var(--accent);
+  color: var(--gold-dark);
+}
+.live-chip.ok {
+  border-color: #10b981;
+  color: #0f8a5f;
+}
+.live-chip.warn {
+  border-color: #f59e0b;
+  color: #b45309;
+}
+.live-chip.off {
+  color: var(--muted);
+}
+
+.live-link-box {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--page);
+  word-break: break-all;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+}
+.live-link-box code {
+  flex: 1;
+}
+
+.live-unit-residents {
+  display: grid;
+  gap: 2px;
+  font-size: 12px;
+}
+.live-unit-residents small {
+  color: var(--muted);
+}
+
+.live-module-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.live-module-row:last-child {
+  border-bottom: none;
+}
+
+.live-verify-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border: 1px solid #f59e0b;
+  border-radius: 10px;
+  background: rgba(245, 158, 11, 0.08);
+  font-size: 13px;
+}
+.live-verify-banner input {
+  width: 120px;
+  letter-spacing: 3px;
+  text-align: center;
+}
+
+.live-site-list {
+  display: grid;
+  gap: 8px;
+}
+.live-site-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  text-align: left;
+  cursor: pointer;
+}
+.live-site-item:hover {
+  border-color: var(--accent);
+}
+
+.live-progress {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--line);
+  overflow: hidden;
+}
+.live-progress i {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.2s ease;
+}
+
+.live-center {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+  background: var(--page);
+}
+.live-center-card {
+  width: min(560px, 100%);
+  display: grid;
+  gap: 16px;
+}
+.live-site-item:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}

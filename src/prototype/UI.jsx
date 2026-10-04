@@ -92,13 +92,19 @@ export function Stat({ icon: Icon, label, value, note, accent, children }) {
 }
 export function Modal({ title, description, children, onClose }) {
   const ref = useRef(null);
+  // onClose her çizimde yeni bir fonksiyon olabilir; pencere yalnızca açılışta bir kez açılmalı, aksi halde
+  // her tuş vuruşunda kapanıp açılır ve imleç alandan kaçar.
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  });
   useEffect(() => {
     const before = document.activeElement;
     const dialog = ref.current;
     dialog.showModal();
     const close = (e) => {
       e.preventDefault();
-      onClose();
+      onCloseRef.current();
     };
     dialog.addEventListener("cancel", close);
     const overflow = document.body.style.overflow;
@@ -109,7 +115,7 @@ export function Modal({ title, description, children, onClose }) {
       document.body.style.overflow = overflow;
       before?.focus();
     };
-  }, [onClose]);
+  }, []);
   return (
     <dialog
       ref={ref}

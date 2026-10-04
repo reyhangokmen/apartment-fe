@@ -23,6 +23,8 @@ export default function Dashboard({
   onPay,
   onRequest,
   residentName,
+  siteName = "Kovan Sitesi",
+  siteStats,
 }) {
   const monthly = dues.filter((d) => d.period === PERIOD);
   const total = monthly.reduce((s, d) => s + d.amount, 0);
@@ -58,7 +60,7 @@ export default function Dashboard({
       <div className="page-intro">
         <div>
           <span className="eyebrow">
-            KOVAN SİTESİ · {manager ? "YÖNETİCİ PANELİ" : "KONUT SAKİNİ PANELİ"}
+            {siteName.toLocaleUpperCase("tr-TR")} · {manager ? "YÖNETİCİ PANELİ" : "KONUT SAKİNİ PANELİ"}
           </span>
           <h1>
             Merhaba, {user.name.split(" ")[0]}
@@ -81,8 +83,12 @@ export default function Dashboard({
             <Stat
               icon={Building2}
               label="Toplam daire"
-              value={units.length}
-              note={`${units.filter((u) => u.occupied).length} dolu daire · 3 blok`}
+              value={siteStats ? siteStats.unitCount : units.length}
+              note={
+                siteStats
+                  ? `${siteStats.occupiedCount ?? "—"} dolu daire · ${siteStats.blockCount} blok`
+                  : `${units.filter((u) => u.occupied).length} dolu daire · 3 blok`
+              }
             />
             <Stat
               icon={Wallet}
