@@ -21,17 +21,13 @@ import {
   Clock,
   Wrench,
   Mail,
-  ArrowLeftRight,
-  Home,
   User,
+  KeyRound,
 } from "lucide-react";
 import Login from "./prototype/Login";
 import Dashboard from "./prototype/Dashboard";
 import Payments, { PaymentModal } from "./prototype/Payments";
 import Requests, { RequestModal } from "./prototype/Requests";
-import Apartments from "./prototype/Apartments";
-import Roles from "./prototype/Roles";
-import SiteSettings from "./prototype/SiteSettings";
 import ResidentSettings from "./prototype/ResidentSettings";
 import ComingSoon from "./prototype/ComingSoon";
 import { Brand, Button, ErrorBoundary, Modal, ThemeToggle } from "./prototype/UI";
@@ -40,15 +36,21 @@ import {
   initialUsers,
   initialUnits,
   initialMemberships,
-  initialRoles,
   initialDues,
   initialRequests,
   initialAnnouncements,
-  resolveLogin,
   dateLabel,
-  uid,
   TODAY,
 } from "./prototype/data";
+import { getAuth, onAuthChange } from "./api/client";
+import { can, getCurrentSite, listMembers, logout, selectSite } from "./api/kovan";
+import ApartmentsLive from "./live/ApartmentsLive";
+import RolesLive from "./live/RolesLive";
+import SiteSettingsLive from "./live/SiteSettingsLive";
+import InviteJoinModal from "./live/InviteJoinModal";
+import { DemoBanner } from "./live/common";
+import { EmailVerifyBanner, SitePicker } from "./live/SessionScreens";
+import { fullName, roleLabel } from "./live/labels";
 import "./App.css";
 
 const navigation = [
@@ -76,23 +78,30 @@ const navigation = [
   },
 ];
 
+// Yönetim ekranlarını açan izinler (backend'deki role_permissions seed'i)
+const MANAGEMENT_PERMISSIONS = ["SITE.AYARLAR", "SITE.BLOK_DAIRE", "KULLANICI.SAKIN_LISTE", "KULLANICI.DAVET"];
+// Backend'i henüz olmayan modüllerde sakin görünümü için örnek daire
+const DEMO_RESIDENT_UNIT = "A-12";
+
+function invitationTokenFromUrl() {
+  try {
+    if (window.location.pathname !== "/davet") return "";
+    return new URLSearchParams(window.location.search).get("token") || "";
+  } catch {
+    return "";
+  }
+}
+
 export default function App() {
   const [theme, toggleTheme] = useTheme();
-  const [users, setUsers] = useState(initialUsers);
-  const [units, setUnits] = useState(initialUnits);
-  const [memberships, setMemberships] = useState(initialMemberships);
-  const [roles, setRoles] = useState(initialRoles);
+  const [auth, setAuthState] = useState(getAuth);
+  const [inviteToken, setInviteToken] = useState(invitationTokenFromUrl);
   const [dues, setDues] = useState(initialDues);
   const [requests, setRequests] = useState(initialRequests);
-  const [session, setSession] = useState(() => {
-    try {
-      const saved = localStorage.getItem("kovan_session");
-      return saved ? JSON.parse(saved) : null;
-    } catch {
-      return null;
-    }
-  });
+  // Adres çubuğundaki sayfa (/manager/settings gibi) önceliklidir; yoksa son açık sekme.
   const [tab, setTab] = useState(() => {
+    const fromUrl = window.location.pathname.split("/")[2];
+    if (fromUrl && navigation.some((n) => n.id === fromUrl)) return fromUrl;
     try {
       return localStorage.getItem("kovan_active_tab") || "dashboard";
     } catch {
@@ -102,49 +111,70 @@ export default function App() {
   const [mobile, setMobile] = useState(false);
   const [modal, setModal] = useState(null);
   const [toast, setToast] = useState("");
-  const [siteMeta, setSiteMeta] = useState({
-    name: "Kovan Sitesi",
-    location: "Ataşehir, İstanbul",
-    blockSummary: "3 blok, 48 daire",
-  });
+  const [site, setSite] = useState(null); // /sites/current (yalnızca SITE.AYARLAR izniyle okunur)
+  const [occupiedCount, setOccupiedCount] = useState(null);
   const [siteMenuOpen, setSiteMenuOpen] = useState(true);
   const [showTanitim, setShowTanitim] = useState(() => window.location.pathname === "/tanitim");
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const [onboardingBusy, setOnboardingBusy] = useState(false); // kurulum/davet sürerken giriş ekranında kalınır
+  const profileRef = useRef(null);
 
-  // Oturum ve Sekme Kalıcılığı (Sayfa yenilendiğinde çıkış yapmaması için)
-  useEffect(() => {
-    try {
-      if (session) {
-        localStorage.setItem("kovan_session", JSON.stringify(session));
-      } else {
-        localStorage.removeItem("kovan_session");
-        localStorage.removeItem("kovan_active_tab");
-      }
-    } catch (e) {
-      console.warn("Storage sync error", e);
-    }
-  }, [session]);
+  useEffect(() => onAuthChange(setAuthState), []);
 
-  useEffect(() => {
-    try {
-      if (session && tab) {
-        localStorage.setItem("kovan_active_tab", tab);
-      }
-    } catch (e) {
-      console.warn("Tab sync error", e);
-    }
-  }, [session, tab]);
+  const inSite = Boolean(auth?.token && auth?.siteId) && !onboardingBusy;
+  const manager = inSite && MANAGEMENT_PERMISSIONS.some((p) => can(auth, p));
+  const canSiteSettings = can(auth, "SITE.AYARLAR");
+  const canApartments = can(auth, "SITE.BLOK_DAIRE");
+  const canRoles = ["KULLANICI.SAKIN_LISTE", "KULLANICI.ROL_ATAMA", "KULLANICI.DAVET"].some((p) => can(auth, p));
 
-  const manager = session?.activeMode
-    ? session.activeMode === "admin"
-    : session?.role === "ADMIN";
-
-  const user = users.find((u) => u.id === session?.userId) || session?.user || {
-    name: "Mehmet Demir",
-    email: "yonetim@site.com",
+  const user = {
+    name: fullName(auth?.user),
+    email: auth?.user?.email || "",
   };
 
-  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
-  const profileRef = useRef(null);
+  const siteMeta = {
+    name: site?.name || auth?.siteName || "Siteniz",
+    location: site ? `${site.district}, ${site.city}` : (auth?.roles || []).map(roleLabel).join(", "),
+    blockSummary: site ? `${site.blockCount} blok, ${site.unitCount} daire` : "",
+  };
+
+  // Site seçilince ve Genel Bakış'a her dönüşte site bilgileri ile doluluk yeniden okunur
+  // (Kat ve Daireler ekranında eklenen daireler sayıya yansısın).
+  const activeSiteId = inSite ? auth.siteId : null;
+  const canListMembers = can(auth, "KULLANICI.SAKIN_LISTE");
+  const onDashboard = tab === "dashboard";
+  useEffect(() => {
+    if (!activeSiteId) {
+      setSite(null);
+      setOccupiedCount(null);
+      return;
+    }
+    let cancelled = false;
+    if (canSiteSettings) {
+      getCurrentSite()
+        .then((data) => !cancelled && setSite(data))
+        .catch(() => !cancelled && setSite(null));
+    } else {
+      setSite(null);
+    }
+    if (canListMembers) {
+      listMembers()
+        .then((members) => !cancelled && setOccupiedCount(new Set(members.filter((m) => m.unitId).map((m) => m.unitId)).size))
+        .catch(() => !cancelled && setOccupiedCount(null));
+    }
+    return () => {
+      cancelled = true;
+    };
+  }, [activeSiteId, canSiteSettings, canListMembers, onDashboard]);
+
+  useEffect(() => {
+    try {
+      if (inSite && tab) localStorage.setItem("kovan_active_tab", tab);
+      if (!auth) localStorage.removeItem("kovan_active_tab");
+    } catch {
+      // depolama kapalı olabilir
+    }
+  }, [auth, inSite, tab]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -163,32 +193,14 @@ export default function App() {
     };
   }, []);
 
-  const switchAccountMode = useCallback((targetMode) => {
-    if (!session) return;
-    if (session.activeMode === targetMode) {
-      setProfileMenuOpen(false);
-      return;
-    }
-    const nextMode = targetMode;
-    setSession((prev) => ({
-      ...prev,
-      activeMode: nextMode,
-      role: nextMode === "admin" ? "ADMIN" : "RESIDENT",
-    }));
-    setTab("dashboard");
-    setProfileMenuOpen(false);
-    const targetAcc = session.accounts?.find((a) => a.mode === nextMode);
-    setToast(
-      nextMode === "admin"
-        ? `${targetAcc?.title || "Site Yönetim Paneli"} moduna geçildi.`
-        : `${targetAcc?.title || "Sakin Portalı"} moduna geçildi (${targetAcc?.subtitle || session.unitId || ""}).`
-    );
-    window.history.pushState(
-      {},
-      "",
-      `/${nextMode === "admin" ? "manager" : "resident"}`
-    );
-  }, [session]);
+  const allowedTab = useCallback(
+    (id) => {
+      if (id === "apartments") return canApartments;
+      if (id === "roles") return canRoles;
+      return navigation.some((n) => n.id === id);
+    },
+    [canApartments, canRoles],
+  );
 
   const navigate = useCallback(
     (next) => {
@@ -207,28 +219,22 @@ export default function App() {
     [manager],
   );
 
+  // Açılışta adres çubuğu oturuma göre düzeltilir; /davet linki yakalandıktan sonra temizlenir.
   useEffect(() => {
     if (showTanitim) return;
-    try {
-      const saved = localStorage.getItem("kovan_session");
-      const currentSession = saved ? JSON.parse(saved) : null;
-      if (currentSession) {
-        const isMgr = currentSession.activeMode
-          ? currentSession.activeMode === "admin"
-          : currentSession.role === "ADMIN";
-        const savedTab = localStorage.getItem("kovan_active_tab") || "dashboard";
-        window.history.replaceState(
-          {},
-          "",
-          `/${isMgr ? "manager" : "resident"}${savedTab === "dashboard" ? "" : "/" + savedTab}`
-        );
-      } else {
-        window.history.replaceState({}, "", "/login");
-      }
-    } catch {
+    if (inSite) {
+      const safeTab = allowedTab(tab) ? tab : "dashboard";
+      if (safeTab !== tab) setTab(safeTab);
+      window.history.replaceState(
+        {},
+        "",
+        `/${manager ? "manager" : "resident"}${safeTab === "dashboard" ? "" : "/" + safeTab}`,
+      );
+    } else {
       window.history.replaceState({}, "", "/login");
     }
-  }, [showTanitim]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showTanitim, inSite, manager]);
 
   useEffect(() => {
     const pop = () => {
@@ -237,31 +243,23 @@ export default function App() {
         return;
       }
       setShowTanitim(false);
-      if (!session || window.location.pathname === "/login") {
-        setSession(null);
+      if (!inSite || window.location.pathname === "/login") {
         setTab("dashboard");
         setModal(null);
-        window.history.replaceState({}, "", "/login");
+        window.history.replaceState({}, "", inSite ? `/${manager ? "manager" : "resident"}` : "/login");
         return;
       }
       const parts = window.location.pathname.split("/");
       const target = parts[2] || "dashboard";
-      if (
-        parts[1] !== (manager ? "manager" : "resident") ||
-        !navigation.some((n) => n.id === target && (!n.manager || manager))
-      ) {
-        window.history.replaceState(
-          {},
-          "",
-          `/${manager ? "manager" : "resident"}${target === "dashboard" ? "" : "/" + target}`,
-        );
+      if (parts[1] !== (manager ? "manager" : "resident") || !allowedTab(target)) {
+        window.history.replaceState({}, "", `/${manager ? "manager" : "resident"}`);
         setTab("dashboard");
       } else setTab(target);
       setModal(null);
     };
     window.addEventListener("popstate", pop);
     return () => window.removeEventListener("popstate", pop);
-  }, [session, manager]);
+  }, [inSite, manager, allowedTab]);
 
   useEffect(() => {
     if (!toast) return;
@@ -270,29 +268,48 @@ export default function App() {
   }, [toast]);
 
   const closeModal = useCallback(() => setModal(null), []);
-  const notify = (message) => setToast(message);
+  const notify = useCallback((message) => setToast(message), []);
+  const closeInvite = useCallback(() => setInviteToken(""), []);
 
+  const handleLoggedIn = useCallback(() => {
+    setInviteToken("");
+    setTab("dashboard");
+    setToast("");
+  }, []);
+
+  const handleLogout = () => {
+    setProfileMenuOpen(false);
+    logout();
+    setModal(null);
+    setMobile(false);
+    setToast("");
+    window.history.pushState({}, "", "/login");
+  };
+
+  const switchSite = async (siteId) => {
+    setProfileMenuOpen(false);
+    if (siteId === auth?.siteId) return;
+    try {
+      const next = await selectSite(siteId);
+      setTab("dashboard");
+      notify(`${next.siteName} sitesine geçildi.`);
+    } catch (error) {
+      notify(error.message);
+    }
+  };
+
+  // ---- Backend'i henüz olmayan modüller (örnek veri) ----------------------------------------------------
   const residentFor = (id) =>
-    users.find(
-      (u) => u.id === memberships.find((m) => m.unitId === id)?.userId,
-    );
-
+    initialUsers.find((u) => u.id === initialMemberships.find((m) => m.unitId === id)?.userId);
   const residentName = (id) => residentFor(id)?.name || "Boş daire";
-
-  const visibleDues = manager
-    ? dues
-    : dues.filter((d) => d.unitId === session?.unitId);
-
-  const visibleRequests = manager
-    ? requests
-    : requests.filter((r) => r.unitId === session?.unitId);
+  const demoUnitId = manager ? null : DEMO_RESIDENT_UNIT;
+  const visibleDues = manager ? dues : dues.filter((d) => d.unitId === demoUnitId);
+  const visibleRequests = manager ? requests : requests.filter((r) => r.unitId === demoUnitId);
 
   const pay = (id, method) => {
     setDues((prev) =>
       prev.map((d) =>
-        d.id === id &&
-        (manager || d.unitId === session.unitId) &&
-        d.status === "Ödenmemiş"
+        d.id === id && d.status === "Ödenmemiş"
           ? {
               ...d,
               status: method === "card" ? "Ödendi" : "Onay bekliyor",
@@ -304,74 +321,19 @@ export default function App() {
     );
     notify(
       method === "card"
-        ? "Ödeme tamamlandı. Aidat durumunuz güncellendi."
-        : "Ödeme bildiriminiz yönetici onayına gönderildi.",
+        ? "Örnek ödeme tamamlandı (gerçek ödeme alınmadı)."
+        : "Örnek ödeme bildirimi oluşturuldu (kaydedilmedi).",
     );
   };
 
   const createRequest = (r) => {
     setRequests((prev) => [r, ...prev]);
-    notify(
-      "Talebiniz oluşturuldu. Süreci Taleplerim ekranından takip edebilirsiniz.",
-    );
+    notify("Örnek talep oluşturuldu (talep modülü geliştiriliyor, kaydedilmedi).");
   };
 
-  const saveResident = (unitId, profile) => {
-    const existing = memberships.find((m) => m.unitId === unitId);
-    const duplicate = users.find(
-      (u) =>
-        u.email.toLocaleLowerCase("tr-TR") ===
-          profile.email.toLocaleLowerCase("tr-TR") && u.id !== existing?.userId,
-    );
-    if (duplicate) {
-      notify("Bu e-posta başka bir sakine ait. Farklı bir adres kullanın.");
-      return;
-    }
-    if (existing)
-      setUsers((prev) =>
-        prev.map((u) => (u.id === existing.userId ? { ...u, ...profile } : u)),
-      );
-    else {
-      const userId = uid(),
-        membershipId = uid();
-      setUsers((prev) => [...prev, { id: userId, ...profile }]);
-      setMemberships((prev) => [
-        ...prev,
-        {
-          id: membershipId,
-          userId,
-          unitId,
-          blockId: unitId[0],
-          siteId: "kovan",
-        },
-      ]);
-      setRoles((prev) => [...prev, { membershipId, role: "RESIDENT" }]);
-    }
-    setUnits((prev) =>
-      prev.map((u) =>
-        u.id === unitId
-          ? {
-              ...u,
-              occupied: true,
-              ...(profile.type ? { type: profile.type } : {}),
-              ...(profile.m2 ? { m2: Number(profile.m2) } : {}),
-            }
-          : u,
-      ),
-    );
-    notify(`${unitId} (${profile.type || "Daire"}) bilgileri güncellendi.`);
-  };
-
-  // Algoritmik toplu blok & daire ekleme fonksiyonu
-  const handleBatchGenerate = (blockName, newUnits) => {
-    setUnits((prev) => {
-      const filtered = prev.filter((u) => u.block !== blockName);
-      return [...filtered, ...newUnits];
-    });
-  };
-
-  if (!session) {
-    if (showTanitim) {
+  // ---- Oturum yoksa: giriş, tanıtım; site seçilmediyse: site seçimi ------------------------------------
+  if (!auth?.token || onboardingBusy) {
+    if (showTanitim && !onboardingBusy) {
       return (
         <ErrorBoundary>
           <ComingSoon
@@ -385,184 +347,60 @@ export default function App() {
         </ErrorBoundary>
       );
     }
-
     return (
       <ErrorBoundary>
         <Login
-        theme={theme}
-        onToggleTheme={toggleTheme}
-        users={users}
-        units={units}
-        onNotify={notify}
-        onNavigateTanitim={() => {
-          setShowTanitim(true);
-          window.history.pushState({}, "", "/tanitim");
-        }}
-        onLogin={(identifier) => {
-          const resolved = resolveLogin(identifier, users, memberships, roles);
-          setSession(resolved);
-          setTab("dashboard");
-          setToast("");
-          window.history.pushState(
-            {},
-            "",
-            `/${resolved.role === "ADMIN" ? "manager" : "resident"}`,
-          );
-        }}
-        onManagerRegister={(wizardData) => {
-          const newManagerId = uid();
-          const newManagerUser = {
-            id: newManagerId,
-            name: wizardData.managerName,
-            email: wizardData.managerEmail,
-            phone: wizardData.managerPhone,
-          };
-          const newMembershipId = uid();
-          const newMembership = {
-            id: newMembershipId,
-            userId: newManagerId,
-            siteId: "site-" + Date.now(),
-            unitId: null,
-            blockId: null,
-          };
-
-          const generated = [];
-          let blockCountSummary = 0;
-          if (wizardData.blocksConfig && wizardData.blocksConfig.length > 0) {
-            blockCountSummary = wizardData.blocksConfig.length;
-            wizardData.blocksConfig.forEach((bCfg) => {
-              const blk = bCfg.name.replace(/blok/i, "").trim() || "A";
-              let count = 1;
-              for (let f = 1; f <= bCfg.floors; f++) {
-                for (let u = 1; u <= bCfg.unitsPerFloor; u++) {
-                  let uNum =
-                    wizardData.namingPattern === "floor"
-                      ? `${f}${String(u).padStart(2, "0")}`
-                      : wizardData.namingPattern === "block-prefix"
-                      ? `${blk}-${count}`
-                      : `${count}`;
-                  generated.push({
-                    id: `${blk}-${uNum}`,
-                    block: blk,
-                    floor: f,
-                    number: uNum,
-                    occupied: false,
-                    type: "2+1 Standart",
-                  });
-                  count++;
-                }
-              }
-            });
-          } else {
-            const blocks = wizardData.blockNames
-              .split(",")
-              .map((s) => s.trim().toUpperCase());
-            blockCountSummary = blocks.length;
-            blocks.forEach((blk) => {
-              let count = 1;
-              for (let f = 1; f <= wizardData.floorsPerBlock; f++) {
-                for (let u = 1; u <= wizardData.unitsPerFloor; u++) {
-                  let uNum =
-                    wizardData.namingPattern === "floor"
-                      ? `${f}${String(u).padStart(2, "0")}`
-                      : wizardData.namingPattern === "block-prefix"
-                      ? `${blk}-${count}`
-                      : `${count}`;
-                  generated.push({
-                    id: `${blk}-${uNum}`,
-                    block: blk,
-                    floor: f,
-                    number: uNum,
-                    occupied: false,
-                    type: "2+1 Standart",
-                  });
-                  count++;
-                }
-              }
-            });
-          }
-
-          setUsers((prev) => [newManagerUser, ...prev]);
-          setMemberships((prev) => [newMembership, ...prev]);
-          setRoles((prev) => [
-            ...prev,
-            { membershipId: newMembershipId, role: "ADMIN" },
-          ]);
-          setUnits(generated);
-          setSiteMeta({
-            name: wizardData.siteName,
-            location: `${wizardData.district}, ${wizardData.city}`,
-            blockSummary: `${blockCountSummary} blok, ${generated.length} daire`,
-          });
-          setSession({
-            userId: newManagerId,
-            membershipId: newMembershipId,
-            role: "ADMIN",
-            unitId: null,
-          });
-          setTab("dashboard");
-          notify(`${wizardData.siteName} kurulumu tamamlandı. Yönetici paneline yönlendirildiniz.`);
-        }}
-        onInviteAcceptExisting={({ userId, unitId, role, siteName }) => {
-          const mId = uid();
-          setMemberships((prev) => [
-            ...prev,
-            {
-              id: mId,
-              userId,
-              unitId,
-              blockId: unitId.split("-")[0],
-              siteId: "kovan",
-            },
-          ]);
-          setRoles((prev) => [...prev, { membershipId: mId, role: "RESIDENT" }]);
-          setUnits((prev) =>
-            prev.map((u) => (u.id === unitId ? { ...u, occupied: true } : u)),
-          );
-          setSession({
-            userId,
-            membershipId: mId,
-            role: "RESIDENT",
-            unitId,
-          });
-          setTab("dashboard");
-        }}
-        onInviteRegisterNew={({ name, email, phone, password, unitId, role, type, siteName }) => {
-          const uId = uid();
-          const mId = uid();
-          const newUser = { id: uId, name, email, phone, password: password || "demo123" };
-          setUsers((prev) => [...prev, newUser]);
-          setMemberships((prev) => [
-            ...prev,
-            {
-              id: mId,
-              userId: uId,
-              unitId,
-              blockId: unitId.split("-")[0],
-              siteId: "kovan",
-            },
-          ]);
-          setRoles((prev) => [...prev, { membershipId: mId, role: "RESIDENT" }]);
-          setUnits((prev) =>
-            prev.map((u) => (u.id === unitId ? { ...u, occupied: true, ...(type ? { type } : {}) } : u)),
-          );
-          setSession({
-            userId: uId,
-            membershipId: mId,
-            role: "RESIDENT",
-            unitId,
-          });
-          setTab("dashboard");
-          notify(`Hoş geldiniz ${name}! Üyeliğiniz tamamlandı ve ${unitId} (${type || "Daire"}) dairesine bağlandı.`);
-        }}
-      />
+          theme={theme}
+          onToggleTheme={toggleTheme}
+          onNotify={notify}
+          inviteToken={inviteToken}
+          onLoggedIn={handleLoggedIn}
+          onBusyChange={setOnboardingBusy}
+          onNavigateTanitim={() => {
+            setShowTanitim(true);
+            window.history.pushState({}, "", "/tanitim");
+          }}
+        />
+        {toast && (
+          <div className="toast" role="status">
+            <CheckCircle2 size={19} />
+            {toast}
+            <button aria-label="Bildirimi kapat" onClick={() => setToast("")}>
+              <X size={16} />
+            </button>
+          </div>
+        )}
       </ErrorBoundary>
     );
   }
 
-  const activeCount = visibleRequests.filter(
-    (r) => r.status !== "Çözüldü",
-  ).length;
+  if (!inSite) {
+    return (
+      <ErrorBoundary>
+        <SitePicker
+          auth={auth}
+          onSelected={() => setTab("dashboard")}
+          onLogout={handleLogout}
+          onOpenInvite={() => setModal({ type: "invite" })}
+        />
+        {modal?.type === "invite" && (
+          <InviteJoinModal onClose={closeModal} onNotify={notify} onJoined={closeModal} />
+        )}
+        {toast && (
+          <div className="toast" role="status">
+            <CheckCircle2 size={19} />
+            {toast}
+            <button aria-label="Bildirimi kapat" onClick={() => setToast("")}>
+              <X size={16} />
+            </button>
+          </div>
+        )}
+      </ErrorBoundary>
+    );
+  }
+
+  const activeCount = visibleRequests.filter((r) => r.status !== "Çözüldü").length;
+  const otherSites = (auth.workspaces || []).filter((w) => w.siteId !== auth.siteId);
 
   return (
     <div className="app-shell">
@@ -608,7 +446,7 @@ export default function App() {
           </button>
 
           {/* Yönetici İçin: Site Grubu (Kat & Daireler + Site Ayarları) */}
-          {manager && (
+          {(canApartments || canSiteSettings) && (
             <div className="nav-group">
               <button
                 type="button"
@@ -628,32 +466,36 @@ export default function App() {
 
               {siteMenuOpen && (
                 <div className="nav-sub-items">
-                  <button
-                    type="button"
-                    onClick={() => navigate("apartments")}
-                    aria-current={tab === "apartments" ? "page" : undefined}
-                    className={`nav-sub-item ${tab === "apartments" ? "active" : ""}`}
-                  >
-                    <span className="sub-bullet" />
-                    <span>Kat ve Daireler</span>
-                  </button>
+                  {canApartments && (
+                    <button
+                      type="button"
+                      onClick={() => navigate("apartments")}
+                      aria-current={tab === "apartments" ? "page" : undefined}
+                      className={`nav-sub-item ${tab === "apartments" ? "active" : ""}`}
+                    >
+                      <span className="sub-bullet" />
+                      <span>Kat ve Daireler</span>
+                    </button>
+                  )}
 
-                  <button
-                    type="button"
-                    onClick={() => navigate("settings")}
-                    aria-current={tab === "settings" ? "page" : undefined}
-                    className={`nav-sub-item ${tab === "settings" ? "active" : ""}`}
-                  >
-                    <span className="sub-bullet" />
-                    <span>Ayarlar</span>
-                  </button>
+                  {canSiteSettings && (
+                    <button
+                      type="button"
+                      onClick={() => navigate("settings")}
+                      aria-current={tab === "settings" ? "page" : undefined}
+                      className={`nav-sub-item ${tab === "settings" ? "active" : ""}`}
+                    >
+                      <span className="sub-bullet" />
+                      <span>Ayarlar</span>
+                    </button>
+                  )}
                 </div>
               )}
             </div>
           )}
 
           {/* Rol ve Yetkiler (Yönetici) */}
-          {manager && (
+          {canRoles && (
             <button
               onClick={() => navigate("roles")}
               aria-current={tab === "roles" ? "page" : undefined}
@@ -695,8 +537,8 @@ export default function App() {
             <span>Duyurular</span>
           </button>
 
-          {/* Sakin İçin: Hesap & Daire Ayarları */}
-          {!manager && (
+          {/* Site ayarı yetkisi olmayan için: Hesap & Daire Ayarları */}
+          {!canSiteSettings && (
             <button
               onClick={() => navigate("settings")}
               aria-current={tab === "settings" ? "page" : undefined}
@@ -721,7 +563,8 @@ export default function App() {
             <img src="/brand/KOVAN_Binalar.svg" alt="" />
             <strong>Yaşamın düzeni.</strong>
             <span>
-              {siteMeta.name} · {siteMeta.blockSummary}
+              {siteMeta.name}
+              {siteMeta.blockSummary ? ` · ${siteMeta.blockSummary}` : ""}
             </span>
           </div>
           <div className="sidebar-footnote desktop-only">
@@ -743,7 +586,7 @@ export default function App() {
             <span className="desktop-only">Çalışma alanı</span>
             <ChevronRight size={14} className="desktop-only" />
             {tab === "settings" ? (
-              manager ? (
+              canSiteSettings ? (
                 <>
                   <span className="desktop-only">Site</span>
                   <ChevronRight size={14} className="desktop-only" />
@@ -773,7 +616,7 @@ export default function App() {
               <i />
             </button>
 
-            {/* Profil ve Rol Değiştirici (Tüm Kullanıcılar İçin Açılır ve Çıkış Yap İçerir) */}
+            {/* Profil, site değiştirme ve çıkış */}
             <div className="profile-dropdown-container" ref={profileRef}>
               <button
                 type="button"
@@ -789,14 +632,9 @@ export default function App() {
                 </span>
                 <div className="user-profile-meta">
                   <div className="user-profile-name-row">
-                    <strong>{user?.name}</strong>
+                    <strong>{user.name}</strong>
                   </div>
-                  <small>
-                    {manager
-                      ? session?.accounts?.find((a) => a.mode === "admin")?.subtitle || "Site Yöneticisi"
-                      : session?.accounts?.find((a) => a.mode === "resident")?.subtitle ||
-                        (session?.unitId ? `Daire ${session.unitId}` : "Konut Sakini")}
-                  </small>
+                  <small>{(auth.roles || []).map(roleLabel).join(", ")}</small>
                 </div>
                 <ChevronDown
                   size={14}
@@ -804,77 +642,84 @@ export default function App() {
                 />
               </button>
 
-              {/* Açılır Menü (Tüm Kullanıcılar İçin Profil ve Çıkış Paneli) */}
               {profileMenuOpen && (
                 <div className="profile-dropdown-menu">
-                  {/* Profil Başlığı */}
                   <div className="profile-dropdown-header">
                     <span className="avatar avatar-lg">
                       <User size={20} />
                     </span>
                     <div className="header-meta">
-                      <strong>{user?.name}</strong>
-                      <span className="header-email">{user?.email}</span>
+                      <strong>{user.name}</strong>
+                      <span className="header-email">{user.email}</span>
                       <span className="header-role-badge">
-                        {manager ? "Site Yöneticisi" : "Konut Sakini"}
+                        {(auth.roles || []).map(roleLabel).join(", ")}
                       </span>
                     </div>
                   </div>
 
-                  {/* Çoklu Rol / Hesap Geçiş Bölümü (varsa) */}
-                  {session?.accounts?.length > 1 && (
+                  {/* Kullanıcının üye olduğu diğer siteler */}
+                  {otherSites.length > 0 && (
                     <div className="profile-dropdown-section">
-                      <span className="profile-section-label">Hesaplar ve Roller</span>
+                      <span className="profile-section-label">Siteleriniz</span>
                       <div className="profile-accounts-list">
-                        {session.accounts.map((acc) => {
-                          const isActive = acc.mode === (manager ? "admin" : "resident");
-                          return (
-                            <button
-                              key={acc.mode}
-                              type="button"
-                              className={`profile-account-item ${isActive ? "active" : ""}`}
-                              onClick={() => {
-                                switchAccountMode(acc.mode);
-                                setProfileMenuOpen(false);
-                              }}
-                            >
-                              <span className="profile-account-icon">
-                                {acc.icon === "home" ? <Home size={15} /> : <Shield size={15} />}
-                              </span>
-                              <div className="profile-account-details">
-                                <span className="profile-account-title">{acc.title}</span>
-                                <span className="profile-account-sub">{acc.subtitle}</span>
-                              </div>
-                              {isActive ? (
-                                <span className="profile-account-active-badge">
-                                  <CheckCircle2 size={14} />
-                                  <span>Aktif</span>
-                                </span>
-                              ) : (
-                                <span className="profile-account-switch-hint">
-                                  Geçiş Yap
-                                </span>
-                              )}
-                            </button>
-                          );
-                        })}
+                        <button type="button" className="profile-account-item active">
+                          <span className="profile-account-icon">
+                            <Building2 size={15} />
+                          </span>
+                          <div className="profile-account-details">
+                            <span className="profile-account-title">{auth.siteName}</span>
+                            <span className="profile-account-sub">{(auth.roles || []).map(roleLabel).join(", ")}</span>
+                          </div>
+                          <span className="profile-account-active-badge">
+                            <CheckCircle2 size={14} />
+                            <span>Aktif</span>
+                          </span>
+                        </button>
+                        {otherSites.map((w) => (
+                          <button
+                            key={w.siteId}
+                            type="button"
+                            className="profile-account-item"
+                            onClick={() => switchSite(w.siteId)}
+                          >
+                            <span className="profile-account-icon">
+                              <Building2 size={15} />
+                            </span>
+                            <div className="profile-account-details">
+                              <span className="profile-account-title">{w.siteName}</span>
+                              <span className="profile-account-sub">{w.roles.map(roleLabel).join(", ")}</span>
+                            </div>
+                            <span className="profile-account-switch-hint">Geçiş Yap</span>
+                          </button>
+                        ))}
                       </div>
                     </div>
                   )}
 
-                  {/* Profil Menüsü Alt Çıkış Butonu */}
+                  <div className="profile-dropdown-section">
+                    <button
+                      type="button"
+                      className="profile-account-item"
+                      onClick={() => {
+                        setProfileMenuOpen(false);
+                        setModal({ type: "invite" });
+                      }}
+                    >
+                      <span className="profile-account-icon">
+                        <KeyRound size={15} />
+                      </span>
+                      <div className="profile-account-details">
+                        <span className="profile-account-title">Davet bağlantım var</span>
+                        <span className="profile-account-sub">Başka bir siteye katıl</span>
+                      </div>
+                    </button>
+                  </div>
+
                   <div className="profile-dropdown-footer">
                     <button
                       type="button"
                       className="profile-dropdown-logout-btn"
-                      onClick={() => {
-                        setProfileMenuOpen(false);
-                        setSession(null);
-                        setModal(null);
-                        setMobile(false);
-                        setToast("");
-                        window.history.pushState({}, "", "/login");
-                      }}
+                      onClick={handleLogout}
                     >
                       <LogOut size={16} />
                       <span>Çıkış Yap</span>
@@ -886,21 +731,22 @@ export default function App() {
           </div>
         </header>
         <main className="page-content">
+          <EmailVerifyBanner user={auth.user} onNotify={notify} />
           {tab !== "dashboard" && (
             <div className="page-intro module-title">
               <div>
                 <span className="eyebrow">
                   {tab === "settings"
-                    ? manager
+                    ? canSiteSettings
                       ? "SİTE YÖNETİMİ / AYARLAR"
                       : "PROFİL & DAİRE YÖNETİMİ"
                     : tab === "apartments"
                     ? "SİTE YÖNETİMİ / DAİRELER"
-                    : siteMeta.name.toUpperCase()}
+                    : siteMeta.name.toLocaleUpperCase("tr-TR")}
                 </span>
                 <h1>
                   {tab === "settings"
-                    ? manager
+                    ? canSiteSettings
                       ? "Site Ayarları"
                       : "Hesap & Daire Ayarları"
                     : navigation.find((n) => n.id === tab)?.label}
@@ -915,109 +761,103 @@ export default function App() {
           )}
           <ErrorBoundary>
           {tab === "dashboard" && (
-            <Dashboard
-              manager={manager}
-              user={user}
-              units={units}
-              dues={visibleDues}
-              requests={visibleRequests}
-              announcements={initialAnnouncements}
-              onNavigate={navigate}
-              onPay={(due) => setModal({ type: "pay", due })}
-              onRequest={() => setModal({ type: "request" })}
-              residentName={residentName}
-            />
-          )}{" "}
-          {tab === "apartments" && manager && (
-            <Apartments
-              units={units}
-              users={users}
-              residentFor={residentFor}
-              onSave={saveResident}
-              onBatchGenerate={handleBatchGenerate}
-              onNotify={notify}
-              siteName={siteMeta?.name || "Kovan Sitesi"}
-            />
-          )}{" "}
-          {tab === "roles" && manager && (
-            <Roles
-              users={users}
-              units={units}
-              memberships={memberships}
-              residentFor={residentFor}
-              onNotify={notify}
-            />
-          )}{" "}
-          {tab === "settings" && (
-            manager ? (
-              <SiteSettings
-                siteMeta={siteMeta}
-                onUpdateSiteMeta={setSiteMeta}
-                units={units}
-                onNotify={notify}
-              />
-            ) : (
-              <ResidentSettings
+            <>
+              <DemoBanner>
+                <strong>Tahsilat, talep ve duyuru kartları örnek veridir;</strong> bu modüllerin backend'i henüz
+                geliştiriliyor. Site adı ve daire sayıları gerçek veridir.
+              </DemoBanner>
+              <Dashboard
+                manager={manager}
                 user={user}
-                session={session}
-                units={units}
-                onNotify={notify}
-                onSwitchToManager={() => switchAccountMode("admin")}
+                units={initialUnits}
+                dues={visibleDues}
+                requests={visibleRequests}
+                announcements={initialAnnouncements}
+                onNavigate={navigate}
+                onPay={(due) => setModal({ type: "pay", due })}
+                onRequest={() => setModal({ type: "request" })}
+                residentName={residentName}
+                siteName={siteMeta.name}
+                siteStats={site ? { unitCount: site.unitCount, blockCount: site.blockCount, occupiedCount } : undefined}
               />
+            </>
+          )}{" "}
+          {tab === "apartments" && canApartments && <ApartmentsLive auth={auth} onNotify={notify} />}{" "}
+          {tab === "roles" && canRoles && <RolesLive auth={auth} onNotify={notify} />}{" "}
+          {tab === "settings" && (
+            canSiteSettings ? (
+              <SiteSettingsLive auth={auth} siteMeta={siteMeta} onSiteUpdated={setSite} onNotify={notify} />
+            ) : (
+              <>
+                <DemoBanner>
+                  <strong>Profil düzenleme, araç ve bildirim tercihlerinin backend'i henüz yok.</strong> Ad ve
+                  e-posta gerçek hesabınızdan gelir; diğer alanlar örnektir ve kaydedilmez.
+                </DemoBanner>
+                <ResidentSettings
+                  user={user}
+                  session={{ unitId: DEMO_RESIDENT_UNIT }}
+                  units={initialUnits}
+                  onNotify={notify}
+                  onSwitchToManager={() => {}}
+                />
+              </>
             )
           )}{" "}
           {tab === "payments" && (
-            <Payments
-              dues={visibleDues}
-              units={units}
-              residentName={residentName}
-              manager={manager}
-              onPay={pay}
-              onAccrue={(items) => {
-                if (!manager) return;
-                setDues((prev) => [...items, ...prev]);
-                notify(`${items.length} daire için borç kaydı oluşturuldu.`);
-              }}
-              onReview={(id, approved) => {
-                if (!manager) return;
-                setDues((prev) =>
-                  prev.map((d) =>
-                    d.id === id
-                      ? {
-                          ...d,
-                          status: approved ? "Ödendi" : "Ödenmemiş",
-                          paidDate: approved ? TODAY : null,
-                        }
-                      : d,
-                  ),
-                );
-                notify(
-                  approved
-                    ? "Ödeme onaylandı."
-                    : "Bildirim reddedildi. Borç yeniden ödenmemiş olarak işaretlendi.",
-                );
-              }}
-              notify={notify}
-            />
+            <>
+              <DemoBanner />
+              <Payments
+                dues={visibleDues}
+                units={initialUnits}
+                residentName={residentName}
+                manager={manager}
+                onPay={pay}
+                onAccrue={(items) => {
+                  if (!manager) return;
+                  setDues((prev) => [...items, ...prev]);
+                  notify(`${items.length} daire için örnek borç kaydı oluşturuldu (kaydedilmedi).`);
+                }}
+                onReview={(id, approved) => {
+                  if (!manager) return;
+                  setDues((prev) =>
+                    prev.map((d) =>
+                      d.id === id
+                        ? {
+                            ...d,
+                            status: approved ? "Ödendi" : "Ödenmemiş",
+                            paidDate: approved ? TODAY : null,
+                          }
+                        : d,
+                    ),
+                  );
+                  notify(approved ? "Örnek ödeme onaylandı." : "Örnek bildirim reddedildi.");
+                }}
+                notify={notify}
+              />
+            </>
           )}{" "}
           {tab === "requests" && (
-            <Requests
-              requests={visibleRequests}
-              manager={manager}
-              residentName={residentName}
-              unitId={session?.unitId}
-              onCreate={createRequest}
-              onStatus={(id, status) => {
-                if (!manager) return;
-                setRequests((prev) =>
-                  prev.map((r) => (r.id === id ? { ...r, status } : r)),
-                );
-                notify("Talep durumu güncellendi.");
-              }}
-            />
+            <>
+              <DemoBanner />
+              <Requests
+                requests={visibleRequests}
+                manager={manager}
+                residentName={residentName}
+                unitId={demoUnitId}
+                onCreate={createRequest}
+                onStatus={(id, status) => {
+                  if (!manager) return;
+                  setRequests((prev) =>
+                    prev.map((r) => (r.id === id ? { ...r, status } : r)),
+                  );
+                  notify("Örnek talep durumu güncellendi.");
+                }}
+              />
+            </>
           )}{" "}
           {tab === "announcements" && (
             <div className="announcements-page">
+              <DemoBanner />
               {initialAnnouncements.map((a) => (
                 <article className="full-announcement" key={a.id}>
                   <span className="announcement-date">
@@ -1035,7 +875,7 @@ export default function App() {
                     <h2>{a.title}</h2>
                     <p>{a.body}</p>
                     <footer>
-                      <span>Kovan Site Yönetimi</span>
+                      <span>{siteMeta.name} Yönetimi</span>
                       <span>{dateLabel(a.date)}</span>
                     </footer>
                   </div>
@@ -1047,7 +887,7 @@ export default function App() {
           <footer className="page-footer">
             <span>© 2026 Kovan · Yaşamın düzeni.</span>
             <span>
-              Tüm sistem modülleri aktif · BMS-137, BMS-138, BMS-142 tam entegre.
+              Gerçek veri: giriş, site, blok/daire, üyeler, davetler ve site ayarları · Aidat, talep ve duyuru örnektir.
             </span>
           </footer>
         </main>
@@ -1061,6 +901,21 @@ export default function App() {
           </button>
         </div>
       )}
+      {(inviteToken || modal?.type === "invite") && (
+        <InviteJoinModal
+          initialToken={inviteToken}
+          onClose={() => {
+            closeInvite();
+            closeModal();
+          }}
+          onNotify={notify}
+          onJoined={() => {
+            closeInvite();
+            closeModal();
+            setTab("dashboard");
+          }}
+        />
+      )}
       {modal?.type === "pay" && (
         <PaymentModal
           due={modal.due}
@@ -1073,7 +928,7 @@ export default function App() {
       )}
       {modal?.type === "request" && (
         <RequestModal
-          unitId={session?.unitId}
+          unitId={demoUnitId}
           onClose={closeModal}
           onSubmit={(r) => {
             createRequest(r);

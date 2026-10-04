@@ -1,0 +1,59 @@
+# DigitalOcean test cluster'i (k8s-uniconn-test): frontend kovan namespace'inde, backend ile ayni yerde calisir.
+# Uygulama: kubectl apply -k k8s/overlays/cloud   (backend reposundaki k8s/README.md'deki kubeconfig ile)
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: kovan
+
+resources:
+  - ../../base
+
+images:
+  - name: kovan-fe
+    newName: ghcr.io/apartman-yonetim-sistemi/kovan-web
+    newTag: 5428d40 # Her deploy'da commit SHA'si ile guncellenir
+
+patches:
+  # Tek node'lu, ortak test cluster'i: tek kopya ve kucuk kaynak; imaj ozel GitHub registry'sinden cekilir.
+  - target:
+      kind: Deployment
+      name: kovan-fe-deployment
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 1
+      - op: replace
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: IfNotPresent
+      - op: replace
+        path: /spec/template/spec/containers/0/resources
+        value:
+          requests:
+            cpu: 20m
+            memory: 32Mi
+          limits:
+            memory: 64Mi
+      - op: add
+        path: /spec/template/spec/imagePullSecrets
+        value:
+          - name: ghcr-pull
+  - target:
+      kind: Ingress
+      name: kovan-fe-ingress
+    patch: |-
+      - op: replace
+        path: /metadata/annotations
+        value:
+          cert-manager.io/cluster-issuer: letsencrypt-kovanbe-test
+      - op: add
+        path: /spec/ingressClassName
+        value: nginx
+      - op: replace
+        path: /spec/rules/0/host
+        value: kovan.universeconn.online
+      - op: add
+        path: /spec/tls
+        value:
+          - hosts:
+              - kovan.universeconn.online
+            secretName: kovan-fe-test-tls
