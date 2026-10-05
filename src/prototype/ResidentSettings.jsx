@@ -18,6 +18,8 @@ import {
   Heart,
   ArrowLeftRight,
   AlertTriangle,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { Button, Field, Panel } from "./UI";
 
@@ -27,6 +29,8 @@ export default function ResidentSettings({
   units = [],
   onNotify,
   onSwitchToManager,
+  theme,
+  onToggleTheme,
 }) {
   const [activeTab, setActiveTab] = useState("profile"); // 'profile' | 'vehicles' | 'notifications' | 'security'
 
@@ -486,6 +490,32 @@ export default function ResidentSettings({
                       }
                     />
                   </Field>
+                </div>
+              </div>
+
+              {/* Görünüm & Tema Tercihi (Özellikle Mobil ve Hızlı Erişim İçin) */}
+              <div className="settings-sub-section">
+                <h4>Görünüm ve Tema Tercihi</h4>
+                <p className="text-xs text-muted mt-1">
+                  Uygulama arayüzünün görünümünü gündüz ve gece kullanımınıza göre açık veya koyu tema olarak ayarlayabilirsiniz.
+                </p>
+                <div style={{ display: "flex", gap: "12px", marginTop: "12px", flexWrap: "wrap" }}>
+                  <button
+                    type="button"
+                    className={`theme-select-card ${theme === "light" ? "active" : ""}`}
+                    onClick={() => theme !== "light" && onToggleTheme?.()}
+                  >
+                    <Sun size={16} />
+                    <span>Açık Tema</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={`theme-select-card ${theme === "dark" ? "active" : ""}`}
+                    onClick={() => theme !== "dark" && onToggleTheme?.()}
+                  >
+                    <Moon size={16} />
+                    <span>Koyu Tema</span>
+                  </button>
                 </div>
               </div>
 

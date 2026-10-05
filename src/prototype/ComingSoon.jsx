@@ -61,7 +61,17 @@ export default function ComingSoon({ onBackToLogin, theme, onToggleTheme }) {
             <Button onClick={onBackToLogin} className="btn-hero-primary">
               Mevcut Paneli Canlı Deneyin <ArrowRight size={17} />
             </Button>
-            <a href="#ozellikler" className="btn-hero-secondary">
+            <a
+              href="#ozellikler"
+              onClick={(e) => {
+                e.preventDefault();
+                const el = document.getElementById("ozellikler");
+                if (el) {
+                  el.scrollIntoView({ behavior: "smooth", block: "start" });
+                }
+              }}
+              className="btn-hero-secondary"
+            >
               Özellikleri Keşfedin &darr;
             </a>
           </div>

@@ -21,14 +21,16 @@ import {
   Clock,
   Wrench,
   Mail,
-  User,
   KeyRound,
+  Sun,
+  Moon,
 } from "lucide-react";
 import Login from "./prototype/Login";
 import Dashboard from "./prototype/Dashboard";
 import Payments, { PaymentModal } from "./prototype/Payments";
 import Requests, { RequestModal } from "./prototype/Requests";
 import ResidentSettings from "./prototype/ResidentSettings";
+import Announcements from "./prototype/Announcements";
 import ComingSoon from "./prototype/ComingSoon";
 import { Brand, Button, ErrorBoundary, Modal, ThemeToggle } from "./prototype/UI";
 import useTheme from "./prototype/useTheme";
@@ -39,7 +41,6 @@ import {
   initialDues,
   initialRequests,
   initialAnnouncements,
-  dateLabel,
   TODAY,
 } from "./prototype/data";
 import { getAuth, onAuthChange } from "./api/client";
@@ -52,6 +53,15 @@ import { DemoBanner } from "./live/common";
 import { EmailVerifyBanner, SitePicker } from "./live/SessionScreens";
 import { fullName, roleLabel } from "./live/labels";
 import "./App.css";
+
+function getInitials(name) {
+  if (!name || typeof name !== "string") return "KV";
+  const clean = name.trim();
+  if (!clean) return "KV";
+  const parts = clean.split(/\s+/);
+  if (parts.length === 1) return parts[0].slice(0, 2).toLocaleUpperCase("tr-TR");
+  return (parts[0][0] + parts[parts.length - 1][0]).toLocaleUpperCase("tr-TR");
+}
 
 const navigation = [
   { id: "dashboard", label: "Genel Bakış", icon: LayoutDashboard },
@@ -98,6 +108,7 @@ export default function App() {
   const [inviteToken, setInviteToken] = useState(invitationTokenFromUrl);
   const [dues, setDues] = useState(initialDues);
   const [requests, setRequests] = useState(initialRequests);
+  const [announcements, setAnnouncements] = useState(initialAnnouncements);
   // Adres çubuğundaki sayfa (/manager/settings gibi) önceliklidir; yoksa son açık sekme.
   const [tab, setTab] = useState(() => {
     const fromUrl = window.location.pathname.split("/")[2];
@@ -413,7 +424,7 @@ export default function App() {
       )}
       <aside className={`sidebar ${mobile ? "open" : ""}`}>
         <div className="sidebar-brand">
-          <Brand />
+          <Brand onClick={() => navigate("dashboard")} />
           <button
             className="icon-button mobile-only"
             aria-label="Menüyü kapat"
@@ -606,7 +617,9 @@ export default function App() {
             )}
           </div>
           <div className="topbar-right">
-            <ThemeToggle theme={theme} onToggle={toggleTheme} />
+            <div className="desktop-only">
+              <ThemeToggle theme={theme} onToggle={toggleTheme} />
+            </div>
             <button
               className="notification-button icon-button"
               aria-label="Duyuruları görüntüle"
@@ -625,12 +638,12 @@ export default function App() {
                 aria-expanded={profileMenuOpen}
                 aria-haspopup="true"
                 style={{ cursor: "pointer" }}
-                title="Profil menüsü ve oturumu kapat"
+                title={`${user?.name || "Kullanıcı"} - Profil menüsü ve oturumu kapat`}
               >
-                <span className="avatar">
-                  <User size={16} />
+                <span className="avatar avatar-initials">
+                  {getInitials(user?.name)}
                 </span>
-                <div className="user-profile-meta">
+                <div className="user-profile-meta desktop-only">
                   <div className="user-profile-name-row">
                     <strong>{user.name}</strong>
                   </div>
@@ -638,15 +651,15 @@ export default function App() {
                 </div>
                 <ChevronDown
                   size={14}
-                  className={`profile-chevron ${profileMenuOpen ? "rotate-180" : ""}`}
+                  className={`profile-chevron desktop-only ${profileMenuOpen ? "rotate-180" : ""}`}
                 />
               </button>
 
               {profileMenuOpen && (
                 <div className="profile-dropdown-menu">
                   <div className="profile-dropdown-header">
-                    <span className="avatar avatar-lg">
-                      <User size={20} />
+                    <span className="avatar avatar-lg avatar-initials">
+                      {getInitials(user?.name)}
                     </span>
                     <div className="header-meta">
                       <strong>{user.name}</strong>
@@ -655,6 +668,27 @@ export default function App() {
                         {(auth.roles || []).map(roleLabel).join(", ")}
                       </span>
                     </div>
+                  </div>
+
+                  {/* Görünüm Teması Switcher (Özellikle Mobil Kullanıcılar İçin) */}
+                  <div className="profile-theme-switch-row">
+                    <div className="profile-theme-info">
+                      {theme === "dark" ? <Moon size={15} /> : <Sun size={15} />}
+                      <span>Görünüm Teması</span>
+                    </div>
+                    <button
+                      type="button"
+                      className="profile-theme-toggle-btn"
+                      onClick={toggleTheme}
+                      title="Açık ve koyu tema arasında geçiş yapın"
+                    >
+                      <span className={`theme-pill ${theme === "light" ? "active" : ""}`}>
+                        <Sun size={12} /> Açık
+                      </span>
+                      <span className={`theme-pill ${theme === "dark" ? "active" : ""}`}>
+                        <Moon size={12} /> Koyu
+                      </span>
+                    </button>
                   </div>
 
                   {/* Kullanıcının üye olduğu diğer siteler */}
@@ -772,7 +806,7 @@ export default function App() {
                 units={initialUnits}
                 dues={visibleDues}
                 requests={visibleRequests}
-                announcements={initialAnnouncements}
+                announcements={announcements}
                 onNavigate={navigate}
                 onPay={(due) => setModal({ type: "pay", due })}
                 onRequest={() => setModal({ type: "request" })}
@@ -799,6 +833,8 @@ export default function App() {
                   units={initialUnits}
                   onNotify={notify}
                   onSwitchToManager={() => {}}
+                  theme={theme}
+                  onToggleTheme={toggleTheme}
                 />
               </>
             )
@@ -856,32 +892,24 @@ export default function App() {
             </>
           )}{" "}
           {tab === "announcements" && (
-            <div className="announcements-page">
-              <DemoBanner />
-              {initialAnnouncements.map((a) => (
-                <article className="full-announcement" key={a.id}>
-                  <span className="announcement-date">
-                    <strong>
-                      {new Date(`${a.date}T12:00:00`).getDate()}
-                    </strong>
-                    <span>
-                      {new Date(`${a.date}T12:00:00`)
-                        .toLocaleDateString("tr-TR", { month: "short" })
-                        .toLocaleUpperCase("tr-TR")}
-                    </span>
-                  </span>
-                  <div>
-                    <span className="gold-label">{a.category}</span>
-                    <h2>{a.title}</h2>
-                    <p>{a.body}</p>
-                    <footer>
-                      <span>{siteMeta.name} Yönetimi</span>
-                      <span>{dateLabel(a.date)}</span>
-                    </footer>
-                  </div>
-                </article>
-              ))}
-            </div>
+            <>
+              <DemoBanner>
+                <strong>Site duyuruları backend servisi geliştirme aşamasındadır;</strong> şu an örnek veriler
+                gösterilmektedir ve kaydedilmez.
+              </DemoBanner>
+              <Announcements
+                announcements={announcements}
+                manager={manager}
+                onAddAnnouncement={(newAnn) => {
+                  setAnnouncements((prev) => [newAnn, ...prev]);
+                  notify("Yeni duyuru başarıyla yayınlandı ve sakinlere duyuruldu (örnek).");
+                }}
+                onDeleteAnnouncement={(id) => {
+                  setAnnouncements((prev) => prev.filter((a) => a.id !== id));
+                  notify("Duyuru yayından kaldırıldı.");
+                }}
+              />
+            </>
           )}
           </ErrorBoundary>
           <footer className="page-footer">

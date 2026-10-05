@@ -15,9 +15,22 @@ export function ThemeToggle({ theme, onToggle }) {
     </button>
   );
 }
-export function Brand() {
+export function Brand({ onClick, className = "", style }) {
   return (
-    <div className="brand">
+    <div
+      className={`brand ${className}`}
+      onClick={onClick}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      style={{ cursor: onClick ? "pointer" : "default", ...style }}
+      onKeyDown={(e) => {
+        if (onClick && (e.key === "Enter" || e.key === " ")) {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+      title={onClick ? "Genel Bakış ana sayfasına git" : undefined}
+    >
       <img src="/brand/KOVAN_Yazi_ve_Simgeler.svg" alt="KOVAN" />
       <span>KONUT & SİTE YÖNETİMİ</span>
     </div>

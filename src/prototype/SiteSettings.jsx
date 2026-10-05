@@ -15,6 +15,8 @@ import {
   Sparkles,
   Smartphone,
   Info,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { Button, Field, Panel } from "./UI";
 import { APARTMENT_TYPES, money } from "./data";
@@ -24,6 +26,8 @@ export default function SiteSettings({
   onUpdateSiteMeta,
   units = [],
   onNotify,
+  theme,
+  onToggleTheme,
 }) {
   // 6 Ana Kurumsal Sekme
   const [activeTab, setActiveTab] = useState("general"); // 'general' | 'finance' | 'dues' | 'facilities' | 'notifications' | 'privacy'
@@ -385,6 +389,40 @@ export default function SiteSettings({
                       }
                     />
                   </Field>
+                </div>
+              </div>
+
+              {/* Görünüm ve Tema Tercihi (Özellikle Mobil ve Hızlı Erişim İçin) */}
+              <div className="settings-card-box mt-3">
+                <div className="settings-card-header">
+                  <div className="flex items-center gap-2">
+                    {theme === "dark" ? <Moon size={18} className="text-gold" /> : <Sun size={18} className="text-gold" />}
+                    <strong>Uygulama Teması ve Görünüm Tercihi</strong>
+                  </div>
+                  <span className="badge info">
+                    {theme === "dark" ? "Koyu Tema Aktif" : "Açık Tema Aktif"}
+                  </span>
+                </div>
+                <p className="text-xs text-muted mt-1">
+                  Yönetim panelinin açık veya koyu temasını buradan ya da üst menüden değiştirebilirsiniz.
+                </p>
+                <div style={{ display: "flex", gap: "12px", marginTop: "12px", flexWrap: "wrap" }}>
+                  <button
+                    type="button"
+                    className={`theme-select-card ${theme === "light" ? "active" : ""}`}
+                    onClick={() => theme !== "light" && onToggleTheme?.()}
+                  >
+                    <Sun size={16} />
+                    <span>Açık Tema</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={`theme-select-card ${theme === "dark" ? "active" : ""}`}
+                    onClick={() => theme !== "dark" && onToggleTheme?.()}
+                  >
+                    <Moon size={16} />
+                    <span>Koyu Tema</span>
+                  </button>
                 </div>
               </div>
             </div>
