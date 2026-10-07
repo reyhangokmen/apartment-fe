@@ -145,65 +145,84 @@ export default function ComingSoon({ onBackToLogin, theme, onToggleTheme }) {
         </div>
       </header>
 
-      {/* HERO BÖLÜMÜ (ORİJİNAL) */}
-      <section className="landing-hero">
-        <div className="landing-hero-content">
-          <div className="landing-pill">
-            <Sparkles size={14} className="text-gold" />
-            <span>Yeni Nesil Konut & Site Yönetim Ekosistemi</span>
-          </div>
-          <h1>
-            Yaşamın düzeni.<br />
-            <span className="text-gradient-gold">KOVAN ile dijitalleşiyor.</span>
-          </h1>
-          <p className="landing-lead">
-            Apartman ve site yönetimlerinin tüm aidat, sakin iletişimi, afet hazırlığı ve bakım süreçlerini tek çatı altında toplayan akıllı yönetim platformu çok yakında hizmetinizde.
-          </p>
-
-          <div className="landing-cta-row">
-            <Button onClick={onBackToLogin} className="btn-hero-primary">
-              Mevcut Paneli Canlı Deneyin <ArrowRight size={17} />
-            </Button>
-            <a
-              href="#ozellikler"
-              onClick={(e) => {
-                e.preventDefault();
-                const el = document.getElementById("ozellikler");
-                if (el) {
-                  el.scrollIntoView({ behavior: "smooth", block: "start" });
-                }
-              }}
-              className="btn-hero-secondary"
-            >
-              Özellikleri Keşfedin &darr;
-            </a>
-          </div>
+      {/* HERO BÖLÜMÜ (MİMARİ GÖRSEL + BAL PETEĞİ MİX) */}
+      <section className="landing-hero-wrapper">
+        <div className="landing-hero-backdrop">
+          <div className="landing-hero-building-bg" />
+          <div className="landing-hero-honeycomb" />
+          <div className="landing-hero-glow-orb glow-orb-1" />
+          <div className="landing-hero-glow-orb glow-orb-2" />
+          <div className="landing-hero-gradient-overlay" />
         </div>
 
-        {/* MİMARİ GRAFİK VURGUSU (ORİJİNAL) */}
-        <div className="landing-hero-visual">
-          <div className="landing-visual-card">
-            <div className="visual-top">
-              <span className="dot dot-red" />
-              <span className="dot dot-yellow" />
-              <span className="dot dot-green" />
-              <span className="visual-title">KOVAN ERP v2.4</span>
+        <div className="landing-hero">
+          <div className="landing-hero-content">
+            <div className="landing-pill">
+              <Sparkles size={14} className="text-gold" />
+              <span>Yeni Nesil Konut & Site Yönetim Ekosistemi</span>
             </div>
-            <div className="visual-metrics-grid">
-              <div className="visual-stat">
-                <small>Aylık Tahsilat Oranı</small>
-                <strong>%98.4</strong>
-                <span className="badge-sub">PayTR Sanal POS Entegre</span>
+            <h1>
+              Yaşamın düzeni.<br />
+              <span className="text-gradient-gold">KOVAN ile dijitalleşiyor.</span>
+            </h1>
+            <p className="landing-lead">
+              Apartman ve site yönetimlerinin tüm aidat, sakin iletişimi, afet hazırlığı ve bakım süreçlerini tek çatı altında toplayan akıllı yönetim platformu çok yakında hizmetinizde.
+            </p>
+
+            <div className="landing-cta-row">
+              <Button onClick={onBackToLogin} className="btn-hero-primary">
+                Mevcut Paneli Canlı Deneyin <ArrowRight size={17} />
+              </Button>
+              <a
+                href="#ozellikler"
+                onClick={(e) => {
+                  e.preventDefault();
+                  const el = document.getElementById("ozellikler");
+                  if (el) {
+                    el.scrollIntoView({ behavior: "smooth", block: "start" });
+                  }
+                }}
+                className="btn-hero-secondary"
+              >
+                Özellikleri Keşfedin &darr;
+              </a>
+            </div>
+          </div>
+
+          {/* MİMARİ GRAFİK VURGUSU */}
+          <div className="landing-hero-visual">
+            <div className="landing-visual-card">
+              <div className="visual-top">
+                <span className="dot dot-red" />
+                <span className="dot dot-yellow" />
+                <span className="dot dot-green" />
+                <span className="visual-title">KOVAN ERP v2.4</span>
               </div>
-              <div className="visual-stat">
-                <small>Afet Tahliye Kaydı</small>
-                <strong>Aktif</strong>
-                <span className="badge-sub text-amber-500">🚨 Hasta & Öncelik Hazır</span>
+
+              {/* Apartman Görseli Vitrini */}
+              <div className="visual-building-preview">
+                <img src="/login-building.jpg" alt="KOVAN Akıllı Site" />
+                <div className="preview-badge">
+                  <span className="pulse-dot" /> KOVAN Akıllı Site Otomasyonu
+                </div>
               </div>
-              <div className="visual-stat">
-                <small>Sakin Katılımı</small>
-                <strong>7 Gün</strong>
-                <span className="badge-sub">Güvenli Yönetici Daveti</span>
+
+              <div className="visual-metrics-grid">
+                <div className="visual-stat">
+                  <small>Aylık Tahsilat Oranı</small>
+                  <strong>%98.4</strong>
+                  <span className="badge-sub">PayTR Sanal POS Entegre</span>
+                </div>
+                <div className="visual-stat">
+                  <small>Afet Tahliye Kaydı</small>
+                  <strong>Aktif</strong>
+                  <span className="badge-sub text-amber-500">🚨 Hasta & Öncelik Hazır</span>
+                </div>
+                <div className="visual-stat">
+                  <small>Sakin Katılımı</small>
+                  <strong>7 Gün</strong>
+                  <span className="badge-sub">Güvenli Yönetici Daveti</span>
+                </div>
               </div>
             </div>
           </div>
