@@ -567,11 +567,11 @@ function UnitModal({ unit, block, residents, canInvite, onClose, onChanged, onNo
                   <option value="KIRACI">Kiracı</option>
                 </select>
               </Field>
-              <Field label=" ">
-                <Button type="submit" disabled={assign.busy}>
+              <div className="field" style={{ justifyContent: "flex-end" }}>
+                <Button type="submit" disabled={assign.busy} style={{ height: "41px", minHeight: "41px", width: "100%" }}>
                   {assign.busy ? "Gönderiliyor…" : "Ekle / Davet Et"}
                 </Button>
-              </Field>
+              </div>
             </form>
             <Notice kind="error">{assign.error}</Notice>
 
