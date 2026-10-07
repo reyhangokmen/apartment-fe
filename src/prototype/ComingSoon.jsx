@@ -36,6 +36,38 @@ function LinkedInIcon({ size = 16, className = "" }) {
   );
 }
 
+// Apple App Store Resmi Logosu
+function AppleLogo({ size = 22, className = "" }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 170 170"
+      fill="currentColor"
+      className={className}
+    >
+      <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.16-1.9-14.42-6.08-3.7-3.04-7.6-7.77-11.7-14.18-5.77-8.91-10.29-19.14-13.56-30.68-3.27-11.54-4.9-22.39-4.9-32.55 0-14.13 3.59-25.59 10.77-34.38 7.18-8.79 16.23-13.31 27.15-13.56 5.34 0 11.05 1.41 17.13 4.23 6.08 2.82 10.05 4.34 11.91 4.56 1.86-.22 5.94-1.74 12.24-4.56 6.3-2.82 11.83-4.12 16.59-3.9 12.19.65 21.84 5.38 28.96 14.2-10.66 6.52-15.89 15.44-15.68 26.77.22 8.7 3.64 15.93 10.27 21.68 6.63 5.76 14.56 9.08 23.79 9.95-2.18 6.52-4.79 13.04-7.83 19.57zM119.22 31.84c0-7.18 2.61-13.91 7.83-20.19 5.22-6.28 11.64-10.27 19.27-11.97.22 1.3.33 2.61.33 3.92 0 7.18-2.77 14.08-8.32 20.69-5.55 6.61-12.01 10.49-19.38 11.63-.44-1.3-.73-2.66-.73-4.08z" />
+    </svg>
+  );
+}
+
+// Google Play Store Resmi Logosu
+function GooglePlayLogo({ size = 20, className = "" }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 512 512"
+      className={className}
+    >
+      <path fill="#4285F4" d="M48.7 16.3C40.6 24.9 36 37.8 36 53.6v404.8c0 15.8 4.6 28.7 12.7 37.3l2.1 1.9L278.4 270v-5.6L50.8 14.4l-2.1 1.9z" />
+      <path fill="#FBBC04" d="M358.3 350.3l-79.9-79.9v-5.6l79.9-79.9 1.8 1 94.6 53.8c27 15.3 27 40.5 0 55.9l-94.6 53.7-1.8 1z" />
+      <path fill="#EA4335" d="M278.4 270.4L50.8 497.6c8.9 9.4 23.6 10.6 40.3 1.1l240.8-136.8-53.5-91.5z" />
+      <path fill="#34A853" d="M278.4 241.6l53.5-91.5L91.1 13.3c-16.7-9.5-31.4-8.3-40.3 1.1L278.4 241.6z" />
+    </svg>
+  );
+}
+
 // Gelecekte eklenecek yol haritası modülleri
 const ROADMAP_MODULES = [
   {
@@ -298,8 +330,25 @@ export default function ComingSoon({ onBackToLogin, theme, onToggleTheme }) {
               Yönetici ve sakinler için optimize edilmiş sezgisel arayüz. Duyurular, arıza talepleri, aidat ödemeleri ve zil bildirimleri doğrudan cebinizde.
             </p>
             <div className="app-store-badges">
-              <span className="app-badge"><Smartphone size={16} /> iOS Uygulaması Çok Yakında</span>
-              <span className="app-badge"><Smartphone size={16} /> Android Uygulaması Çok Yakında</span>
+              {/* App Store Resmi Rozet */}
+              <div className="official-store-badge">
+                <AppleLogo size={24} className="store-logo-icon" />
+                <div className="badge-text-col">
+                  <span className="badge-top-text">Çok Yakında</span>
+                  <strong className="badge-main-text">App Store</strong>
+                </div>
+                <span className="store-status-tag">iOS</span>
+              </div>
+
+              {/* Google Play Resmi Rozet */}
+              <div className="official-store-badge">
+                <GooglePlayLogo size={22} className="store-logo-icon" />
+                <div className="badge-text-col">
+                  <span className="badge-top-text">Çok Yakında</span>
+                  <strong className="badge-main-text">Google Play</strong>
+                </div>
+                <span className="store-status-tag">Android</span>
+              </div>
             </div>
           </div>
           <div className="mobile-mockup-graphic">
@@ -316,6 +365,11 @@ export default function ComingSoon({ onBackToLogin, theme, onToggleTheme }) {
               <div className="phone-card alert">
                 <small>🚨 Bina Afet Bilgisi</small>
                 <span>Tahliye Önceliği Kayıtlı</span>
+              </div>
+              <div className="phone-quick-actions">
+                <span>📱 QR Kapı</span>
+                <span>🛠️ Talep Aç</span>
+                <span>📋 Duyurular</span>
               </div>
             </div>
           </div>
