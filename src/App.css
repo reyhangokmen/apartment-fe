@@ -7285,3 +7285,389 @@ td small {
   font-size: 12px;
   margin: 0;
 }
+
+
+/* ==========================================================================
+   KOVAN LANDING PAGE: ROADMAP, TEAM & DONATION EXTENSIONS
+   ========================================================================== */
+
+/* 1. Roadmap Section */
+.landing-roadmap-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 60px 32px;
+}
+
+.roadmap-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 22px;
+}
+
+.roadmap-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md, 12px);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.roadmap-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--gold-dark);
+  box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.08);
+}
+
+.roadmap-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.roadmap-status-pill {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(245, 158, 11, 0.12);
+  color: #b45309;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+:root[data-theme="dark"] .roadmap-status-pill {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+}
+
+.roadmap-card h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  color: var(--ink);
+}
+
+.roadmap-badge-sub {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--gold-dark);
+  margin-bottom: 10px;
+}
+
+.roadmap-card p {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.55;
+  margin: 0 0 16px 0;
+}
+
+.roadmap-funding-note {
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px dashed var(--line);
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.45;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+/* 2. Team Section */
+.landing-team-section {
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 64px 32px;
+}
+
+.landing-team-section .team-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.team-grid-5 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.team-member-card {
+  background: var(--page);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md, 12px);
+  padding: 24px 18px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.team-member-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px -8px rgba(0, 0, 0, 0.08);
+}
+
+.member-avatar-circle {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold-light, #fef3c7), #fde68a);
+  color: var(--gold-dark, #92400e);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 14px;
+  border: 2px solid var(--surface);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+:root[data-theme="dark"] .member-avatar-circle {
+  background: linear-gradient(135deg, rgba(217, 119, 6, 0.25), rgba(245, 158, 11, 0.15));
+  color: #fbbf24;
+}
+
+.member-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 4px 0;
+}
+
+.member-role-badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.member-focus {
+  font-size: 11.5px;
+  color: var(--muted);
+  line-height: 1.4;
+  margin: 0 0 16px 0;
+  min-height: 32px;
+}
+
+.member-linkedin-link {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #0a66c2;
+  background: rgba(10, 102, 194, 0.08);
+  border: 1px solid rgba(10, 102, 194, 0.25);
+  border-radius: 999px;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.member-linkedin-link:hover {
+  background: #0a66c2;
+  color: #ffffff;
+  border-color: #0a66c2;
+}
+
+:root[data-theme="dark"] .member-linkedin-link {
+  color: #70b5f9;
+  background: rgba(10, 102, 194, 0.2);
+  border-color: rgba(112, 181, 249, 0.35);
+}
+
+:root[data-theme="dark"] .member-linkedin-link:hover {
+  background: #0a66c2;
+  color: #ffffff;
+}
+
+/* 3. Donation Section */
+.landing-donate-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 50px 32px;
+}
+
+.donate-banner-card {
+  background: linear-gradient(135deg, rgba(217, 119, 6, 0.06), rgba(245, 158, 11, 0.12));
+  border: 1.5px solid rgba(217, 119, 6, 0.3);
+  border-radius: var(--radius-lg, 16px);
+  padding: 36px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+:root[data-theme="dark"] .donate-banner-card {
+  background: linear-gradient(135deg, rgba(217, 119, 6, 0.15), rgba(245, 158, 11, 0.05));
+  border-color: rgba(245, 158, 11, 0.35);
+}
+
+.donate-banner-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  max-width: 700px;
+}
+
+.donate-icon-bubble {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #e11d48;
+}
+
+:root[data-theme="dark"] .donate-icon-bubble {
+  background: var(--surface);
+  color: #fb7185;
+}
+
+.donate-pill {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(225, 29, 72, 0.1);
+  color: #be123c;
+  margin-bottom: 6px;
+}
+
+:root[data-theme="dark"] .donate-pill {
+  color: #fda4af;
+  background: rgba(225, 29, 72, 0.2);
+}
+
+.donate-banner-text h3 {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--ink);
+  margin: 0 0 6px 0;
+}
+
+.donate-banner-text p {
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.donate-banner-right {
+  display: flex;
+  align-items: center;
+}
+
+.btn-donate-trigger {
+  padding: 12px 22px;
+  font-size: 14px;
+  font-weight: 700;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(217, 119, 6, 0.25);
+  cursor: pointer;
+}
+
+/* 4. Donation Modal */
+.donate-modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 14px;
+}
+
+.donate-intro-text {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.donate-method-box {
+  background: var(--page);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm, 8px);
+  padding: 14px;
+}
+
+.method-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.method-copy-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.method-copy-row code {
+  font-family: monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: 0.02em;
+  word-break: break-all;
+}
+
+.btn-copy-code {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--page);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--ink);
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.btn-copy-code:hover {
+  border-color: var(--gold-dark);
+  color: var(--gold-dark);
+}
+
+.btn-copy-code.copied {
+  background: #10b981;
+  color: #ffffff;
+  border-color: #10b981;
+}
+
+.donate-thanks-note {
+  font-size: 11.5px;
+  color: var(--muted);
+  text-align: center;
+  margin: 4px 0 0 0;
+}
