@@ -326,38 +326,40 @@ function ModulesTab({ onNotify }) {
       title="Site Modülleri"
       subtitle="Zorunlu modüller her sitede açıktır. İsteğe bağlı bir modülü kapattığınızda modül 10 dakika daha açık kalır; bu sürede vazgeçebilirsiniz. Menüdeki değişiklik kullanıcılar siteyi yeniden seçtiğinde yansır."
     >
-      <Notice kind="error">{error}</Notice>
-      {modules.data.map((m) => {
-        const scheduled = Boolean(m.active && m.scheduledDeactivationAt);
-        // Planlı kapanışta "aç" isteği vazgeçmektir; aksi halde mevcut durumun tersi istenir.
-        const target = scheduled || !m.active;
-        return (
-          <div className="live-module-row" key={m.code}>
-            <div>
-              <strong>{m.name}</strong>
-              <div className="live-row mt-1">
-                {m.mandatory && <span className="live-chip">Zorunlu</span>}
-                {!m.available && <span className="live-chip off">Kullanıma kapalı</span>}
-                {m.active ? (
-                  <span className="live-chip ok">Açık</span>
-                ) : (
-                  <span className="live-chip off">Kapalı</span>
-                )}
-                {scheduled && (
-                  <span className="live-chip warn">
-                    {minutesLeft(m.scheduledDeactivationAt)} dk sonra kapanacak
-                  </span>
-                )}
+      <div className="live-modules-list">
+        <Notice kind="error">{error}</Notice>
+        {modules.data.map((m) => {
+          const scheduled = Boolean(m.active && m.scheduledDeactivationAt);
+          // Planlı kapanışta "aç" isteği vazgeçmektir; aksi halde mevcut durumun tersi istenir.
+          const target = scheduled || !m.active;
+          return (
+            <div className="live-module-row" key={m.code}>
+              <div>
+                <strong>{m.name}</strong>
+                <div className="live-row mt-1">
+                  {m.mandatory && <span className="live-chip">Zorunlu</span>}
+                  {!m.available && <span className="live-chip off">Kullanıma kapalı</span>}
+                  {m.active ? (
+                    <span className="live-chip ok">Açık</span>
+                  ) : (
+                    <span className="live-chip off">Kapalı</span>
+                  )}
+                  {scheduled && (
+                    <span className="live-chip warn">
+                      {minutesLeft(m.scheduledDeactivationAt)} dk sonra kapanacak
+                    </span>
+                  )}
+                </div>
               </div>
+              {!m.mandatory && m.available && (
+                <Button secondary={m.active && !scheduled} disabled={busy} onClick={() => toggle(m, target)}>
+                  {scheduled ? "Kapatmaktan Vazgeç" : m.active ? "Kapat" : "Aç"}
+                </Button>
+              )}
             </div>
-            {!m.mandatory && m.available && (
-              <Button secondary={m.active && !scheduled} disabled={busy} onClick={() => toggle(m, target)}>
-                {scheduled ? "Kapatmaktan Vazgeç" : m.active ? "Kapat" : "Aç"}
-              </Button>
-            )}
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </Panel>
   );
 }
