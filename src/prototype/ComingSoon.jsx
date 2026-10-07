@@ -337,7 +337,6 @@ export default function ComingSoon({ onBackToLogin, theme, onToggleTheme }) {
                   <span className="badge-top-text">Çok Yakında</span>
                   <strong className="badge-main-text">App Store</strong>
                 </div>
-                <span className="store-status-tag">iOS</span>
               </div>
 
               {/* Google Play Resmi Rozet */}
@@ -347,7 +346,6 @@ export default function ComingSoon({ onBackToLogin, theme, onToggleTheme }) {
                   <span className="badge-top-text">Çok Yakında</span>
                   <strong className="badge-main-text">Google Play</strong>
                 </div>
-                <span className="store-status-tag">Android</span>
               </div>
             </div>
           </div>
