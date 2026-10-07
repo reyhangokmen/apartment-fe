@@ -131,31 +131,33 @@ export default function ComingSoon({ onBackToLogin, theme, onToggleTheme }) {
 
   return (
     <div className="landing-container">
-      {/* ÜST GEZİNME ÇUBUĞU (ORİJİNAL) */}
-      <header className="landing-header">
-        <div className="landing-brand-wrap">
-          <Brand />
-          <span className="landing-badge">Çok Yakında</span>
-        </div>
-        <div className="landing-header-actions">
-          {onToggleTheme && <ThemeToggle theme={theme} onToggle={onToggleTheme} />}
-          <Button secondary onClick={onBackToLogin}>
-            <ArrowLeft size={15} /> Demo Yönetim Paneline Giriş
-          </Button>
-        </div>
-      </header>
+      {/* TÜM SAYFAYI KAPSAYAN HİBRİT ARKA PLAN (APARTMAN + BAL PETEĞİ + AMBİYANS) */}
+      <div className="landing-page-bg-fixed">
+        <div className="landing-bg-building" />
+        <div className="landing-bg-honeycomb" />
+        <div className="landing-bg-glow-orb orb-top-right" />
+        <div className="landing-bg-glow-orb orb-mid-left" />
+        <div className="landing-bg-glow-orb orb-bottom-right" />
+        <div className="landing-bg-gradient-wash" />
+      </div>
 
-      {/* HERO BÖLÜMÜ (MİMARİ GÖRSEL + BAL PETEĞİ MİX) */}
-      <section className="landing-hero-wrapper">
-        <div className="landing-hero-backdrop">
-          <div className="landing-hero-building-bg" />
-          <div className="landing-hero-honeycomb" />
-          <div className="landing-hero-glow-orb glow-orb-1" />
-          <div className="landing-hero-glow-orb glow-orb-2" />
-          <div className="landing-hero-gradient-overlay" />
-        </div>
+      <div className="landing-content-layer">
+        {/* ÜST GEZİNME ÇUBUĞU (ORİJİNAL) */}
+        <header className="landing-header">
+          <div className="landing-brand-wrap">
+            <Brand />
+            <span className="landing-badge">Çok Yakında</span>
+          </div>
+          <div className="landing-header-actions">
+            {onToggleTheme && <ThemeToggle theme={theme} onToggle={onToggleTheme} />}
+            <Button secondary onClick={onBackToLogin}>
+              <ArrowLeft size={15} /> Demo Yönetim Paneline Giriş
+            </Button>
+          </div>
+        </header>
 
-        <div className="landing-hero">
+        {/* HERO BÖLÜMÜ */}
+        <section className="landing-hero">
           <div className="landing-hero-content">
             <div className="landing-pill">
               <Sparkles size={14} className="text-gold" />
@@ -226,8 +228,7 @@ export default function ComingSoon({ onBackToLogin, theme, onToggleTheme }) {
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
       {/* ÖNE ÇIKAN ÖZELLİKLER (ORİJİNAL) */}
       <section id="ozellikler" className="landing-features-section">
@@ -479,8 +480,9 @@ export default function ComingSoon({ onBackToLogin, theme, onToggleTheme }) {
           </div>
         </div>
       </footer>
+    </div>
 
-      {/* BAĞIŞ VE DESTEK MODALI */}
+    {/* BAĞIŞ VE DESTEK MODALI */}
       {showDonateModal && (
         <Modal
           title="Öğrenci Ekibimize Destek Olun"

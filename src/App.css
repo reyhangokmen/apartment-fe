@@ -7674,126 +7674,176 @@ td small {
 
 
 /* ==========================================================================
-   KOVAN LANDING HERO: APARTMENT BACKDROP + BAL PETEĞİ (HONEYCOMB) HYBRID
+   KOVAN LANDING: BÜTÜN SAYFAYI KAPSAYAN APARTMAN + BAL PETEĞİ HİBRİT ARKA PLAN
    ========================================================================== */
 
-.landing-hero-wrapper {
+.landing-container {
+  min-height: 100vh;
+  background: var(--page);
+  color: var(--ink);
   position: relative;
+  overflow-x: hidden;
+}
+
+/* Sabit Tam Sayfa Arka Plan (Scroll ettikçe arkada sabit, akıcı durur) */
+.landing-page-bg-fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
   overflow: hidden;
+}
+
+/* 1. Katman: Girişteki Apartman Fotoğrafı (Tüm sayfayı kaplayan zarif doku) */
+.landing-bg-building {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('/login-building.jpg') center center / cover no-repeat;
+  opacity: 0.10;
+  filter: saturate(1.15) contrast(1.1);
+}
+
+:root[data-theme="dark"] .landing-bg-building {
+  opacity: 0.08;
+  filter: saturate(0.9) brightness(0.65);
+}
+
+/* 2. Katman: Kesintisiz Bal Peteği Geometrisi */
+.landing-bg-honeycomb {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='84' viewBox='0 0 48 84'%3E%3Cpath d='M24 0 L48 14 L48 42 L24 56 L0 42 L0 14 Z M0 42 L24 56 L24 84 L0 70 Z M48 42 L24 56 L24 84 L48 70 Z' fill='none' stroke='%23d97706' stroke-width='1.1' stroke-opacity='0.12'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+}
+
+:root[data-theme="dark"] .landing-bg-honeycomb {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='84' viewBox='0 0 48 84'%3E%3Cpath d='M24 0 L48 14 L48 42 L24 56 L0 42 L0 14 Z M0 42 L24 56 L24 84 L0 70 Z M48 42 L24 56 L24 84 L48 70 Z' fill='none' stroke='%23fbbf24' stroke-width='1.1' stroke-opacity='0.14'/%3E%3C/svg%3E");
+}
+
+/* 3. Katman: Tüm Sayfaya Dağılmış Sıcak Işık Dalgaları (Glow Orbs) */
+.landing-bg-glow-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  pointer-events: none;
+}
+
+.orb-top-right {
+  width: 650px;
+  height: 650px;
+  top: -120px;
+  right: -100px;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.20) 0%, transparent 70%);
+}
+
+.orb-mid-left {
+  width: 580px;
+  height: 580px;
+  top: 35%;
+  left: -120px;
+  background: radial-gradient(circle, rgba(217, 119, 6, 0.14) 0%, transparent 70%);
+}
+
+.orb-bottom-right {
+  width: 550px;
+  height: 550px;
+  bottom: -100px;
+  right: -100px;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.16) 0%, transparent 70%);
+}
+
+/* 4. Katman: Degrade Yıkaması */
+.landing-bg-gradient-wash {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.25) 0%,
+    rgba(255, 255, 255, 0.55) 50%,
+    rgba(255, 255, 255, 0.75) 100%
+  );
+}
+
+:root[data-theme="dark"] .landing-bg-gradient-wash {
+  background: linear-gradient(
+    180deg,
+    rgba(15, 23, 42, 0.35) 0%,
+    rgba(15, 23, 42, 0.65) 50%,
+    rgba(15, 23, 42, 0.85) 100%
+  );
+}
+
+/* Sayfa İçerik Katmanı */
+.landing-content-layer {
+  position: relative;
+  z-index: 1;
+}
+
+/* Header Cam Efekti */
+.landing-header {
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
   border-bottom: 1px solid var(--line);
 }
 
-.landing-hero-backdrop {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-  z-index: 0;
+:root[data-theme="dark"] .landing-header {
+  background: rgba(15, 23, 42, 0.85) !important;
 }
 
-/* 1. Katman: Girişteki Apartman Fotoğrafı */
-.landing-hero-building-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: url('/login-building.jpg') center 22% / cover no-repeat;
-  opacity: 0.16;
-  filter: saturate(1.15) contrast(1.08);
-  transform: scale(1.02);
+/* Bütün Kartlar ve Bölümler İçin Uyumlu Buzlu Cam (Glassmorphism) */
+.landing-visual-card,
+.landing-feature-card,
+.roadmap-card,
+.team-member-card,
+.newsletter-card {
+  background: rgba(255, 255, 255, 0.82) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.85) !important;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.06) !important;
 }
 
-:root[data-theme="dark"] .landing-hero-building-bg {
-  opacity: 0.12;
-  filter: saturate(0.9) brightness(0.7);
+:root[data-theme="dark"] .landing-visual-card,
+:root[data-theme="dark"] .landing-feature-card,
+:root[data-theme="dark"] .roadmap-card,
+:root[data-theme="dark"] .team-member-card,
+:root[data-theme="dark"] .newsletter-card {
+  background: rgba(30, 41, 59, 0.78) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3) !important;
 }
 
-/* 2. Katman: Bal Peteği (Honeycomb) Geometrik Izgara */
-.landing-hero-honeycomb {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='84' viewBox='0 0 48 84'%3E%3Cpath d='M24 0 L48 14 L48 42 L24 56 L0 42 L0 14 Z M0 42 L24 56 L24 84 L0 70 Z M48 42 L24 56 L24 84 L48 70 Z' fill='none' stroke='%23d97706' stroke-width='1.1' stroke-opacity='0.16'/%3E%3C/svg%3E");
-  background-repeat: repeat;
-  mask-image: radial-gradient(circle at 68% 45%, black 25%, transparent 85%);
-  -webkit-mask-image: radial-gradient(circle at 68% 45%, black 25%, transparent 85%);
+/* Mobil Bölüm ve Ekip Bölümü Arka Planı (Sayfayı bölmemesi için yarı saydam) */
+.landing-mobile-preview,
+.landing-team-section {
+  background: rgba(255, 255, 255, 0.45) !important;
+  backdrop-filter: blur(8px);
 }
 
-:root[data-theme="dark"] .landing-hero-honeycomb {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='84' viewBox='0 0 48 84'%3E%3Cpath d='M24 0 L48 14 L48 42 L24 56 L0 42 L0 14 Z M0 42 L24 56 L24 84 L0 70 Z M48 42 L24 56 L24 84 L48 70 Z' fill='none' stroke='%23fbbf24' stroke-width='1.1' stroke-opacity='0.18'/%3E%3C/svg%3E");
-}
-
-/* 3. Katman: Ambiyans Işıltıları (Glow Orbs) */
-.landing-hero-glow-orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  pointer-events: none;
-}
-
-.glow-orb-1 {
-  width: 480px;
-  height: 480px;
-  top: -120px;
-  right: -60px;
-  background: radial-gradient(circle, rgba(245, 158, 11, 0.22) 0%, transparent 70%);
-}
-
-.glow-orb-2 {
-  width: 420px;
-  height: 420px;
-  bottom: -80px;
-  left: -80px;
-  background: radial-gradient(circle, rgba(217, 119, 6, 0.16) 0%, transparent 75%);
-}
-
-/* 4. Katman: Yumuşak degrade geçişi */
-.landing-hero-gradient-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.4) 0%,
-    rgba(255, 255, 255, 0.72) 65%,
-    var(--page) 100%
-  );
-}
-
-:root[data-theme="dark"] .landing-hero-gradient-overlay {
-  background: linear-gradient(
-    180deg,
-    rgba(15, 23, 42, 0.45) 0%,
-    rgba(15, 23, 42, 0.78) 65%,
-    var(--page) 100%
-  );
+:root[data-theme="dark"] .landing-mobile-preview,
+:root[data-theme="dark"] .landing-team-section {
+  background: rgba(15, 23, 42, 0.45) !important;
 }
 
 .landing-hero {
   position: relative;
   z-index: 1;
-}
-
-/* Buzlu Cam (Glassmorphism) Efekti - Visual Card */
-.landing-visual-card {
-  background: rgba(255, 255, 255, 0.84) !important;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.85) !important;
-  box-shadow: 0 24px 48px -12px rgba(217, 119, 6, 0.14), 0 8px 24px -6px rgba(0, 0, 0, 0.06) !important;
-}
-
-:root[data-theme="dark"] .landing-visual-card {
-  background: rgba(30, 41, 59, 0.78) !important;
-  border-color: rgba(255, 255, 255, 0.12) !important;
-  box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.35) !important;
 }
 
 .visual-building-preview {
