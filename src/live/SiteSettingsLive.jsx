@@ -29,8 +29,11 @@ export default function SiteSettingsLive({ auth, siteMeta, onSiteUpdated, onNoti
   ];
 
   return (
-    <>
-      <div className="subnav-tabs settings-tabs-nav">
+    <div className="site-settings-container">
+      <div
+        className="settings-tabs-nav live-settings-tabs-nav"
+        style={{ gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}
+      >
         {tabs.map(({ id, label, icon: Icon }) => (
           <button key={id} type="button" className={tab === id ? "active" : ""} onClick={() => setTab(id)}>
             <Icon size={16} /> {label}
@@ -49,7 +52,7 @@ export default function SiteSettingsLive({ auth, siteMeta, onSiteUpdated, onNoti
           <SiteSettings siteMeta={siteMeta} onUpdateSiteMeta={() => {}} units={[]} onNotify={onNotify} />
         </>
       )}
-    </>
+    </div>
   );
 }
 
