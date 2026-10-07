@@ -181,9 +181,9 @@ function DuesTab({ onNotify }) {
   const s = settings.data;
   return (
     <div className="live-stack">
-      <Panel title="Aidat Politikası" subtitle="Ödeme toleransı, avans taksitleri ve aidattan kimin sorumlu olduğu.">
+      <Panel title="Aidat Politikası" subtitle="Ödeme toleransı ve avans taksit alt sınırları.">
         <form onSubmit={submitSettings} className="settings-grid">
-          <div className="grid-3-col">
+          <div className="grid-2-col">
             <Field label="Tolerans Günü (0–30)">
               <input
                 type="number"
@@ -204,18 +204,6 @@ function DuesTab({ onNotify }) {
                 onChange={(e) => setForm({ ...form, minAdvanceInstallmentAmount: e.target.value })}
               />
             </Field>
-            <Field label="Varsayılan Borçlu">
-              <select
-                value={form.defaultDuesDebtorRule}
-                onChange={(e) => setForm({ ...form, defaultDuesDebtorRule: e.target.value })}
-              >
-                {DEBTOR_RULES.map((r) => (
-                  <option key={r.value} value={r.value}>
-                    {r.label}
-                  </option>
-                ))}
-              </select>
-            </Field>
           </div>
           <Notice kind="error">{save.error}</Notice>
           <div className="live-row end">
@@ -230,17 +218,17 @@ function DuesTab({ onNotify }) {
         title="Gecikme Faizi"
         subtitle="Kat Mülkiyeti Kanunu'na göre aylık en fazla %5. Değişiklik yönetim kurulu kararıyla yapılır ve geçmiş bir güne uygulanamaz."
       >
-        <div className="live-row mb-3">
-          <span className="live-chip gold">
-            <Percent size={11} /> Bugün geçerli: %{s.monthlyLateFeeRate}
-          </span>
-          {s.scheduledLateFeeRate != null && (
-            <span className="live-chip warn">
-              {dateOnly(s.scheduledRateEffectiveFrom)} itibarıyla: %{s.scheduledLateFeeRate}
-            </span>
-          )}
-        </div>
         <form onSubmit={submitRate} className="settings-grid">
+          <div className="live-row" style={{ marginBottom: "4px" }}>
+            <span className="live-chip gold" style={{ padding: "4px 10px", fontSize: "12px", gap: "6px" }}>
+              <Percent size={13} /> Bugün geçerli: %{s.monthlyLateFeeRate}
+            </span>
+            {s.scheduledLateFeeRate != null && (
+              <span className="live-chip warn" style={{ padding: "4px 10px", fontSize: "12px", gap: "6px" }}>
+                {dateOnly(s.scheduledRateEffectiveFrom)} itibarıyla: %{s.scheduledLateFeeRate}
+              </span>
+            )}
+          </div>
           <div className="grid-3-col">
             <Field label="Yeni Aylık Oran (%)">
               <input
