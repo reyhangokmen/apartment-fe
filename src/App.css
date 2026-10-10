@@ -8033,3 +8033,91 @@ td small {
     grid-template-columns: 1fr !important;
   }
 }
+
+
+/* ==========================================================================
+   DONATE BANNER MOBILE RESPONSIVE ENHANCEMENTS
+   ========================================================================== */
+
+@media (max-width: 860px) {
+  .landing-donate-section {
+    padding: 32px 18px !important;
+  }
+
+  .donate-banner-card {
+    padding: 24px 20px !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 18px !important;
+  }
+
+  .donate-banner-left {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 12px !important;
+    text-align: center !important;
+    max-width: 100% !important;
+  }
+
+  .donate-icon-bubble {
+    width: 46px !important;
+    height: 46px !important;
+    margin: 0 auto !important;
+  }
+
+  .donate-banner-text {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    width: 100% !important;
+  }
+
+  .donate-banner-text h2 {
+    font-size: 18px !important;
+    margin: 6px 0 8px 0 !important;
+    line-height: 1.35 !important;
+    text-align: center !important;
+  }
+
+  .donate-banner-text p {
+    font-size: 13px !important;
+    line-height: 1.55 !important;
+    text-align: center !important;
+    max-width: 100% !important;
+  }
+
+  .donate-banner-right {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+  }
+
+  .btn-donate-trigger {
+    width: 100% !important;
+    max-width: 320px !important;
+    justify-content: center !important;
+    padding: 12px 20px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .landing-donate-section {
+    padding: 24px 14px !important;
+  }
+
+  .donate-banner-card {
+    padding: 20px 16px !important;
+    border-radius: 14px !important;
+  }
+
+  .donate-banner-text h2 {
+    font-size: 16.5px !important;
+  }
+
+  .donate-banner-text p {
+    font-size: 12px !important;
+    line-height: 1.5 !important;
+  }
+}

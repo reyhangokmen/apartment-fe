@@ -492,14 +492,14 @@ export default function ComingSoon({ onBackToLogin, theme, onToggleTheme }) {
         <div className="donate-banner-card">
           <div className="donate-banner-left">
             <div className="donate-icon-bubble">
-              <Heart size={26} className="text-gold" />
+              <Heart size={24} className="text-gold" />
             </div>
-            <div>
-              <span className="donate-eyebrow">ÖĞRENCİ PROJESİNE KATKI</span>
+            <div className="donate-banner-text">
+              <span className="donate-pill">ÖĞRENCİ PROJESİNE KATKI</span>
               <h2>Öğrenci Ekibimize Destek Olmak İster misiniz?</h2>
               <p>
-                KOVAN'ın bulut sunucuları (Kubernetes kümesi), domain ve geliştirmekte olduğumuz Plaka Tanıma / QR donanım prototiplerinin maliyetlerini kendi öğrenci bütçemizle karşılıyoruz. 
-                Gelişimimize katkıda bulunmak ya da ekibimize bir kahve ısmarlamak isterseniz bağış ve destekleriniz bizim için çok kıymetli!
+                KOVAN'ın bulut sunucuları ve akıllı donanım prototiplerini kendi öğrenci bütçemizle karşılıyoruz. 
+                Gelişimimize katkıda bulunmak ya da ekibimize bir kahve ısmarlamak isterseniz desteğiniz bizim için çok kıymetli!
               </p>
             </div>
           </div>
