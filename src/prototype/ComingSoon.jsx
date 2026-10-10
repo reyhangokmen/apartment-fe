@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  ShieldCheck,
   Building2,
   Smartphone,
   Wallet,
@@ -104,40 +105,40 @@ const ROADMAP_MODULES = [
   },
 ];
 
-// KOVAN Öğrenci Geliştirme Ekibi
+// KOVAN Geliştirme Ekibi
 const TEAM_MEMBERS = [
   {
     name: "Yusuf Mermertaş",
-    role: "Full Stack Developer",
-    focus: "Sistem mimarisi, servis entegrasyonu ve mobil/web ürün geliştirme",
+    role: "Mobil & Frontend Developer",
+    focus: "Mobil uygulama mimarisi, Android/iOS entegrasyonu ve responsive web arayüzleri",
     linkedin: "https://www.linkedin.com/in/yusufmermertas?utm_source=share_via&utm_content=profile&utm_medium=member_ios",
     initials: "YM",
   },
   {
     name: "Onur Kaçar",
     role: "Backend & Database Developer",
-    focus: "Veritabanı ilişkileri, veri bütünlüğü ve backend servis geliştirme",
+    focus: "Veritabanı mimarisi, veri bütünlüğü ve backend servis geliştirme",
     linkedin: "https://www.linkedin.com/in/onurkacaar/?isSelfProfile=true",
     initials: "OK",
   },
   {
     name: "Hakan Tekin",
     role: "Backend & Cloud Architecture",
-    focus: "Kubernetes kümesi, Spring Boot mimarisi ve bulut dağıtımı",
+    focus: "Spring Boot backend mimarisi, Kubernetes cluster ve bulut altyapısı",
     linkedin: "https://www.linkedin.com/in/hakan-tekin-15122b26a",
     initials: "HT",
   },
   {
     name: "Ceren Mıcık",
-    role: "Full Stack Developer",
-    focus: "Yetkilendirme mimarisi, servis katmanı ve sistem entegrasyonları",
+    role: "Backend Developer",
+    focus: "Backend API geliştirme, yetkilendirme mimarisi ve mikroservis entegrasyonları",
     linkedin: "https://www.linkedin.com/in/ceren-m%C4%B1c%C4%B1k-5bb308294?utm_source=share_via&utm_content=profile&utm_medium=member_ios",
     initials: "CM",
   },
   {
     name: "Reyhan Gökmen",
     role: "Frontend & UI/UX Developer",
-    focus: "Modern kullanıcı arayüzü, responsive deneyim ve bileşen tasarımı",
+    focus: "Modern kullanıcı arayüzü, responsive deneyim ve bileşen kütüphanesi",
     linkedin: "https://www.linkedin.com/in/reyhan-g%C3%B6kmen-9103391a8",
     initials: "RG",
   },
@@ -262,6 +263,35 @@ export default function ComingSoon({ onBackToLogin, theme, onToggleTheme }) {
           </div>
         </section>
 
+        {/* MOBİL UYGULAMA MAĞAZA ÇUBUĞU (HERO İLE KARMAŞIK SİTE YÖNETİMİ ARASI) */}
+        <div className="landing-store-strip">
+          <div className="landing-store-strip-inner">
+            <div className="strip-title-wrap">
+              <span className="strip-dot" />
+              <span>KOVAN Mobil Uygulaması Çok Yakında Yayında:</span>
+            </div>
+            <div className="app-store-badges">
+              {/* App Store Resmi Rozet */}
+              <div className="official-store-badge">
+                <AppleLogo size={24} className="store-logo-icon" />
+                <div className="badge-text-col">
+                  <span className="badge-top-text">Çok Yakında</span>
+                  <strong className="badge-main-text">App Store</strong>
+                </div>
+              </div>
+
+              {/* Google Play Resmi Rozet */}
+              <div className="official-store-badge">
+                <GooglePlayLogo size={22} className="store-logo-icon" />
+                <div className="badge-text-col">
+                  <span className="badge-top-text">Çok Yakında</span>
+                  <strong className="badge-main-text">Google Play</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       {/* ÖNE ÇIKAN ÖZELLİKLER (ORİJİNAL) */}
       <section id="ozellikler" className="landing-features-section">
         <div className="section-heading">
@@ -377,16 +407,23 @@ export default function ComingSoon({ onBackToLogin, theme, onToggleTheme }) {
       {/* ERKEN ERİŞİM / BİLGİ ALMA FORMU (ORİJİNAL) */}
       <section className="landing-newsletter">
         <div className="newsletter-card">
-          <h2>Kovan ile sitenizi geleceğe taşıyın.</h2>
+          <span className="section-eyebrow">ÖN KAYIT AYRICALIKLARI</span>
+          <h2>Ön Kayıt Yaptırın, Özel Avantajlardan Yararlanın</h2>
           <p>
-            Platform lansmanımızda ilk kullanan siteler arasında yer almak ve özel avantajlardan haberdar olmak için e-postanızı bırakın.
+            Lansman öncesi ön kayıt oluşturan siteler ilk 3 ay ücretsiz kullanım, sıfır veri aktarım maliyeti ve öncelikli destek imkanlarından yararlanır.
           </p>
+
+          <div className="pre-register-perks">
+            <span className="perk-badge"><Sparkles size={13} className="text-gold" /> İlk 3 Ay Ücretsiz Kullanım</span>
+            <span className="perk-badge"><CheckCircle2 size={13} className="text-green-500" /> Ücretsiz Kurulum & Veri Aktarımı</span>
+            <span className="perk-badge"><ShieldCheck size={13} className="text-blue-500" /> VIP Öncelikli Destek</span>
+          </div>
 
           {demoRequested ? (
             <div className="newsletter-success">
               <CheckCircle2 size={24} className="text-green-500" />
-              <strong>Talebiniz alındı!</strong>
-              <span>Lansman öncesi ekibimiz sizinle iletişime geçecektir.</span>
+              <strong>Ön Kayıt Talebiniz Alındı!</strong>
+              <span>Özel lansman avantajlarınız hesabınıza tanımlandı. Lansman öncesi ekibimiz sizinle iletişime geçecektir.</span>
             </div>
           ) : (
             <form onSubmit={handleDemoSubmit} className="newsletter-form">
@@ -398,7 +435,7 @@ export default function ComingSoon({ onBackToLogin, theme, onToggleTheme }) {
                 onChange={(e) => setEmail(e.target.value)}
               />
               <Button type="submit">
-                Erken Erişim Talep Et <ArrowRight size={15} />
+                Ön Kayıt Ol & Avantajlardan Yararlan <ArrowRight size={15} />
               </Button>
             </form>
           )}
@@ -452,13 +489,13 @@ export default function ComingSoon({ onBackToLogin, theme, onToggleTheme }) {
         </div>
       </section>
 
-      {/* 2. KOVAN ÖĞRENCİ GELİŞTİRME EKİBİ */}
+      {/* 2. KOVAN GELİŞTİRME EKİBİ */}
       <section className="landing-team-section">
         <div className="section-heading">
           <span className="section-eyebrow">BİZ KİMİZ?</span>
-          <h2>KOVAN Öğrenci Geliştirme Ekibi</h2>
+          <h2>KOVAN Geliştirme Ekibi</h2>
           <p className="section-sub-desc">
-            KOVAN; üniversite öğrencisi 5 kişilik genç bir yazılım geliştirme ekibi tarafından sıfırdan, büyük bir emek ve tutkuyla geliştirilmektedir.
+            KOVAN; yenilikçi 5 kişilik yazılım geliştirme ekibimiz tarafından sıfırdan, büyük bir emek ve tutkuyla hayata geçirilmektedir.
           </p>
         </div>
 
@@ -487,7 +524,7 @@ export default function ComingSoon({ onBackToLogin, theme, onToggleTheme }) {
         </div>
       </section>
 
-      {/* 3. ÖĞRENCİ EKİBİNE DESTEK / BAĞIŞ (DONATE) */}
+      {/* 3. PROJE GELİŞTİRME FONUNA DESTEK / BAĞIŞ (DONATE) */}
       <section className="landing-donate-section">
         <div className="donate-banner-card">
           <div className="donate-banner-left">
@@ -495,10 +532,10 @@ export default function ComingSoon({ onBackToLogin, theme, onToggleTheme }) {
               <Heart size={24} className="text-gold" />
             </div>
             <div className="donate-banner-text">
-              <span className="donate-pill">ÖĞRENCİ PROJESİNE KATKI</span>
-              <h2>Öğrenci Ekibimize Destek Olmak İster misiniz?</h2>
+              <span className="donate-pill">PROJEYE DESTEK</span>
+              <h2>Geliştirme Ekibimize Destek Olmak İster misiniz?</h2>
               <p>
-                KOVAN'ın bulut sunucuları ve akıllı donanım prototiplerini kendi öğrenci bütçemizle karşılıyoruz. 
+                KOVAN'ın bulut sunucuları ve akıllı donanım prototiplerinin maliyetlerini kendi imkanlarımızla karşılıyoruz. 
                 Gelişimimize katkıda bulunmak ya da ekibimize bir kahve ısmarlamak isterseniz desteğiniz bizim için çok kıymetli!
               </p>
             </div>
@@ -537,7 +574,7 @@ export default function ComingSoon({ onBackToLogin, theme, onToggleTheme }) {
     {/* BAĞIŞ VE DESTEK MODALI */}
       {showDonateModal && (
         <Modal
-          title="Öğrenci Ekibimize Destek Olun"
+          title="Geliştirme Ekibimize Destek Olun"
           description="KOVAN sunucu, veritabanı ve donanım geliştirme bütçesine katkıda bulunun."
           onClose={() => setShowDonateModal(false)}
         >
@@ -545,7 +582,7 @@ export default function ComingSoon({ onBackToLogin, theme, onToggleTheme }) {
             <div className="donate-modal-intro">
               <Coffee size={24} className="text-gold" />
               <p>
-                Bizler üniversitede yazılım ve mühendislik eğitimi alan 5 öğrenciyiz. 
+                Bizler teknoloji ve modern yazılıma tutkuyla bağlı 5 kişilik bir geliştirme ekibiyiz. 
                 Yapacağınız her katkı, Kubernetes sunucu masraflarımızın ve IoT akıllı kapı / kamera donanımlarının geliştirilmesinde doğrudan kullanılacaktır.
               </p>
             </div>
