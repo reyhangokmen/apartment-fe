@@ -8126,18 +8126,21 @@ td small {
    KOVAN LANDING PAGE ENHANCEMENTS (BMS-144)
    ======================================================== */
 
-/* Enlarge KOVAN ERP v2.4 Card in Hero & Seamless Fold */
+/* Hero Ana Sayfayı Tam Kaplasın (100vh Full Screen) & Mobil Çizgisi */
 .landing-mobile-preview {
-  border-top: none !important;
-  padding: 80px 32px 70px 32px !important;
+  border-top: 1px solid var(--line) !important;
+  padding: 80px 32px !important;
 }
 
 @media (min-width: 901px) {
   .landing-hero {
+    min-height: calc(100vh - 72px) !important;
+    min-height: calc(100dvh - 72px) !important;
     grid-template-columns: 1.08fr 0.92fr !important;
     gap: 48px !important;
-    align-items: center;
-    padding: 44px 32px 56px 32px !important;
+    align-items: center !important;
+    padding: 32px 32px 48px 32px !important;
+    box-sizing: border-box !important;
   }
 
   .landing-visual-card {
