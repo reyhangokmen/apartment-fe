@@ -8204,3 +8204,34 @@ td small {
   }
 }
 
+
+/* ========================================================
+   ZORUNLU ALAN YILDIZI & KURULUM SIHIRBAZI BILGILENDIRMESI
+   ======================================================== */
+.field-required-star {
+  color: #ef4444 !important;
+  font-weight: 700;
+  margin-left: 4px;
+  font-size: 14px;
+  line-height: 1;
+  display: inline-block;
+}
+
+.wizard-required-legend {
+  font-size: 12px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: -2px 0 16px 0;
+  padding: 6px 12px;
+  background: rgba(239, 68, 68, 0.08);
+  border-left: 3px solid #ef4444;
+  border-radius: var(--radius-sm, 6px);
+  font-weight: 500;
+}
+
+:root[data-theme="dark"] .wizard-required-legend {
+  background: rgba(239, 68, 68, 0.12);
+  color: #cbd5e1;
+}

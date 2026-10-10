@@ -160,10 +160,17 @@ export function Modal({ title, description, children, onClose }) {
     </dialog>
   );
 }
-export function Field({ label, children }) {
+export function Field({ label, required, children }) {
   return (
     <label className="field">
-      <span>{label}</span>
+      <span>
+        {label}
+        {required && (
+          <span className="field-required-star" style={{ color: "#ef4444", marginLeft: "4px", fontWeight: "700" }} title="Zorunlu alan">
+            *
+          </span>
+        )}
+      </span>
       {children}
     </label>
   );

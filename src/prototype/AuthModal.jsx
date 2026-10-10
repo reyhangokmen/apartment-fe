@@ -758,8 +758,12 @@ export function ManagerRegisterWizard({ onClose, onComplete, onNotify, onBusyCha
             <p className="form-subtext">
               Site yöneticisi hesabınızı tanımlayın. Bu hesap, sitenizin tam yetkili ana yöneticisi olacaktır.
             </p>
+            <div className="wizard-required-legend">
+              <span className="field-required-star">*</span>
+              <span>Kırmızı yıldızlı alanların doldurulması zorunludur.</span>
+            </div>
             <div className="grid-2-col">
-              <Field label="Adınız">
+              <Field label="Adınız" required>
                 <div className="input-with-icon">
                   <User size={18} className="field-icon" />
                   <input
@@ -770,7 +774,7 @@ export function ManagerRegisterWizard({ onClose, onComplete, onNotify, onBusyCha
                   />
                 </div>
               </Field>
-              <Field label="Soyadınız">
+              <Field label="Soyadınız" required>
                 <input
                   required
                   autoComplete="family-name"
@@ -779,7 +783,7 @@ export function ManagerRegisterWizard({ onClose, onComplete, onNotify, onBusyCha
                 />
               </Field>
             </div>
-            <Field label="E-posta Adresi">
+            <Field label="E-posta Adresi" required>
               <div className="input-with-icon">
                 <Mail size={18} className="field-icon" />
                 <input
@@ -793,7 +797,7 @@ export function ManagerRegisterWizard({ onClose, onComplete, onNotify, onBusyCha
               </div>
             </Field>
             <div className="grid-2-col">
-              <Field label="Yönetici Giriş Şifresi">
+              <Field label="Yönetici Giriş Şifresi" required>
                 <div className="input-with-icon">
                   <Lock size={18} className="field-icon" />
                   <input
@@ -806,7 +810,7 @@ export function ManagerRegisterWizard({ onClose, onComplete, onNotify, onBusyCha
                   />
                 </div>
               </Field>
-              <Field label="Şifre (Tekrar)">
+              <Field label="Şifre (Tekrar)" required>
                 <div className="input-with-icon">
                   <Lock size={18} className="field-icon" />
                   <input
@@ -825,7 +829,11 @@ export function ManagerRegisterWizard({ onClose, onComplete, onNotify, onBusyCha
         {step === 2 && (
           <div className="wizard-fields">
             <p className="form-subtext">Yöneteceğiniz sitenin temel bilgilerini ve konumunu girin.</p>
-            <Field label="Site / Apartman Adı">
+            <div className="wizard-required-legend">
+              <span className="field-required-star">*</span>
+              <span>Kırmızı yıldızlı alanların doldurulması zorunludur.</span>
+            </div>
+            <Field label="Site / Apartman Adı" required>
               <div className="input-with-icon">
                 <Building2 size={18} className="field-icon" />
                 <input
@@ -838,10 +846,10 @@ export function ManagerRegisterWizard({ onClose, onComplete, onNotify, onBusyCha
               </div>
             </Field>
             <div className="grid-2-col">
-              <Field label="İl">
+              <Field label="İl" required>
                 <input required maxLength={100} value={formData.city} onChange={(e) => update("city", e.target.value)} />
               </Field>
-              <Field label="İlçe">
+              <Field label="İlçe" required>
                 <input
                   required
                   maxLength={100}
@@ -850,7 +858,7 @@ export function ManagerRegisterWizard({ onClose, onComplete, onNotify, onBusyCha
                 />
               </Field>
             </div>
-            <Field label="Açık Adres">
+            <Field label="Açık Adres" required>
               <input
                 required
                 maxLength={500}
@@ -858,7 +866,7 @@ export function ManagerRegisterWizard({ onClose, onComplete, onNotify, onBusyCha
                 onChange={(e) => update("address", e.target.value)}
               />
             </Field>
-            <Field label="Tesis / Yapı Tipi">
+            <Field label="Tesis / Yapı Tipi" required>
               <select value={formData.siteType} onChange={(e) => update("siteType", e.target.value)}>
                 {SITE_TYPES.map((t) => (
                   <option key={t.value} value={t.value}>
@@ -880,6 +888,10 @@ export function ManagerRegisterWizard({ onClose, onComplete, onNotify, onBusyCha
               Sitenizin bloklarını tanımlayın. Her bloğun kat ve daire sayısını ayrı kutucuklarda belirleyebilir veya
               algoritmik kurulum yapabilirsiniz. Daha sonra Kat ve Daireler ekranından değişiklik ekleyebilirsiniz.
             </p>
+            <div className="wizard-required-legend">
+              <span className="field-required-star">*</span>
+              <span>Kırmızı yıldızlı alanların doldurulması zorunludur.</span>
+            </div>
 
             <div className="source-toggle-tabs mb-3">
               <button
@@ -899,7 +911,7 @@ export function ManagerRegisterWizard({ onClose, onComplete, onNotify, onBusyCha
             </div>
 
             <div className="grid-2-col mb-3">
-              <Field label="Blok Sayısı">
+              <Field label="Blok Sayısı" required>
                 <input
                   type="number"
                   min="1"
@@ -909,7 +921,7 @@ export function ManagerRegisterWizard({ onClose, onComplete, onNotify, onBusyCha
                   onChange={(e) => updateBlockCount(parseInt(e.target.value) || 1)}
                 />
               </Field>
-              <Field label="Numaralandırma Şablonu">
+              <Field label="Numaralandırma Şablonu" required>
                 <select value={formData.namingPattern} onChange={(e) => update("namingPattern", e.target.value)}>
                   <option value="block-prefix">Blok Önekli (Örn: A-1, A-2, B-1...)</option>
                   <option value="floor">Kat Bazlı Numaratör (Örn: 101, 102, 201...)</option>
@@ -936,10 +948,10 @@ export function ManagerRegisterWizard({ onClose, onComplete, onNotify, onBusyCha
                         <span className="block-total-unit-badge">{b.floors * b.unitsPerFloor} Daire</span>
                       </div>
                       <div className="grid-3-col mt-2">
-                        <Field label="Blok Adı">
+                        <Field label="Blok Adı" required>
                           <input value={b.name} onChange={(e) => updateBlockItem(idx, "name", e.target.value)} />
                         </Field>
-                        <Field label="Kat Sayısı">
+                        <Field label="Kat Sayısı" required>
                           <input
                             type="number"
                             min="1"
@@ -948,7 +960,7 @@ export function ManagerRegisterWizard({ onClose, onComplete, onNotify, onBusyCha
                             onChange={(e) => updateBlockItem(idx, "floors", parseInt(e.target.value) || 1)}
                           />
                         </Field>
-                        <Field label="Katta Daire">
+                        <Field label="Katta Daire" required>
                           <input
                             type="number"
                             min="1"
@@ -964,7 +976,7 @@ export function ManagerRegisterWizard({ onClose, onComplete, onNotify, onBusyCha
               </div>
             ) : (
               <div className="grid-2-col mb-3">
-                <Field label="Tüm Bloklar İçin Kat Sayısı">
+                <Field label="Tüm Bloklar İçin Kat Sayısı" required>
                   <input
                     type="number"
                     min="1"
@@ -974,7 +986,7 @@ export function ManagerRegisterWizard({ onClose, onComplete, onNotify, onBusyCha
                     onChange={(e) => update("floorsPerBlock", parseInt(e.target.value) || 1)}
                   />
                 </Field>
-                <Field label="Kat Başına Daire Sayısı">
+                <Field label="Kat Başına Daire Sayısı" required>
                   <input
                     type="number"
                     min="1"
