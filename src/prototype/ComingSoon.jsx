@@ -263,13 +263,15 @@ export default function ComingSoon({ onBackToLogin, theme, onToggleTheme }) {
           </div>
         </section>
 
-        {/* MOBİL UYGULAMA MAĞAZA ÇUBUĞU (HERO İLE KARMAŞIK SİTE YÖNETİMİ ARASI) */}
-        <div className="landing-store-strip">
-          <div className="landing-store-strip-inner">
-            <div className="strip-title-wrap">
-              <span className="strip-dot" />
-              <span>KOVAN Mobil Uygulaması Çok Yakında Yayında:</span>
-            </div>
+      {/* MOBİL UYGULAMA TANITIMI (HERO'NUN HEMEN ALTINDA) */}
+      <section className="landing-mobile-preview">
+        <div className="landing-mobile-inner">
+          <div className="mobile-text">
+            <span className="section-eyebrow">HER YERDE YANINIZDA</span>
+            <h2>Web ve Mobilde Kusursuz Senkronizasyon</h2>
+            <p>
+              Yönetici ve sakinler için optimize edilmiş sezgisel arayüz. Duyurular, arıza talepleri, aidat ödemeleri ve zil bildirimleri doğrudan cebinizde.
+            </p>
             <div className="app-store-badges">
               {/* App Store Resmi Rozet */}
               <div className="official-store-badge">
@@ -290,7 +292,30 @@ export default function ComingSoon({ onBackToLogin, theme, onToggleTheme }) {
               </div>
             </div>
           </div>
+          <div className="mobile-mockup-graphic">
+            <div className="phone-screen-frame">
+              <div className="phone-header">
+                <strong>KOV<span>A</span>N</strong>
+                <Bell size={14} className="text-gold" />
+              </div>
+              <div className="phone-card">
+                <small>Eylül 2026 Aidatı</small>
+                <strong>2.500 ₺</strong>
+                <span className="phone-status">Online Ödendi</span>
+              </div>
+              <div className="phone-card alert">
+                <small>🚨 Bina Afet Bilgisi</small>
+                <span>Tahliye Önceliği Kayıtlı</span>
+              </div>
+              <div className="phone-quick-actions">
+                <span>📱 QR Kapı</span>
+                <span>🛠️ Talep Aç</span>
+                <span>📋 Duyurular</span>
+              </div>
+            </div>
+          </div>
         </div>
+      </section>
 
       {/* ÖNE ÇIKAN ÖZELLİKLER (ORİJİNAL) */}
       <section id="ozellikler" className="landing-features-section">
@@ -346,60 +371,6 @@ export default function ComingSoon({ onBackToLogin, theme, onToggleTheme }) {
               <li><CheckCircle2 size={15} /> DASK deprem sigortası poliçe takibi</li>
               <li><CheckCircle2 size={15} /> Bina güvenliği ve denetçi iletişimi</li>
             </ul>
-          </div>
-        </div>
-      </section>
-
-      {/* MOBİL UYGULAMA TANITIMI (ORİJİNAL) */}
-      <section className="landing-mobile-preview">
-        <div className="landing-mobile-inner">
-          <div className="mobile-text">
-            <span className="section-eyebrow">HER YERDE YANINIZDA</span>
-            <h2>Web ve Mobilde Kusursuz Senkronizasyon</h2>
-            <p>
-              Yönetici ve sakinler için optimize edilmiş sezgisel arayüz. Duyurular, arıza talepleri, aidat ödemeleri ve zil bildirimleri doğrudan cebinizde.
-            </p>
-            <div className="app-store-badges">
-              {/* App Store Resmi Rozet */}
-              <div className="official-store-badge">
-                <AppleLogo size={24} className="store-logo-icon" />
-                <div className="badge-text-col">
-                  <span className="badge-top-text">Çok Yakında</span>
-                  <strong className="badge-main-text">App Store</strong>
-                </div>
-              </div>
-
-              {/* Google Play Resmi Rozet */}
-              <div className="official-store-badge">
-                <GooglePlayLogo size={22} className="store-logo-icon" />
-                <div className="badge-text-col">
-                  <span className="badge-top-text">Çok Yakında</span>
-                  <strong className="badge-main-text">Google Play</strong>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="mobile-mockup-graphic">
-            <div className="phone-screen-frame">
-              <div className="phone-header">
-                <strong>KOV<span>A</span>N</strong>
-                <Bell size={14} className="text-gold" />
-              </div>
-              <div className="phone-card">
-                <small>Eylül 2026 Aidatı</small>
-                <strong>2.500 ₺</strong>
-                <span className="phone-status">Online Ödendi</span>
-              </div>
-              <div className="phone-card alert">
-                <small>🚨 Bina Afet Bilgisi</small>
-                <span>Tahliye Önceliği Kayıtlı</span>
-              </div>
-              <div className="phone-quick-actions">
-                <span>📱 QR Kapı</span>
-                <span>🛠️ Talep Aç</span>
-                <span>📋 Duyurular</span>
-              </div>
-            </div>
           </div>
         </div>
       </section>
