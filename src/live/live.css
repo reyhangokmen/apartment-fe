@@ -235,3 +235,41 @@
   opacity: 0.6;
   cursor: wait;
 }
+
+/* Kurul Üyesi Ata Formu & Panel İçi Hizalama */
+.board-assign-grid {
+  display: grid;
+  grid-template-columns: minmax(240px, 1.4fr) minmax(180px, 1fr) auto;
+  gap: 16px;
+  align-items: flex-end;
+}
+
+.board-assign-btn-wrap {
+  display: flex;
+  align-items: flex-end;
+}
+
+.board-assign-btn {
+  height: 42px;
+  min-height: 42px;
+  padding: 0 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.panel > .live-notice {
+  margin: 8px 24px 12px 24px;
+}
+
+@media (max-width: 768px) {
+  .board-assign-grid {
+    grid-template-columns: 1fr;
+  }
+  .board-assign-btn-wrap,
+  .board-assign-btn {
+    width: 100%;
+  }
+}

@@ -133,26 +133,34 @@ function BoardRoleForm({ onDone, onNotify }) {
 
   return (
     <Panel title="Kurul üyesi ata" subtitle="Kişinin hesabı varsa rol hemen verilir; yoksa e-postasına 7 gün geçerli davet gider.">
-      <form onSubmit={submit} className="grid-3-col">
-        <Field label="E-posta">
-          <div className="input-with-icon">
-            <Mail size={16} className="field-icon" />
-            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+      <form onSubmit={submit} className="settings-grid">
+        <div className="board-assign-grid">
+          <Field label="E-posta">
+            <div className="input-with-icon">
+              <Mail size={16} className="field-icon" />
+              <input
+                type="email"
+                required
+                placeholder="ornek@alanadi.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+          </Field>
+          <Field label="Rol">
+            <select value={roleCode} onChange={(e) => setRoleCode(e.target.value)}>
+              <option value="YONETIM_KURULU">Yönetim Kurulu</option>
+              <option value="DENETIM_KURULU">Denetim Kurulu</option>
+            </select>
+          </Field>
+          <div className="board-assign-btn-wrap">
+            <Button type="submit" disabled={busy} className="board-assign-btn">
+              <Send size={14} /> {busy ? "Gönderiliyor…" : "Ata / Davet Et"}
+            </Button>
           </div>
-        </Field>
-        <Field label="Rol">
-          <select value={roleCode} onChange={(e) => setRoleCode(e.target.value)}>
-            <option value="YONETIM_KURULU">Yönetim Kurulu</option>
-            <option value="DENETIM_KURULU">Denetim Kurulu</option>
-          </select>
-        </Field>
-        <Field label=" ">
-          <Button type="submit" disabled={busy}>
-            <Send size={14} /> {busy ? "Gönderiliyor…" : "Ata / Davet Et"}
-          </Button>
-        </Field>
+        </div>
+        <Notice kind="error">{error}</Notice>
       </form>
-      <Notice kind="error">{error}</Notice>
     </Panel>
   );
 }
