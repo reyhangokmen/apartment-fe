@@ -1,7 +1,11 @@
 // KOVAN backend ile konuşan tek yer. Oturum (token'lar, seçili site, izinler) burada tutulur;
 // süresi dolan erişim token'ı bir kez yenilenir ve seçili site için yeniden yetki alınır.
 
-const BASE_URL = (import.meta.env.VITE_API_BASE_URL || "https://kovanbe.universeconn.online").replace(/\/$/, "");
+const isVercel = typeof window !== "undefined" && window.location.hostname.includes("vercel.app");
+const BASE_URL = (
+  import.meta.env.VITE_API_BASE_URL ||
+  (isVercel ? "/api-proxy" : "https://kovanbe.universeconn.online")
+).replace(/\/$/, "");
 const STORAGE_KEY = "kovan_auth";
 
 export class ApiError extends Error {
