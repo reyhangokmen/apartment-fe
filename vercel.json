@@ -6,7 +6,7 @@
   "rewrites": [
     {
       "source": "/api-proxy/:match*",
-      "destination": "https://kovanbe.universeconn.online/:match*"
+      "destination": "/api/proxy?__path=:match*"
     },
     {
       "source": "/(.*)",
