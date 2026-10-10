@@ -184,7 +184,7 @@ export default function ComingSoon({ onBackToLogin, theme, onToggleTheme }) {
           <div className="landing-header-actions">
             {onToggleTheme && <ThemeToggle theme={theme} onToggle={onToggleTheme} />}
             <Button secondary onClick={onBackToLogin}>
-              <ArrowLeft size={15} /> Demo Yönetim Paneline Giriş
+              <ArrowLeft size={15} /> Yönetim Paneline Giriş
             </Button>
           </div>
         </header>
