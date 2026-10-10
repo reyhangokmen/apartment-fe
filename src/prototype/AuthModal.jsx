@@ -95,7 +95,7 @@ export function ForgotPasswordModal({ onClose, onNotify, onSuccess }) {
     setStep(2);
     setCountdown(60);
     setCanResend(false);
-    onNotify?.(`${email} adresi kayıtlıysa 6 haneli şifre sıfırlama kodu gönderildi (10 dakika geçerli).`);
+    onNotify?.(`${email} adresi kayıtlıysa 6 haneli şifre sıfırlama kodu gönderildi (5 dakika geçerli).`);
   };
 
   const handleResend = async () => {
@@ -324,7 +324,7 @@ export function ForgotPasswordModal({ onClose, onNotify, onSuccess }) {
           <div className="otp-target-badge">
             {resetMethod === "email" ? <Mail size={15} /> : <Smartphone size={15} />}
             <span>
-              <strong>{activeTarget}</strong> adresi kayıtlıysa 6 haneli tek kullanımlık kod gönderildi. Kod 10 dakika
+              <strong>{activeTarget}</strong> adresi kayıtlıysa 6 haneli tek kullanımlık kod gönderildi. Kod 5 dakika
               geçerlidir ve en fazla 3 kez denenebilir.
             </span>
           </div>

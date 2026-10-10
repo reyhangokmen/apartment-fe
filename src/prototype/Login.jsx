@@ -8,10 +8,29 @@ import { login } from "../api/kovan";
 import { errorMessage } from "../api/client";
 
 function loginErrorMessage(error) {
-  if (error.code === "ACCOUNT_LOCKED" && error.lockedUntil) {
-    const until = new Date(error.lockedUntil).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" });
-    return `Çok fazla hatalı deneme nedeniyle hesabınız ${until}'e kadar kilitlendi. Şifrenizi unuttuysanız "Şifremi unuttum" ile kilidi hemen açabilirsiniz.`;
+  // 1. Kilit durumu: 423 / ACCOUNT_LOCKED / lockedUntil
+  // Süreyi sabit yazma, lockedUntil'den dinamik hesapla
+  if (error.status === 423 || error.code === "ACCOUNT_LOCKED" || error.lockedUntil) {
+    if (error.lockedUntil) {
+      const msLeft = Math.max(0, new Date(error.lockedUntil).getTime() - Date.now());
+      const minutesLeft = Math.max(1, Math.ceil(msLeft / 60000));
+      const until = new Date(error.lockedUntil).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" });
+      return `Çok fazla hatalı deneme nedeniyle hesabınız ${minutesLeft} dakika (${until}'e kadar) kilitlendi. Şifrenizi unuttuysanız "Şifremi unuttum" ile kilidi hemen açabilirsiniz.`;
+    }
+    return error.detail || errorMessage(error);
   }
+
+  // 2. Kilit sonrası kalan haklar (remainingAttempts: 1 ve nextLockMinutes)
+  // Backend'in detail alanındaki "Son hakkınız..." uyarısını öncelikli göster
+  if (error.status === 401 && (error.remainingAttempts !== undefined || error.detail)) {
+    if (error.detail) {
+      return error.detail;
+    }
+    if (error.remainingAttempts === 1) {
+      return `Hatalı şifre. Son 1 hakkınız kaldı! Tekrar hatalı girerseniz hesabınız ${error.nextLockMinutes || 5} dakika kilitlenecektir.`;
+    }
+  }
+
   return errorMessage(error);
 }
 

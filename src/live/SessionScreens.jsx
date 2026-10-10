@@ -102,7 +102,7 @@ export function EmailVerifyBanner({ user, onNotify }) {
     setError("");
     try {
       await resendVerification(user.email);
-      onNotify?.("Yeni doğrulama kodu e-postanıza gönderildi (10 dakika geçerli).");
+      onNotify?.("Yeni doğrulama kodu e-postanıza gönderildi (5 dakika geçerli).");
     } catch (err) {
       setError(errorMessage(err));
     } finally {

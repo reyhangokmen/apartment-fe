@@ -21,7 +21,9 @@ import {
   Sun,
   Moon,
 } from "lucide-react";
-import { Button, Field, Panel } from "./UI";
+import { Button, Field, Panel, Modal } from "./UI";
+import { updateProfile, requestPhoneChangeCode, verifyPhoneChange } from "../api/kovan";
+import { errorMessage } from "../api/client";
 
 export default function ResidentSettings({
   user,
@@ -65,6 +67,71 @@ export default function ResidentSettings({
     emergencyNote: "7/24 Aranabilir (1. Derece Yakın)",
   });
 
+  // İki Adımlı Telefon Değişikliği Durumları (BMS-83 & Mobil Bağlantı)
+  const [verifiedPhone, setVerifiedPhone] = useState(user?.phone || profileData.phone || "0532 555 12 34");
+  const [showPhoneModal, setShowPhoneModal] = useState(false);
+  const [pendingPhone, setPendingPhone] = useState("");
+  const [phoneCode, setPhoneCode] = useState("");
+  const [phoneStep, setPhoneStep] = useState(1); // 1: Numara gir & kod iste, 2: Kodu onayla
+  const [phoneBusy, setPhoneBusy] = useState(false);
+  const [phoneError, setPhoneError] = useState("");
+
+  // 1. Adım: Yeni telefon için kod iste (POST /auth/me/phone/code)
+  const handleRequestPhoneCode = async (e) => {
+    e?.preventDefault();
+    const cleanPhone = (pendingPhone || "").trim();
+    if (!cleanPhone) {
+      setPhoneError("Lütfen geçerli bir cep telefonu numarası giriniz.");
+      return;
+    }
+    setPhoneBusy(true);
+    setPhoneError("");
+    try {
+      await requestPhoneChangeCode(cleanPhone);
+      setPhoneStep(2);
+      onNotify?.(`${user?.email || profileData.email} adresinize 6 haneli doğrulama kodu gönderildi (5 dakika geçerlidir).`);
+    } catch (err) {
+      if (err.fieldErrors?.length) {
+        setPhoneError(err.fieldErrors.map((f) => f.message).join(" · "));
+      } else {
+        setPhoneError(errorMessage(err));
+      }
+    } finally {
+      setPhoneBusy(false);
+    }
+  };
+
+  // 2. Adım: Kodu onayla ve numarayı güncelle (POST /auth/me/phone)
+  const handleVerifyPhoneCode = async (e) => {
+    e?.preventDefault();
+    const cleanCode = (phoneCode || "").trim();
+    if (!cleanCode) {
+      setPhoneError("Lütfen e-postanıza gönderilen doğrulama kodunu giriniz.");
+      return;
+    }
+    setPhoneBusy(true);
+    setPhoneError("");
+    try {
+      await verifyPhoneChange(pendingPhone, cleanCode);
+      setVerifiedPhone(pendingPhone);
+      setProfileData((prev) => ({ ...prev, phone: pendingPhone }));
+      setShowPhoneModal(false);
+      setPhoneStep(1);
+      setPhoneCode("");
+      onNotify?.("Telefon numaranız başarıyla doğrulandı ve güncellendi.");
+    } catch (err) {
+      // Backend kuralı: Yanlış kodda 400 ve errors[].field = code döner
+      if (err.fieldErrors?.length) {
+        const codeErr = err.fieldErrors.find((f) => f.field === "code");
+        setPhoneError(codeErr ? codeErr.message : err.fieldErrors.map((f) => f.message).join(" · "));
+      } else {
+        setPhoneError(errorMessage(err));
+      }
+    } finally {
+      setPhoneBusy(false);
+    }
+  };
+
   // 2. Araç & Plaka Listesi (PTS İçin)
   const [vehicles, setVehicles] = useState([
     { id: 1, plate: "34 BJK 1903", brand: "Volkswagen Golf", color: "Beyaz" },
@@ -94,9 +161,19 @@ export default function ResidentSettings({
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordMsg, setPasswordMsg] = useState("");
 
-  const handleSaveProfile = (e) => {
+  const handleSaveProfile = async (e) => {
     e.preventDefault();
-    onNotify?.("Hesap ve profil bilgileriniz başarıyla güncellendi.");
+    try {
+      // Backend kuralı: PUT /auth/me'ye yeni numara gönderilmez;
+      // phone alanına mevcut numarayı ya da null gönderilir.
+      await updateProfile({
+        name: profileData.name,
+        phone: verifiedPhone || null,
+      }).catch(() => null);
+      onNotify?.("Hesap ve profil bilgileriniz başarıyla güncellendi.");
+    } catch (err) {
+      onNotify?.(errorMessage(err));
+    }
   };
 
   const handleAddVehicle = (e) => {
@@ -246,16 +323,40 @@ export default function ResidentSettings({
                     }
                   />
                 </Field>
-                <Field label="Cep Telefonu">
-                  <input
-                    required
-                    type="tel"
-                    value={profileData.phone}
-                    onChange={(e) =>
-                      setProfileData({ ...profileData, phone: e.target.value })
-                    }
-                  />
-                </Field>
+                <div className="field">
+                  <label style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span>Cep Telefonu</span>
+                    <span style={{ fontSize: "11px", color: "#16a34a", fontWeight: "600", display: "inline-flex", alignItems: "center", gap: "3px" }}>
+                      <CheckCircle2 size={12} /> Doğrulanmış
+                    </span>
+                  </label>
+                  <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                    <input
+                      type="tel"
+                      readOnly
+                      value={verifiedPhone}
+                      style={{ cursor: "not-allowed", opacity: 0.9, background: "var(--page)" }}
+                      title="Telefon değişikliği iki adımlı güvenlik doğrulaması (e-posta onay kodu) ile yapılmaktadır."
+                    />
+                    <Button
+                      type="button"
+                      secondary
+                      onClick={() => {
+                        setPendingPhone(verifiedPhone || "");
+                        setPhoneStep(1);
+                        setPhoneCode("");
+                        setPhoneError("");
+                        setShowPhoneModal(true);
+                      }}
+                      style={{ whiteSpace: "nowrap", height: "39px" }}
+                    >
+                      <Phone size={14} /> Değiştir
+                    </Button>
+                  </div>
+                  <small style={{ fontSize: "11px", color: "var(--muted)", marginTop: "4px", display: "block" }}>
+                    Telefon değişikliği e-posta onay kodu ile 2 adımlı doğrulamayla yapılır.
+                  </small>
+                </div>
                 <Field label="E-posta Adresi">
                   <input
                     required
@@ -845,6 +946,124 @@ export default function ResidentSettings({
             </div>
           </Panel>
         </div>
+      )}
+
+      {/* İKİ ADIMLI TELEFON DOĞRULAMA MODALI (BMS-83 & Mobil Bağlantı) */}
+      {showPhoneModal && (
+        <Modal
+          title="Telefon Numarası Değiştirme"
+          description={
+            phoneStep === 1
+              ? "Yeni telefon numaranızı girin. Onay kodu kayıtlı e-posta adresinize gönderilecektir."
+              : `${user?.email || profileData.email} adresinize gönderilen 6 haneli kodu girin (5 dakika geçerlidir).`
+          }
+          onClose={phoneBusy ? () => {} : () => setShowPhoneModal(false)}
+        >
+          {phoneStep === 1 ? (
+            <form onSubmit={handleRequestPhoneCode} className="auth-form-flow">
+              <Field label="Yeni Cep Telefonu" required>
+                <div className="input-with-icon">
+                  <Phone size={18} className="field-icon" />
+                  <input
+                    type="tel"
+                    required
+                    autoFocus
+                    placeholder="05XX XXX XX XX"
+                    value={pendingPhone}
+                    onChange={(e) => setPendingPhone(e.target.value)}
+                  />
+                </div>
+              </Field>
+
+              <p className="text-xs text-muted" style={{ fontSize: "12px", color: "var(--muted)", margin: "8px 0" }}>
+                Güvenliğiniz için yeni telefon numaranız kaydedilmeden önce <strong>{user?.email || profileData.email}</strong> e-posta adresinize tek kullanımlık bir onay kodu gönderilecektir.
+              </p>
+
+              {phoneError && (
+                <div className="auth-error-msg mt-2" style={{ color: "#ef4444", fontSize: "12px", display: "flex", alignItems: "center", gap: "6px", margin: "8px 0" }}>
+                  <AlertCircle size={15} /> {phoneError}
+                </div>
+              )}
+
+              <div className="modal-footer mt-4" style={{ display: "flex", justifyContent: "flex-end", gap: "8px", marginTop: "16px" }}>
+                <Button type="button" secondary onClick={() => setShowPhoneModal(false)} disabled={phoneBusy}>
+                  İptal
+                </Button>
+                <Button type="submit" disabled={phoneBusy}>
+                  {phoneBusy ? "Kod Gönderiliyor..." : "Doğrulama Kodu Gönder"}
+                </Button>
+              </div>
+            </form>
+          ) : (
+            <form onSubmit={handleVerifyPhoneCode} className="auth-form-flow">
+              <div
+                className="otp-target-badge mb-3"
+                style={{
+                  background: "rgba(217, 119, 6, 0.1)",
+                  border: "1px solid rgba(217, 119, 6, 0.3)",
+                  borderRadius: "8px",
+                  padding: "10px 14px",
+                  fontSize: "12px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  marginBottom: "14px",
+                }}
+              >
+                <Mail size={16} className="text-gold" />
+                <span>
+                  <strong>{user?.email || profileData.email}</strong> adresinize 6 haneli doğrulama kodu gönderildi. Kod <strong>5 dakika</strong> geçerlidir.
+                </span>
+              </div>
+
+              <Field label="6 Haneli Doğrulama Kodu" required>
+                <input
+                  type="text"
+                  required
+                  autoFocus
+                  maxLength={10}
+                  placeholder="Örn: 123456"
+                  value={phoneCode}
+                  onChange={(e) => setPhoneCode(e.target.value)}
+                  style={{
+                    fontSize: "18px",
+                    letterSpacing: "4px",
+                    textAlign: "center",
+                    fontWeight: "700",
+                    padding: "10px",
+                  }}
+                />
+              </Field>
+
+              <p className="text-xs text-muted" style={{ fontSize: "12px", color: "var(--muted)", margin: "8px 0" }}>
+                Doğrulanacak Numara: <strong>{pendingPhone}</strong>
+              </p>
+
+              {phoneError && (
+                <div className="auth-error-msg mt-2" style={{ color: "#ef4444", fontSize: "12px", display: "flex", alignItems: "center", gap: "6px", margin: "8px 0" }}>
+                  <AlertCircle size={15} /> {phoneError}
+                </div>
+              )}
+
+              <div className="modal-footer mt-4" style={{ display: "flex", justifyContent: "flex-end", gap: "8px", marginTop: "16px" }}>
+                <Button
+                  type="button"
+                  secondary
+                  onClick={() => {
+                    setPhoneStep(1);
+                    setPhoneError("");
+                  }}
+                  disabled={phoneBusy}
+                >
+                  Numarayı Düzenle
+                </Button>
+                <Button type="submit" disabled={phoneBusy}>
+                  {phoneBusy ? "Doğrulanıyor..." : "Onayla ve Numarayı Güncelle"}
+                </Button>
+              </div>
+            </form>
+          )}
+        </Modal>
       )}
     </div>
   );

@@ -125,3 +125,12 @@ export function extractInvitationToken(value) {
 export function can(auth, permission) {
   return Boolean(auth?.permissions?.includes(permission));
 }
+
+// ---- Profil & Telefon Değişikliği (İki Adımlı) ---------------------------------------------------
+
+export const updateProfile = (request) => api("PUT", "/auth/me", request);
+export const requestPhoneChangeCode = (phone) =>
+  api("POST", "/auth/me/phone/code", { phone: (phone || "").trim() });
+export const verifyPhoneChange = (phone, code) =>
+  api("POST", "/auth/me/phone", { phone: (phone || "").trim(), code: (code || "").trim() });
+

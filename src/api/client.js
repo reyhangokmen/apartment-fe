@@ -11,6 +11,9 @@ export class ApiError extends Error {
     this.code = problem?.code;
     this.fieldErrors = problem?.errors || [];
     this.lockedUntil = problem?.lockedUntil;
+    this.remainingAttempts = problem?.remainingAttempts;
+    this.nextLockMinutes = problem?.nextLockMinutes;
+    this.detail = problem?.detail;
     this.retryAfter = retryAfter ? Number(retryAfter) : null;
   }
 }
